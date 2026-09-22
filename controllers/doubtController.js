@@ -52,7 +52,7 @@ exports.postDoubt = wrapAsync(async (req, res) => {
   const doubt = await doubtService.createDoubt(req.user._id, value);
 
   req.flash('success', 'Your doubt has been posted! Teachers will review and answer soon.');
-  return res.redirect(`/doubts/${doubt._id}`);
+  return res.redirect(303, `/doubts/${doubt._id}`);
 });
 
 /**
@@ -89,7 +89,7 @@ exports.getEditDoubtForm = wrapAsync(async (req, res) => {
 
   if (!isDoubtOwner && !isAdmin) {
     req.flash('error', 'You do not have permission to edit this doubt.');
-    return res.redirect(`/doubts/${doubt._id}`);
+    return res.redirect(303, `/doubts/${doubt._id}`);
   }
 
   res.render('doubts/edit', {
@@ -107,7 +107,7 @@ exports.putDoubt = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/doubts/${req.params.id}/edit`);
+    return res.redirect(303, `/doubts/${req.params.id}/edit`);
   }
 
   const doubt = await doubtService.updateDoubt(
@@ -118,7 +118,7 @@ exports.putDoubt = wrapAsync(async (req, res) => {
   );
 
   req.flash('success', 'Doubt updated successfully.');
-  return res.redirect(`/doubts/${doubt._id}`);
+  return res.redirect(303, `/doubts/${doubt._id}`);
 });
 
 /**
@@ -128,7 +128,7 @@ exports.deleteDoubt = wrapAsync(async (req, res) => {
   await doubtService.softDeleteDoubt(req.params.id, req.user._id, req.user.role);
 
   req.flash('success', 'Doubt deleted successfully.');
-  return res.redirect('/doubts');
+  return res.redirect(303, '/doubts');
 });
 
 /**
@@ -144,13 +144,13 @@ exports.postAnswer = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/doubts/${doubtId}#answers`);
+    return res.redirect(303, `/doubts/${doubtId}#answers`);
   }
 
   await doubtService.addAnswer(doubtId, teacherId, teacherRole, value.content);
 
   req.flash('success', 'Your answer has been published!');
-  return res.redirect(`/doubts/${doubtId}#answers`);
+  return res.redirect(303, `/doubts/${doubtId}#answers`);
 });
 
 /**
@@ -162,7 +162,7 @@ exports.getEditAnswerForm = wrapAsync(async (req, res) => {
 
   if (!answer || answer.isDeleted) {
     req.flash('error', 'Answer was not found.');
-    return res.redirect('/doubts');
+    return res.redirect(303, '/doubts');
   }
 
   const isAuthor = answer.author.equals(req.user._id);
@@ -170,7 +170,7 @@ exports.getEditAnswerForm = wrapAsync(async (req, res) => {
 
   if (!isAuthor && !isAdmin) {
     req.flash('error', 'You do not have permission to edit this answer.');
-    return res.redirect(`/doubts/${answer.doubt._id}`);
+    return res.redirect(303, `/doubts/${answer.doubt._id}`);
   }
 
   res.render('answers/edit', {
@@ -187,7 +187,7 @@ exports.putAnswer = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/answers/${req.params.id}/edit`);
+    return res.redirect(303, `/answers/${req.params.id}/edit`);
   }
 
   const updatedAnswer = await doubtService.updateAnswer(
@@ -198,7 +198,7 @@ exports.putAnswer = wrapAsync(async (req, res) => {
   );
 
   req.flash('success', 'Answer updated successfully.');
-  return res.redirect(`/doubts/${updatedAnswer.doubt}#answers`);
+  return res.redirect(303, `/doubts/${updatedAnswer.doubt}#answers`);
 });
 
 /**
@@ -212,7 +212,7 @@ exports.deleteAnswer = wrapAsync(async (req, res) => {
   );
 
   req.flash('success', 'Answer deleted.');
-  return res.redirect(`/doubts/${deletedAnswer.doubt}#answers`);
+  return res.redirect(303, `/doubts/${deletedAnswer.doubt}#answers`);
 });
 
 /**
@@ -227,5 +227,5 @@ exports.acceptAnswer = wrapAsync(async (req, res) => {
   );
 
   req.flash('success', 'Answer accepted as the solution!');
-  return res.redirect(`/doubts/${result.doubt._id}#answers`);
+  return res.redirect(303, `/doubts/${result.doubt._id}#answers`);
 });

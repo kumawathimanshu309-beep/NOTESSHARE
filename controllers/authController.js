@@ -65,7 +65,7 @@ exports.postLogin = (req, res, next) => {
         }
 
         req.flash('success', `Welcome back, ${user.name}!`);
-        res.redirect(redirectUrl);
+        res.redirect(303, redirectUrl);
       });
     });
   })(req, res, next);
@@ -149,7 +149,7 @@ exports.postSignup = wrapAsync(async (req, res, next) => {
     req.login(newUser, (err) => {
       if (err) return next(err);
       req.flash('success', 'Account created successfully. Welcome to StudyShare!');
-      res.redirect('/dashboard');
+      res.redirect(303, '/dashboard');
     });
   });
 });
@@ -169,7 +169,7 @@ exports.postForgotPassword = wrapAsync(async (req, res) => {
   const { email } = req.body;
   // Always render generic success message regardless of email existence to prevent account enumeration
   req.flash('success', 'If an account matching that email exists, password reset instructions have been sent.');
-  res.redirect('/auth/login');
+  res.redirect(303, '/auth/login');
 });
 
 // @desc    Initiate Google OAuth Sign-In
@@ -223,7 +223,7 @@ exports.postLogout = (req, res, next) => {
     if (err) return next(err);
     req.session.destroy(() => {
       res.clearCookie('connect.sid');
-      res.redirect('/?logout=true');
+      res.redirect(303, '/?logout=true');
     });
   });
 };

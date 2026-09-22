@@ -40,5 +40,5 @@ exports.postCreateTeacherRequest = wrapAsync(async (req, res) => {
       : 'Candidate recommendation submitted successfully for HOD/Admin review.'
   );
 
-  res.redirect(req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
+  res.redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
 });

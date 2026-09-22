@@ -9,10 +9,10 @@ const AppError = require('../utils/AppError');
  */
 exports.redirectToOwnProfile = wrapAsync(async (req, res) => {
   if (req.user && req.user.username) {
-    return res.redirect(`/profile/${req.user.username}`);
+    return res.redirect(303, `/profile/${req.user.username}`);
   }
   req.flash('error', 'Please log in to view your profile.');
-  return res.redirect('/auth/login');
+  return res.redirect(303, '/auth/login');
 });
 
 /**
@@ -69,7 +69,7 @@ exports.updateProfile = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect('/profile/edit');
+    return res.redirect(303, '/profile/edit');
   }
 
   // Pure whitelist extraction prevents role/isAdmin/password manipulation
@@ -85,16 +85,16 @@ exports.updateProfile = wrapAsync(async (req, res) => {
     updatedUser = await socialService.updateUserProfile(userId, safeData);
   } catch (err) {
     req.flash('error', err.message || 'Failed to update profile.');
-    return res.redirect('/profile/edit');
+    return res.redirect(303, '/profile/edit');
   }
 
   // Synchronize Passport session user object cleanly
   req.login(updatedUser, (err) => {
     if (err) {
       req.flash('success', 'Profile updated successfully.');
-      return res.redirect(`/profile/${updatedUser.username}`);
+      return res.redirect(303, `/profile/${updatedUser.username}`);
     }
     req.flash('success', 'Profile updated successfully.');
-    return res.redirect(`/profile/${updatedUser.username}`);
+    return res.redirect(303, `/profile/${updatedUser.username}`);
   });
 });

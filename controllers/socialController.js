@@ -19,7 +19,7 @@ exports.toggleLike = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', result.liked ? 'Note added to your likes.' : 'Note removed from your likes.');
-  return res.redirect(`/notes/${noteId}`);
+  return res.redirect(303, `/notes/${noteId}`);
 });
 
 /**
@@ -38,7 +38,7 @@ exports.toggleBookmark = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', result.bookmarked ? 'Note saved to your bookmarks.' : 'Note removed from your bookmarks.');
-  return res.redirect(`/notes/${noteId}`);
+  return res.redirect(303, `/notes/${noteId}`);
 });
 
 /**
@@ -53,7 +53,7 @@ exports.rateNote = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/notes/${noteId}`);
+    return res.redirect(303, `/notes/${noteId}`);
   }
 
   const result = await socialService.upsertRating(
@@ -74,7 +74,7 @@ exports.rateNote = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', `Thank you! You rated this note ${result.userRating} out of 5 stars.`);
-  return res.redirect(`/notes/${noteId}`);
+  return res.redirect(303, `/notes/${noteId}`);
 });
 
 /**
@@ -89,13 +89,13 @@ exports.addComment = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/notes/${noteId}#comments`);
+    return res.redirect(303, `/notes/${noteId}#comments`);
   }
 
   await socialService.addComment(noteId, userId, userRole, value.content);
 
   req.flash('success', 'Comment posted successfully.');
-  return res.redirect(`/notes/${noteId}#comments`);
+  return res.redirect(303, `/notes/${noteId}#comments`);
 });
 
 /**
@@ -108,12 +108,12 @@ exports.renderEditCommentForm = wrapAsync(async (req, res) => {
 
   if (!comment || comment.isDeleted) {
     req.flash('error', 'Comment not found.');
-    return res.redirect('/dashboard');
+    return res.redirect(303, '/dashboard');
   }
 
   if (!comment.user.equals(req.user._id) && req.user.role !== 'admin') {
     req.flash('error', 'You can only edit your own comment.');
-    return res.redirect(`/notes/${comment.note._id}`);
+    return res.redirect(303, `/notes/${comment.note._id}`);
   }
 
   res.render('comments/edit', {
@@ -134,7 +134,7 @@ exports.updateComment = wrapAsync(async (req, res) => {
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.redirect(`/comments/${commentId}/edit`);
+    return res.redirect(303, `/comments/${commentId}/edit`);
   }
 
   const updatedComment = await socialService.updateComment(
@@ -145,7 +145,7 @@ exports.updateComment = wrapAsync(async (req, res) => {
   );
 
   req.flash('success', 'Comment updated successfully.');
-  return res.redirect(`/notes/${updatedComment.note}#comments`);
+  return res.redirect(303, `/notes/${updatedComment.note}#comments`);
 });
 
 /**
@@ -159,5 +159,5 @@ exports.deleteComment = wrapAsync(async (req, res) => {
   const deletedComment = await socialService.deleteComment(commentId, userId, userRole);
 
   req.flash('success', 'Comment removed.');
-  return res.redirect(`/notes/${deletedComment.note}#comments`);
+  return res.redirect(303, `/notes/${deletedComment.note}#comments`);
 });
