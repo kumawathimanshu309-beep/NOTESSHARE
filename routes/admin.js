@@ -13,6 +13,7 @@ router.get('/', adminController.getAdminDashboard);
 // 2. User & Role Management
 router.get('/users', adminController.getUsers);
 router.patch('/users/:id/role', adminController.patchUserRole);
+router.post('/users/:id/role', adminController.patchUserRole);
 router.post('/users/:id/demote', adminController.postDemoteTeacher);
 
 // 2b. Teacher Governance Requests
@@ -26,6 +27,7 @@ router.get('/pending-notes', adminController.getPendingNotes);
 router.post('/notes/:id/approve', adminController.postApproveNote);
 router.post('/notes/:id/reject', adminController.postRejectNote);
 router.patch('/notes/:id/toggle-publish', adminController.patchToggleNotePublish);
+router.post('/notes/:id/toggle-publish', adminController.patchToggleNotePublish);
 router.delete('/notes/:id', adminController.deleteNote);
 
 // 4. Doubt Moderation
@@ -36,8 +38,11 @@ router.delete('/doubts/:id', adminController.deleteDoubt);
 router.get('/home-content', adminController.getHomeCards);
 router.post('/home-content', adminController.postHomeCard);
 router.patch('/home-content/:id/toggle-publish', adminController.patchToggleHomeCardPublish);
+router.post('/home-content/:id/toggle-publish', adminController.patchToggleHomeCardPublish);
 router.patch('/home-content/:id/toggle-enable', adminController.patchToggleHomeCardEnable);
+router.post('/home-content/:id/toggle-enable', adminController.patchToggleHomeCardEnable);
 router.patch('/home-content/:id/restore', adminController.restoreHomeCard);
+router.post('/home-content/:id/restore', adminController.restoreHomeCard);
 router.delete('/home-content/:id', adminController.deleteHomeCard);
 
 // 6. Audit Logs
