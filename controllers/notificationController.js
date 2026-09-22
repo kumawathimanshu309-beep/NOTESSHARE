@@ -27,7 +27,7 @@ exports.patchMarkAsRead = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', 'Notification marked as read.');
-  res.redirect('/notifications');
+  res.redirect(303, '/notifications');
 });
 
 // @desc    Mark all notifications as read for current user
@@ -40,7 +40,7 @@ exports.postMarkAllAsRead = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', `${count} notification${count === 1 ? '' : 's'} marked as read.`);
-  res.redirect('/notifications');
+  res.redirect(303, '/notifications');
 });
 
 // @desc    Delete / dismiss a single notification
@@ -53,5 +53,5 @@ exports.deleteNotification = wrapAsync(async (req, res) => {
   }
 
   req.flash('success', 'Notification removed.');
-  res.redirect('/notifications');
+  res.redirect(303, '/notifications');
 });

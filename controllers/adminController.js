@@ -189,7 +189,7 @@ exports.patchUserRole = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Role for @${targetUser.username} updated to ${newRole.toUpperCase()}.`);
-  res.redirect('/admin/users');
+  res.redirect(303, '/admin/users');
 });
 
 // @desc    Get Resources / Notes List for Admin Moderation
@@ -254,7 +254,7 @@ exports.patchToggleNotePublish = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Note "${note.title}" ${note.isPublished ? 'published' : 'unpublished'}.`);
-  res.redirect('/admin/notes');
+  res.redirect(303, '/admin/notes');
 });
 
 // @desc    Admin Soft Delete Note
@@ -280,7 +280,7 @@ exports.deleteNote = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Note "${note.title}" deleted.`);
-  res.redirect('/admin/notes');
+  res.redirect(303, '/admin/notes');
 });
 
 // @desc    Get Doubts for Admin Moderation
@@ -347,7 +347,7 @@ exports.deleteDoubt = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Doubt "${doubt.title}" deleted.`);
-  res.redirect('/admin/doubts');
+  res.redirect(303, '/admin/doubts');
 });
 
 // @desc    Get Home Page Dynamic Content Cards for Admin Management
@@ -394,7 +394,7 @@ exports.postHomeCard = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Home Card "${card.title}" created successfully.`);
-  res.redirect('/admin/home-content');
+  res.redirect(303, '/admin/home-content');
 });
 
 // @desc    Toggle Home Page Card Published State
@@ -419,7 +419,7 @@ exports.patchToggleHomeCardPublish = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Home Card "${card.title}" ${card.isPublished ? 'published' : 'unpublished'}.`);
-  res.redirect('/admin/home-content');
+  res.redirect(303, '/admin/home-content');
 });
 
 // @desc    Toggle Home Page Card Enabled State
@@ -444,7 +444,7 @@ exports.patchToggleHomeCardEnable = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Home Card "${card.title}" ${card.isEnabled ? 'enabled' : 'disabled'}.`);
-  res.redirect('/admin/home-content');
+  res.redirect(303, '/admin/home-content');
 });
 
 // @desc    Soft Delete Home Page Card
@@ -469,7 +469,7 @@ exports.deleteHomeCard = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Home Card "${card.title}" soft deleted.`);
-  res.redirect('/admin/home-content');
+  res.redirect(303, '/admin/home-content');
 });
 
 // @desc    Restore Soft-Deleted Home Page Card
@@ -494,7 +494,7 @@ exports.restoreHomeCard = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Home Card "${card.title}" restored.`);
-  res.redirect('/admin/home-content');
+  res.redirect(303, '/admin/home-content');
 });
 
 // @desc    Get Paginated System Audit Logs
@@ -549,7 +549,7 @@ exports.postApproveTeacherRequest = wrapAsync(async (req, res) => {
   const request = await governanceService.reviewTeacherRequest(req.params.id, req.user, 'approve');
 
   req.flash('success', 'Teacher request approved successfully! User promoted to Teacher role.');
-  res.redirect('/admin/teacher-requests');
+  res.redirect(303, '/admin/teacher-requests');
 });
 
 // @desc    Reject Pending Teacher Request
@@ -559,7 +559,7 @@ exports.postRejectTeacherRequest = wrapAsync(async (req, res) => {
   await governanceService.reviewTeacherRequest(req.params.id, req.user, 'reject', rejectionReason);
 
   req.flash('success', 'Teacher request rejected.');
-  res.redirect('/admin/teacher-requests');
+  res.redirect(303, '/admin/teacher-requests');
 });
 
 // @desc    Demote Teacher to Student Role (Preserving historical assets/answers)
@@ -568,7 +568,7 @@ exports.postDemoteTeacher = wrapAsync(async (req, res) => {
   const demotedUser = await governanceService.demoteTeacher(req.params.id, req.user);
 
   req.flash('success', `Teacher @${demotedUser.username} demoted to Student role.`);
-  res.redirect('/admin/users');
+  res.redirect(303, '/admin/users');
 });
 
 // @desc    Get Pending Notes Moderation Queue for Admin Review
@@ -657,7 +657,7 @@ exports.postApproveNote = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Note "${note.title}" has been approved and published.`);
-  res.redirect('/admin/pending-notes');
+  res.redirect(303, '/admin/pending-notes');
 });
 
 // @desc    Reject Pending Student Note
@@ -705,5 +705,5 @@ exports.postRejectNote = wrapAsync(async (req, res) => {
   });
 
   req.flash('success', `Note "${note.title}" rejected.`);
-  res.redirect('/admin/pending-notes');
+  res.redirect(303, '/admin/pending-notes');
 });
