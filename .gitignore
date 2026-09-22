@@ -1,66 +1,18 @@
-# =========================
-# ENV / SECRETS
-# =========================
 .env
 .env.*
 !.env.example
 
-# =========================
-# DEPENDENCIES
-# =========================
 node_modules/
-
-# =========================
-# LOGS
-# =========================
+.vercel/
+dist/
+coverage/
+build/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# =========================
-# IDE / OS
-# =========================
-.vscode/
-.idea/
 .DS_Store
 Thumbs.db
 
-# =========================
-# BUILD / TEST
-# =========================
-coverage/
-.nyc_output/
-dist/
-build/
-
-# =========================
-# INTERNAL TESTING
-# =========================
 scratch/
-
-# =========================
-# INTERNAL PROJECT DOCS / REPORTS
-# =========================
-StudyShare_Antigravity_Project_Docs/
-GOVERNANCE_WORKFLOW.md
-PHASE_*_REPORT.md
-PHASE_*_AUDIT.md
-*_AUDIT.md
-*_IMPLEMENTATION_REPORT.md
-PHASE_*_SECURITY_CONTRACT.md
-PHASE_*_NOTIFICATION_MATRIX.md
-PHASE_*_ADMIN_MATRIX.md
-PHASE_*_IMPLEMENTATION_PLAN.md
-PHASE_*_SECURITY_DESIGN_REVIEW.md
-walkthrough.md
-
-# =========================
-# TEMP / BACKUP
-# =========================
-*.tmp
-*.temp
-*.bak
-*.backup
-
-scripts/
+scripts/seedAdmin.js
+scripts/seedDemoData.js
+scripts/seedTeacher.js
+scripts/generateDemoPDFs.js
