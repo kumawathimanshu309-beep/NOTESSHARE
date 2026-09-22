@@ -11,7 +11,6 @@
     <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px;">Update your doubt details.</p>
 
     <form action="/doubts/<%= doubt._id %>?_method=PUT" method="POST">
-      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
       
       <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Title</label>

@@ -127,11 +127,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 9. CSRF Protection Middleware
-const csrfProtection = require('./middleware/csrf');
-app.use(csrfProtection);
-
-// 10. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
+// 9. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
 app.use(async (req, res, next) => {
   res.locals.isAuthenticated = req.isAuthenticated();
   res.locals.currentUser = req.user || null;

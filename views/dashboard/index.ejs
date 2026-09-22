@@ -61,7 +61,6 @@
 
       <div style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 15px;">
         <form action="/auth/logout" method="POST">
-          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
           <button type="submit" style="width: 100%; background: transparent; border: 1px solid rgba(239,68,68,0.2); color: #F87171; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">
             Log Out
           </button>
