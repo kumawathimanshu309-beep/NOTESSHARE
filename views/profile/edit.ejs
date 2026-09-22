@@ -11,6 +11,7 @@
     <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px;">Update your public profile information on StudyShare.</p>
 
     <form action="/profile/edit" method="POST">
+      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
       
       <!-- Full Name -->
       <div style="margin-bottom: 20px;">

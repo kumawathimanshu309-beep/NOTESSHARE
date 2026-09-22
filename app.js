@@ -97,9 +97,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(methodOverride('_method'));
 
-const csrfProtection = require('./middleware/csrf');
-app.use(csrfProtection);
-
 // 6. Session Management with MongoStore
 const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/studyshare';
 const sessionSecret = process.env.SESSION_SECRET || 'dev_session_secret_key_change_in_production';
@@ -111,6 +108,7 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl,
+      dbName: 'studyshare',
       touchAfter: 24 * 3600, // Lazy update session once per 24 hours unless modified
     }),
     cookie: {
@@ -129,7 +127,11 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 9. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
+// 9. CSRF Protection Middleware
+const csrfProtection = require('./middleware/csrf');
+app.use(csrfProtection);
+
+// 10. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
 app.use(async (req, res, next) => {
   res.locals.isAuthenticated = req.isAuthenticated();
   res.locals.currentUser = req.user || null;

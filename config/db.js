@@ -13,7 +13,7 @@ const connectDB = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(mongoURI);
+    const conn = await mongoose.connect(mongoURI, { dbName: 'studyshare' });
     console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host}`);
     return true;
   } catch (error) {

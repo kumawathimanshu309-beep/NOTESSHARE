@@ -25,6 +25,7 @@
     </div>
 
     <form action="/auth/signup" method="POST" id="signupForm">
+      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
       
       <div style="margin-bottom: 18px;">
         <label for="name" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</label>

@@ -41,6 +41,7 @@
             👤 <strong style="color: white;"><%= currentUser.name.split(' ')[0] %></strong>
           </a>
           <form action="/auth/logout" method="POST" style="display: inline;">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
             <button type="submit" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">
               Log out
             </button>
