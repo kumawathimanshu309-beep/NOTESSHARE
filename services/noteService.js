@@ -2,9 +2,27 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const Note = require('../models/Note');
+const blobService = require('./blobService');
 const AppError = require('../utils/AppError');
 
 class NoteService {
+  /**
+   * Helper to write local file buffer in dev mode
+   */
+  async _saveBufferLocally(originalname, buffer) {
+    const uploadDir = path.join(__dirname, '../public/uploads/notes');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const ext = path.extname(originalname).toLowerCase();
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `note-${uniqueSuffix}${ext}`;
+    const filePath = path.join(uploadDir, filename);
+
+    await fs.promises.writeFile(filePath, buffer);
+    return `/uploads/notes/${filename}`;
+  }
+
   /**
    * Create a new Note record with role-aware moderation default
    */
@@ -19,17 +37,30 @@ class NoteService {
       parsedTags = tags.split(',').map((t) => t.trim().toLowerCase()).filter((t) => t.length > 0);
     }
 
-    // Process uploaded file
     let fileUrl = '';
     let fileName = '';
     let fileSize = 0;
     let mimeType = '';
 
-    if (file) {
-      fileUrl = `/uploads/notes/${file.filename}`;
+    // Priority 1: Direct Client Blob Upload Metadata
+    if (data.fileUrl && String(data.fileUrl).trim()) {
+      fileUrl = String(data.fileUrl).trim();
+      fileName = data.fileName ? String(data.fileName).trim() : 'uploaded-note';
+      fileSize = Number(data.fileSize) || 0;
+      mimeType = data.mimeType ? String(data.mimeType).trim() : 'application/pdf';
+    } 
+    // Priority 2: Server-Side File Buffer (Multer memoryStorage)
+    else if (file) {
       fileName = file.originalname;
       fileSize = file.size;
       mimeType = file.mimetype;
+
+      if (blobService.isBlobConfigured()) {
+        const blobResult = await blobService.uploadBufferToBlob(file.originalname, file.buffer, file.mimetype);
+        fileUrl = blobResult.url;
+      } else {
+        fileUrl = await this._saveBufferLocally(file.originalname, file.buffer);
+      }
     }
 
     // Moderation rules: Student uploads default to 'pending' and 'isPublished = false'
@@ -46,7 +77,7 @@ class NoteService {
       category: category || 'Notes',
       semester: Number(semester) || 1,
       tags: parsedTags,
-      resourceType: resourceType || (file ? this.detectResourceType(file.mimetype) : 'pdf'),
+      resourceType: resourceType || (mimeType ? this.detectResourceType(mimeType) : 'pdf'),
       fileUrl,
       fileName,
       fileSize,
@@ -69,7 +100,6 @@ class NoteService {
     const limit = Math.min(50, Math.max(1, parseInt(options.limit, 10) || 12));
     const skip = (page - 1) * limit;
 
-    // Base query: Published, Public, Not Soft-Deleted, Approved
     const query = {
       isDeleted: false,
       isPublished: true,
@@ -77,7 +107,6 @@ class NoteService {
       approvalStatus: 'approved',
     };
 
-    // Keyword Search (Title, Description, Subject, Tags)
     if (options.search && options.search.trim()) {
       const searchRegex = new RegExp(options.search.trim(), 'i');
       query.$or = [
@@ -88,32 +117,26 @@ class NoteService {
       ];
     }
 
-    // Filter by Subject
     if (options.subject && options.subject.trim() && options.subject !== 'all') {
       query.subject = new RegExp(`^${options.subject.trim()}$`, 'i');
     }
 
-    // Filter by Semester
     if (options.semester && !isNaN(options.semester)) {
       query.semester = Number(options.semester);
     }
 
-    // Filter by Year (PYQ)
     if (options.year && !isNaN(options.year)) {
       query.year = Number(options.year);
     }
 
-    // Filter by Category
     if (options.category && options.category.trim() && options.category !== 'all') {
       query.category = new RegExp(`^${options.category.trim()}$`, 'i');
     }
 
-    // Filter by Resource Type
     if (options.resourceType && options.resourceType.trim() && options.resourceType !== 'all') {
       query.resourceType = options.resourceType.trim().toLowerCase();
     }
 
-    // Safe Whitelisted Sorting
     let sort = { createdAt: -1 };
     if (options.sort === 'oldest') {
       sort = { createdAt: 1 };
@@ -158,7 +181,6 @@ class NoteService {
       throw new AppError('The requested study note was not found or has been removed.', 404);
     }
 
-    // Visibility & Moderation Guard
     const isApproved = note.approvalStatus === 'approved';
     const isPublicAndPublished = note.isPublished && note.visibility === 'public' && isApproved;
     const isOwner = currentUser && note.author && (note.author._id ? note.author._id.equals(currentUser._id) : note.author.equals(currentUser._id));
@@ -171,18 +193,12 @@ class NoteService {
     return note;
   }
 
-  /**
-   * Increment view counter safely
-   */
   async incrementViews(noteId) {
     if (mongoose.Types.ObjectId.isValid(noteId)) {
       await Note.findByIdAndUpdate(noteId, { $inc: { views: 1 } });
     }
   }
 
-  /**
-   * Increment download counter safely
-   */
   async incrementDownloads(noteId) {
     if (mongoose.Types.ObjectId.isValid(noteId)) {
       await Note.findByIdAndUpdate(noteId, { $inc: { downloads: 1 } });
@@ -202,7 +218,6 @@ class NoteService {
       throw new AppError('You do not have permission to edit this note.', 403);
     }
 
-    // Mass assignment protection: Strip moderation control fields from non-admin payloads
     if (!isAdmin) {
       delete updateData.approvalStatus;
       delete updateData.status;
@@ -212,9 +227,6 @@ class NoteService {
       delete updateData.adminFeedback;
     }
 
-    // Mandatory Re-moderation Rule:
-    // If a student edits an approved or rejected note (or replaces its file),
-    // approvalStatus MUST reset to 'pending' and isPublished MUST become false.
     if (currentUser.role === 'student' && !isAdmin) {
       note.approvalStatus = 'pending';
       note.isPublished = false;
@@ -222,8 +234,6 @@ class NoteService {
       note.adminFeedback = '';
     }
 
-    // Server-managed security: Never allow client to manipulate fileVersion directly
-    // Explicitly update only allowed fields
     if (typeof updateData.title !== 'undefined') note.title = updateData.title.trim();
     if (typeof updateData.description !== 'undefined') note.description = updateData.description.trim();
     if (typeof updateData.content !== 'undefined') note.content = updateData.content.trim();
@@ -246,58 +256,48 @@ class NoteService {
     }
 
     const oldFileUrl = note.fileUrl;
-    let fileWasReplaced = false;
 
-    // Process new file upload if attached
-    if (newFile) {
-      note.fileUrl = `/uploads/notes/${newFile.filename}`;
+    // Direct Client Blob Upload Metadata Replacement
+    if (updateData.fileUrl && String(updateData.fileUrl).trim() && updateData.fileUrl !== oldFileUrl) {
+      note.fileUrl = String(updateData.fileUrl).trim();
+      if (updateData.fileName) note.fileName = String(updateData.fileName).trim();
+      if (updateData.fileSize) note.fileSize = Number(updateData.fileSize) || note.fileSize;
+      if (updateData.mimeType) note.mimeType = String(updateData.mimeType).trim();
+      note.fileVersion = (note.fileVersion || 1) + 1;
+
+      if (oldFileUrl) {
+        await blobService.deleteFileResource(oldFileUrl);
+      }
+    }
+    // Server-Side File Buffer Replacement
+    else if (newFile) {
+      let newFileUrl = '';
+      if (blobService.isBlobConfigured()) {
+        const blobResult = await blobService.uploadBufferToBlob(newFile.originalname, newFile.buffer, newFile.mimetype);
+        newFileUrl = blobResult.url;
+      } else {
+        newFileUrl = await this._saveBufferLocally(newFile.originalname, newFile.buffer);
+      }
+
+      note.fileUrl = newFileUrl;
       note.fileName = newFile.originalname;
       note.fileSize = newFile.size;
       note.mimeType = newFile.mimetype;
-      // Increment fileVersion ONLY when the actual resource file changes
       note.fileVersion = (note.fileVersion || 1) + 1;
-      fileWasReplaced = true;
-    }
 
-    try {
-      await note.save();
-    } catch (saveErr) {
-      // Failure safety: If DB save fails, clean up newly uploaded orphan file
-      if (newFile) {
-        const newFilePath = path.join(__dirname, '../public', note.fileUrl);
-        if (fs.existsSync(newFilePath)) {
-          try {
-            fs.unlinkSync(newFilePath);
-          } catch (e) {
-            console.warn('Could not clean up new orphan file after DB error:', e.message);
-          }
-        }
-      }
-      throw saveErr;
-    }
-
-    // Atomic post-save cleanup: Remove old file safely only after DB update succeeds
-    if (fileWasReplaced && oldFileUrl) {
-      const oldPath = path.join(__dirname, '../public', oldFileUrl);
-      if (fs.existsSync(oldPath)) {
-        try {
-          fs.unlinkSync(oldPath);
-        } catch (e) {
-          console.warn('Could not remove old note file after successful DB update:', e.message);
-        }
+      if (oldFileUrl) {
+        await blobService.deleteFileResource(oldFileUrl);
       }
     }
 
+    await note.save();
     return note;
   }
 
-  /**
-   * Soft Delete Note
-   */
   async softDeleteNote(noteId, currentUser) {
     const note = await this.getNoteById(noteId, currentUser);
 
-    const isOwner = note.author && note.author._id.equals(currentUser._id);
+    const isOwner = note.author && (note.author._id ? note.author._id.equals(currentUser._id) : note.author.equals(currentUser._id));
     const isAdmin = currentUser.role === 'admin';
 
     if (!isOwner && !isAdmin) {
@@ -313,6 +313,7 @@ class NoteService {
   }
 
   detectResourceType(mimeType) {
+    if (!mimeType) return 'pdf';
     if (mimeType.includes('pdf')) return 'pdf';
     if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'ppt';
     if (mimeType.includes('image')) return 'image';

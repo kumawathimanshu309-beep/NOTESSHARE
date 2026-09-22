@@ -12,6 +12,8 @@ build/
 Thumbs.db
 
 scratch/
+public/uploads/*
+!public/uploads/.gitkeep
 scripts/seedAdmin.js
 scripts/seedDemoData.js
 scripts/seedTeacher.js

@@ -149,6 +149,9 @@ app.use(async (req, res, next) => {
 
 const teacherRequestRoutes = require('./routes/teacherRequests');
 
+const blobService = require('./services/blobService');
+const { isLoggedIn } = require('./middleware/auth');
+
 // 10. Application Routers
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
@@ -163,6 +166,7 @@ app.use('/teacher', teacherRoutes);
 app.use('/teachers', teacherRoutes);
 app.use('/teacher-requests', teacherRequestRoutes);
 app.use('/notifications', notificationRoutes);
+app.post('/api/blob/upload', isLoggedIn, blobService.handleClientUpload);
 
 // 11. 404 & Centralized Error Middleware
 app.use(notFoundHandler);

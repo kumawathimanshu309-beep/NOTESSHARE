@@ -1,24 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const multer = require('multer');
 
-const uploadDir = path.join(__dirname, '../public/uploads/notes');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Generate safe unique filename using timestamp + random bytes
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `note-${uniqueSuffix}${ext}`);
-  },
-});
-
+// Allowed MIME types and extensions
 const allowedMimeTypes = [
   'application/pdf',
   'application/vnd.ms-powerpoint',
@@ -46,8 +29,9 @@ const fileFilter = (req, file, cb) => {
   cb(err, false);
 };
 
+// Use memoryStorage to avoid EROFS (read-only filesystem) on Vercel/serverless environments
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter,
   limits: {
     fileSize: 15 * 1024 * 1024, // 15 MB limit

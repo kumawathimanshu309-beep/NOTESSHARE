@@ -43,7 +43,7 @@ exports.postNote = wrapAsync(async (req, res) => {
   } else {
     req.flash('success', 'Note uploaded successfully!');
   }
-  res.redirect(`/notes/${note._id}`);
+  res.redirect(303, `/notes/${note._id}`);
 });
 
 // @desc    Render Note Details Page & Social Metadata & Increment Views
@@ -105,14 +105,20 @@ exports.downloadNote = wrapAsync(async (req, res) => {
     throw new AppError('This note does not have an attached downloadable file.', 404);
   }
 
+  // Increment download counter safely upon successful authorization check
+  await noteService.incrementDownloads(note._id);
+
+  // Remote Vercel Blob File
+  if (note.fileUrl.startsWith('http://') || note.fileUrl.startsWith('https://')) {
+    return res.redirect(note.fileUrl);
+  }
+
+  // Local Filesystem File
   const filePath = path.join(__dirname, '../public', note.fileUrl);
 
   if (!fs.existsSync(filePath)) {
     throw new AppError('The requested file resource is missing from server storage.', 404);
   }
-
-  // Increment download counter safely upon successful authorization check
-  await noteService.incrementDownloads(note._id);
 
   const downloadFilename = note.fileName || path.basename(filePath);
   res.download(filePath, downloadFilename);
@@ -127,14 +133,20 @@ exports.viewNote = wrapAsync(async (req, res) => {
     throw new AppError('This note does not have an attached viewable file.', 404);
   }
 
+  // Increment view counter safely upon successful authorization check
+  await noteService.incrementViews(note._id);
+
+  // Remote Vercel Blob File
+  if (note.fileUrl.startsWith('http://') || note.fileUrl.startsWith('https://')) {
+    return res.redirect(note.fileUrl);
+  }
+
+  // Local Filesystem File
   const filePath = path.join(__dirname, '../public', note.fileUrl);
 
   if (!fs.existsSync(filePath)) {
     throw new AppError('The requested file resource is missing from server storage.', 404);
   }
-
-  // Increment view counter safely upon successful authorization check
-  await noteService.incrementViews(note._id);
 
   const mimeType = note.mimeType || 'application/pdf';
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -172,7 +184,7 @@ exports.putNote = wrapAsync(async (req, res) => {
   const updatedNote = await noteService.updateNote(req.params.id, req.user, req.body, req.file);
 
   req.flash('success', 'Note updated successfully!');
-  res.redirect(`/notes/${updatedNote._id}`);
+  res.redirect(303, `/notes/${updatedNote._id}`);
 });
 
 // @desc    Process Soft Delete Note
@@ -181,5 +193,5 @@ exports.deleteNote = wrapAsync(async (req, res) => {
   await noteService.softDeleteNote(req.params.id, req.user);
 
   req.flash('success', 'Note deleted successfully.');
-  res.redirect('/notes');
+  res.redirect(303, '/notes');
 });
