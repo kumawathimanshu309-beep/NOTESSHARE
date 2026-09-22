@@ -3,7 +3,7 @@
  * Bypasses Vercel Serverless Function 4.5 MB request payload limit by uploading up to 15 MB files
  * directly from browser to Vercel Blob storage.
  */
-async function uploadFileDirectToBlob(file, onProgress) {
+async function uploadFileDirectToBlob(file) {
   if (!file) return null;
 
   // Step 1: Generate Client Upload Token from server
@@ -26,7 +26,7 @@ async function uploadFileDirectToBlob(file, onProgress) {
 
   if (!tokenRes.ok) {
     const errData = await tokenRes.json().catch(() => ({}));
-    throw new Error(errData.error || 'Failed to initialize direct blob upload token.');
+    throw new Error(errData.error || 'Vercel Blob storage is not configured or unavailable.');
   }
 
   const tokenData = await tokenRes.json();
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = noteForm.querySelector('input[type="file"][name="file"]');
   if (!fileInput) return;
 
-  // Add hidden fields for Blob metadata if not present
+  // Ensure hidden fields for Blob metadata exist
   let hiddenUrl = noteForm.querySelector('input[name="fileUrl"]');
   if (!hiddenUrl) {
     hiddenUrl = document.createElement('input');
@@ -105,44 +105,46 @@ document.addEventListener('DOMContentLoaded', () => {
     noteForm.appendChild(hiddenMime);
   }
 
+  let isUploadingDirect = false;
+
   noteForm.addEventListener('submit', async (e) => {
     const selectedFile = fileInput.files[0];
-    if (!selectedFile) return; // Allow submit if no file selected
+    if (!selectedFile || isUploadingDirect) return;
 
-    // If file is > 4 MB (or for all files when direct Blob token is available),
-    // perform direct client-side upload to avoid Vercel Function 4.5 MB payload limit.
-    if (selectedFile.size > 4 * 1024 * 1024) {
-      e.preventDefault();
+    // Intercept form submit and attempt direct client Blob upload for attached files
+    e.preventDefault();
 
-      const submitBtn = noteForm.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+    const submitBtn = noteForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
 
-      try {
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = '⏳ Uploading large file to cloud storage...';
-        }
-
-        const blobMeta = await uploadFileDirectToBlob(selectedFile);
-
-        hiddenUrl.value = blobMeta.url;
-        hiddenName.value = blobMeta.fileName;
-        hiddenSize.value = blobMeta.fileSize;
-        hiddenMime.value = blobMeta.mimeType;
-
-        // Clear file input so browser form payload doesn't send large file through Vercel Function
-        fileInput.value = '';
-
-        // Submit metadata form
-        noteForm.submit();
-      } catch (err) {
-        console.error('Client upload failed:', err);
-        alert(`File upload error: ${err.message}`);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnText;
-        }
+    try {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Uploading file to cloud storage...';
       }
+
+      const blobMeta = await uploadFileDirectToBlob(selectedFile);
+
+      hiddenUrl.value = blobMeta.url;
+      hiddenName.value = blobMeta.fileName;
+      hiddenSize.value = blobMeta.fileSize;
+      hiddenMime.value = blobMeta.mimeType;
+
+      // Clear file input so raw file payload is not sent through Vercel Function
+      fileInput.value = '';
+      isUploadingDirect = true;
+
+      // Submit metadata form
+      noteForm.submit();
+    } catch (err) {
+      console.warn('Direct Blob upload failed:', err.message);
+      // Fallback: If direct client Blob upload endpoint is unconfigured (e.g., local dev), submit standard form
+      isUploadingDirect = true;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+      noteForm.submit();
     }
   });
 });

@@ -5,11 +5,22 @@ const Note = require('../models/Note');
 const blobService = require('./blobService');
 const AppError = require('../utils/AppError');
 
+const isProductionEnv = () => {
+  return Boolean(process.env.VERCEL || process.env.NODE_ENV === 'production');
+};
+
 class NoteService {
   /**
-   * Helper to write local file buffer in dev mode
+   * Helper to write local file buffer ONLY in local development mode
    */
   async _saveBufferLocally(originalname, buffer) {
+    if (isProductionEnv()) {
+      throw new AppError(
+        'Cloud storage token (BLOB_READ_WRITE_TOKEN) is not configured on Vercel production. Local file system writes are strictly disabled in serverless environments.',
+        500
+      );
+    }
+
     const uploadDir = path.join(__dirname, '../public/uploads/notes');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -58,6 +69,11 @@ class NoteService {
       if (blobService.isBlobConfigured()) {
         const blobResult = await blobService.uploadBufferToBlob(file.originalname, file.buffer, file.mimetype);
         fileUrl = blobResult.url;
+      } else if (isProductionEnv()) {
+        throw new AppError(
+          'Vercel Blob storage token (BLOB_READ_WRITE_TOKEN) is missing in Vercel Production. Please configure BLOB_READ_WRITE_TOKEN in Vercel Environment Variables.',
+          500
+        );
       } else {
         fileUrl = await this._saveBufferLocally(file.originalname, file.buffer);
       }
@@ -275,6 +291,11 @@ class NoteService {
       if (blobService.isBlobConfigured()) {
         const blobResult = await blobService.uploadBufferToBlob(newFile.originalname, newFile.buffer, newFile.mimetype);
         newFileUrl = blobResult.url;
+      } else if (isProductionEnv()) {
+        throw new AppError(
+          'Vercel Blob storage token (BLOB_READ_WRITE_TOKEN) is missing in Vercel Production. Please configure BLOB_READ_WRITE_TOKEN in Vercel Environment Variables.',
+          500
+        );
       } else {
         newFileUrl = await this._saveBufferLocally(newFile.originalname, newFile.buffer);
       }
