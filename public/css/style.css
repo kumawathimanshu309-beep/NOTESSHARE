@@ -1138,6 +1138,35 @@ footer {
   margin-bottom: 30px;
 }
 
+/* =========================================================
+   RESPONSIVE TABLE SYSTEM
+========================================================= */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.responsive-table th,
+.responsive-table td {
+  white-space: nowrap;
+}
+
+.responsive-table th.cell-wrap,
+.responsive-table td.cell-wrap {
+  white-space: normal;
+  word-break: break-word;
+  min-width: 180px;
+}
+
 /* Word wrapping & overflow protection */
 h1, h2, h3, h4, p, span, a, td, th, div {
   overflow-wrap: anywhere;
@@ -1274,8 +1303,21 @@ body {
   }
 
   .primary-button,
-  .secondary-button {
+  .secondary-button,
+  .nav-button {
     width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select {
+    font-size: 16px !important;
     min-height: 44px;
   }
 
