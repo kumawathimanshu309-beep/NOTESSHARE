@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=<%= (typeof process !== 'undefined' && process.env && process.env.VERCEL_GIT_COMMIT_SHA) ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : '88686d6' %>">
   <script defer src="/js/main.js"></script>
   <script defer src="/js/blob-uploader.js"></script>
 </head>
