@@ -1,0 +1,104 @@
+<div class="page-container" style="max-width: 1000px;">
+  
+  <!-- Teacher Profile Header Card -->
+  <div class="content-card" style="padding: 35px; border-radius: 24px; margin-bottom: 35px; position: relative; overflow: hidden; border-color: rgba(168,85,247,0.3);">
+    <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: var(--gradient); opacity: 0.2; filter: blur(60px); border-radius: 50%; pointer-events: none;"></div>
+    
+    <div style="display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap;">
+      <!-- Avatar -->
+      <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 38px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.5); flex-shrink: 0;">
+        <%= teacher.name.charAt(0).toUpperCase() %>
+      </div>
+
+      <!-- Info -->
+      <div style="flex: 1; min-width: 250px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px;">
+          <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; margin: 0; font-weight: 700;">
+            <%= teacher.name %>
+          </h1>
+          <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.25); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+            🎓 Verified Teacher
+          </span>
+        </div>
+
+        <p style="color: var(--lavender); font-size: 14px; margin-bottom: 12px;">
+          @<%= teacher.username %> <%= teacher.qualification ? '• ' + teacher.qualification : '' %>
+        </p>
+
+        <% if (teacher.teachingBio || teacher.bio) { %>
+          <p style="color: var(--text); font-size: 14px; line-height: 1.6; max-width: 650px; margin-bottom: 15px;">
+            <%= teacher.teachingBio || teacher.bio %>
+          </p>
+        <% } %>
+
+        <% if (teacher.experience) { %>
+          <div style="font-size: 13px; color: var(--muted);">
+            💼 Experience: <strong style="color: white;"><%= teacher.experience %></strong>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Stat Counters -->
+    <div class="stats-grid-4col" style="margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--border);">
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats.totalResources %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Shared Resources</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: #60A5FA;"><%= stats.totalAnswers %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Answers Provided</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: #4ADE80;"><%= stats.acceptedCount %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Accepted Solutions</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4B5FD;"><%= stats.totalDownloads %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Resource Downloads</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Resources Section -->
+  <div style="margin-bottom: 35px;">
+    <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; margin-bottom: 20px;">
+      Published Study Resources (<%= resources.length %>)
+    </h2>
+
+    <% if (resources && resources.length > 0) { %>
+      <div class="notes-cards-grid">
+        <% resources.forEach(note => { %>
+          <div class="content-card" style="padding: 22px; border-radius: 16px; display: flex; flex-direction: column; justify-space-between;">
+            <div>
+              <span style="padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                <%= note.subject %>
+              </span>
+
+              <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin: 10px 0; line-height: 1.35;">
+                <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;">
+                  <%= note.title %>
+                </a>
+              </h3>
+
+              <p style="color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                <%= note.description || 'No description provided.' %>
+              </p>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">
+              <span>📥 <%= note.downloads %> Downloads</span>
+              <a href="/notes/<%= note._id %>" style="color: var(--accent-light); font-weight: 600; text-decoration: none;">View Resource →</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="color: var(--muted); font-size: 14px;">No public resources uploaded yet.</p>
+    <% } %>
+  </div>
+
+</div>

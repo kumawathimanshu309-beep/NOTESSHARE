@@ -1,0 +1,135 @@
+<div class="page-container" style="max-width: 720px;">
+  
+  <div class="page-header" style="text-align: left; margin-bottom: 30px;">
+    <div class="section-badge">EDIT RESOURCE</div>
+    <h1>Edit <span class="gradient-text"><%= note.title %></span></h1>
+    <p>Update note details, description, tags, or file attachments.</p>
+  </div>
+
+  <div class="content-card" style="padding: 40px; border-radius: 20px;">
+    <form action="/notes/<%= note._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      
+      <!-- Title -->
+      <div style="margin-bottom: 22px;">
+        <label for="title" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase;">Note Title *</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          value="<%= note.title %>" 
+          required 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+
+      <!-- Grid for Subject, Semester, Resource Type -->
+      <div class="form-grid-3col">
+        
+        <div>
+          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject</label>
+          <select id="subject" name="subject" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="Computer Science" <%= note.subject === 'Computer Science' ? 'selected' : '' %>>Computer Science</option>
+            <option value="Mathematics" <%= note.subject === 'Mathematics' ? 'selected' : '' %>>Mathematics</option>
+            <option value="Science" <%= note.subject === 'Science' ? 'selected' : '' %>>Science</option>
+            <option value="Engineering" <%= note.subject === 'Engineering' ? 'selected' : '' %>>Engineering</option>
+            <option value="General" <%= note.subject === 'General' ? 'selected' : '' %>>General</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="semester" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Semester</label>
+          <select id="semester" name="semester" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <% for(let s = 1; s <= 8; s++) { %>
+              <option value="<%= s %>" <%= note.semester == s ? 'selected' : '' %>>Semester <%= s %></option>
+            <% } %>
+          </select>
+        </div>
+
+        <div>
+          <label for="resourceType" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Resource Type</label>
+          <select id="resourceType" name="resourceType" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="pdf" <%= note.resourceType === 'pdf' ? 'selected' : '' %>>PDF Document</option>
+            <option value="ppt" <%= note.resourceType === 'ppt' ? 'selected' : '' %>>PPT / Presentation</option>
+            <option value="image" <%= note.resourceType === 'image' ? 'selected' : '' %>>Image Note</option>
+            <option value="document" <%= note.resourceType === 'document' ? 'selected' : '' %>>Other Document</option>
+            <option value="video" <%= note.resourceType === 'video' ? 'selected' : '' %>>Video Reference</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- File Attachment Replacement Picker -->
+      <div style="margin-bottom: 22px; padding: 20px; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; background: rgba(255,255,255,0.02);">
+        <p style="font-size: 13px; color: var(--text); margin-bottom: 8px;">
+          Current File: <strong><%= note.fileName || 'None' %></strong>
+        </p>
+        <label for="file" style="display: block; font-size: 12px; color: var(--lavender); margin-bottom: 6px; cursor: pointer;">
+          Replace file (optional):
+        </label>
+        <input 
+          type="file" 
+          id="file" 
+          name="file" 
+          accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.webp" 
+          style="font-size: 12px; color: var(--muted);"
+        >
+      </div>
+
+      <!-- Description -->
+      <div style="margin-bottom: 22px;">
+        <label for="description" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase;">Description Summary</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          rows="3" 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; font-family: inherit;"
+        ><%= note.description %></textarea>
+      </div>
+
+      <!-- Content Text -->
+      <div style="margin-bottom: 22px;">
+        <label for="content" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase;">Detailed Text Content</label>
+        <textarea 
+          id="content" 
+          name="content" 
+          rows="5" 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; font-family: inherit;"
+        ><%= note.content %></textarea>
+      </div>
+
+      <!-- Grid for Tags, Visibility -->
+      <div class="form-grid-2col">
+        <div>
+          <label for="tags" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Tags</label>
+          <input 
+            type="text" 
+            id="tags" 
+            name="tags" 
+            value="<%= note.tags ? note.tags.join(', ') : '' %>" 
+            style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 13px; outline: none;"
+          >
+        </div>
+
+        <div>
+          <label for="visibility" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Visibility</label>
+          <select id="visibility" name="visibility" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="public" <%= note.visibility === 'public' ? 'selected' : '' %>>Public (Everyone)</option>
+            <option value="private" <%= note.visibility === 'private' ? 'selected' : '' %>>Private (Only Me)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div style="display: flex; gap: 15px;">
+        <button type="submit" class="primary-button" style="flex: 1; padding: 14px; justify-content: center; font-size: 14px;">
+          Save Changes <span>→</span>
+        </button>
+        <a href="/notes/<%= note._id %>" class="secondary-button" style="padding: 14px 25px;">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+</div>

@@ -1,0 +1,64 @@
+<nav class="navbar">
+  <div class="nav-container">
+
+    <a href="/" class="logo" aria-label="StudyShare Home">
+      <img class="w-10 h-10" src="/images/logo.png" alt="StudyShare Logo" width="40" height="40" decoding="async" loading="lazy">
+      <span>
+        Study<span class="logo-purple">Share</span>
+      </span>
+    </a>
+
+    <div class="nav-menu-wrapper">
+      <div class="nav-links">
+        <a href="/" class="<%= typeof path !== 'undefined' && path === '/' ? 'active' : '' %>">Home</a>
+        <a href="/notes" class="<%= typeof path !== 'undefined' && path === '/notes' ? 'active' : '' %>">Explore Notes</a>
+        <a href="/doubts" class="<%= typeof path !== 'undefined' && path === '/doubts' ? 'active' : '' %>">Doubts Q&A</a>
+        <a href="/features" class="<%= typeof path !== 'undefined' && path === '/features' ? 'active' : '' %>">Features</a>
+        <a href="/about" class="<%= typeof path !== 'undefined' && path === '/about' ? 'active' : '' %>">About</a>
+        
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+          <a href="/notifications" class="<%= typeof path !== 'undefined' && path === '/notifications' ? 'active' : '' %>" style="position: relative; display: inline-flex; align-items: center; gap: 6px;" aria-label="Notifications (<%= typeof unreadNotificationCount !== 'undefined' ? unreadNotificationCount : 0 %> unread)">
+            🔔 Notifications
+            <% if (typeof unreadNotificationCount !== 'undefined' && unreadNotificationCount > 0) { %>
+              <span style="background: #EF4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; font-family: sans-serif; line-height: 1;">
+                <%= unreadNotificationCount > 99 ? '99+' : unreadNotificationCount %>
+              </span>
+            <% } %>
+          </a>
+          <a href="/dashboard" class="<%= typeof path !== 'undefined' && path === '/dashboard' ? 'active' : '' %>">Dashboard</a>
+          <% if (currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) { %>
+            <a href="/teacher/dashboard" class="<%= typeof path !== 'undefined' && path === '/teacher/dashboard' ? 'active' : '' %>" style="color: #C4B5FD;">Teacher Portal</a>
+          <% } %>
+          <% if (currentUser && currentUser.role === 'admin') { %>
+            <a href="/admin" class="<%= typeof path !== 'undefined' && path === '/admin' ? 'active' : '' %>" style="color: var(--lavender);">Admin Panel</a>
+          <% } %>
+        <% } %>
+      </div>
+
+      <div class="nav-actions">
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated && currentUser) { %>
+          <a href="/profile/<%= currentUser.username %>" style="font-size: 13px; color: var(--muted); text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">
+            👤 <strong style="color: white;"><%= currentUser.name.split(' ')[0] %></strong>
+          </a>
+          <form action="/auth/logout" method="POST" style="display: inline;">
+            <button type="submit" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">
+              Log out
+            </button>
+          </form>
+        <% } else { %>
+          <a href="/auth/login" class="login">
+            Log in
+          </a>
+          <a href="/auth/signup" class="nav-button">
+            Get Started
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <button class="mobile-menu" aria-label="Toggle Navigation" aria-expanded="false">
+      ☰
+    </button>
+
+  </div>
+</nav>

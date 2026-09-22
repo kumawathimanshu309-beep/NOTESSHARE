@@ -1,0 +1,169 @@
+<div class="page-container" style="max-width: 520px; margin-top: 40px;">
+  <div class="content-card" style="padding: 40px 35px; border-radius: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+    
+    <div style="text-align: center; margin-bottom: 25px;">
+      <a href="/" class="logo" style="justify-content: center; margin-bottom: 15px;">
+        <img class="w-10 h-10" src="/images/logo.png" alt="StudyShare Logo">
+        <span>Study<span class="logo-purple">Share</span></span>
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700;">Create Your Account</h1>
+      <p style="color: var(--muted); font-size: 13px; margin-top: 6px;">Join thousands of students sharing knowledge nationwide</p>
+    </div>
+
+    <!-- Google Sign-In Option -->
+    <div style="margin-bottom: 20px;">
+      <a href="/auth/google" class="secondary-button" style="width: 100%; justify-content: center; padding: 12px; font-size: 13px; font-weight: 600; gap: 10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.28v3.15C3.26 21.3 7.35 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.28C.46 8.2.0 10.05 0 12s.46 3.8 1.28 5.42l4-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.7 1.28 6.58l4 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+        Sign up with Google
+      </a>
+    </div>
+
+    <div style="display: flex; align-items: center; margin-bottom: 20px; color: var(--muted); font-size: 12px;">
+      <div style="flex: 1; border-bottom: 1px solid var(--border);"></div>
+      <span style="padding: 0 10px; text-transform: uppercase;">or register details</span>
+      <div style="flex: 1; border-bottom: 1px solid var(--border);"></div>
+    </div>
+
+    <form action="/auth/signup" method="POST" id="signupForm">
+      
+      <div style="margin-bottom: 18px;">
+        <label for="name" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value="<%= typeof formData !== 'undefined' && formData.name ? formData.name : '' %>"
+          placeholder="e.g. Alex Johnson" 
+          required 
+          style="width: 100%; padding: 12px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; transition: 0.25s;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+
+      <div style="margin-bottom: 18px;">
+        <label for="username" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          value="<%= typeof formData !== 'undefined' && formData.username ? formData.username : '' %>"
+          placeholder="e.g. alex_j" 
+          required 
+          style="width: 100%; padding: 12px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; transition: 0.25s;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+
+      <div style="margin-bottom: 18px;">
+        <label for="email" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>"
+          placeholder="e.g. alex@university.edu" 
+          required 
+          style="width: 100%; padding: 12px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; transition: 0.25s;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+
+      <div class="form-grid-2col">
+        <div>
+          <label for="password" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
+          <div style="position: relative;">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Min 8 chars" 
+              required 
+              style="width: 100%; padding: 12px 35px 12px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; transition: 0.25s;"
+              onfocus="this.style.borderColor='var(--violet)'"
+              onblur="this.style.borderColor='var(--border)'"
+            >
+            <button type="button" id="togglePassword" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--muted); font-size: 13px; cursor: pointer;">👁️</button>
+          </div>
+        </div>
+        <div>
+          <label for="confirmPassword" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Confirm Password</label>
+          <div style="position: relative;">
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              placeholder="Repeat password" 
+              required 
+              style="width: 100%; padding: 12px 35px 12px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; transition: 0.25s;"
+              onfocus="this.style.borderColor='var(--violet)'"
+              onblur="this.style.borderColor='var(--border)'"
+            >
+            <button type="button" id="toggleConfirmPassword" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--muted); font-size: 13px; cursor: pointer;">👁️</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="passwordError" style="color: #EF4444; font-size: 12px; margin-bottom: 15px; display: none;"></div>
+
+      <button type="submit" class="primary-button" style="width: 100%; padding: 14px; font-size: 14px; justify-content: center;">
+        Create Account <span>→</span>
+      </button>
+
+    </form>
+
+    <div style="text-align: center; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted);">
+      Already have an account? 
+      <a href="/auth/login" style="color: var(--lavender); font-weight: 600; text-decoration: underline;">Log in here</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.getElementById('togglePassword')?.addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      this.textContent = '🙈';
+    } else {
+      passwordInput.type = 'password';
+      this.textContent = '👁️';
+    }
+  });
+
+  document.getElementById('toggleConfirmPassword')?.addEventListener('click', function() {
+    const confirmInput = document.getElementById('confirmPassword');
+    if (confirmInput.type === 'password') {
+      confirmInput.type = 'text';
+      this.textContent = '🙈';
+    } else {
+      confirmInput.type = 'password';
+      this.textContent = '👁️';
+    }
+  });
+
+  document.getElementById('signupForm')?.addEventListener('submit', function(e) {
+    const p1 = document.getElementById('password').value;
+    const p2 = document.getElementById('confirmPassword').value;
+    const errDiv = document.getElementById('passwordError');
+    
+    if (p1.length < 8) {
+      e.preventDefault();
+      errDiv.textContent = 'Password must be at least 8 characters long.';
+      errDiv.style.display = 'block';
+      return;
+    }
+    
+    if (p1 !== p2) {
+      e.preventDefault();
+      errDiv.textContent = 'Passwords do not match.';
+      errDiv.style.display = 'block';
+      return;
+    }
+    
+    errDiv.style.display = 'none';
+  });
+</script>

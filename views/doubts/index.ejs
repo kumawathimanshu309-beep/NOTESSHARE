@@ -1,0 +1,133 @@
+<div class="page-container">
+  
+  <!-- Header -->
+  <div class="page-header" style="text-align: left; max-width: 100%; margin-bottom: 35px;">
+    <div class="section-badge">STUDENT DOUBTS & Q&A</div>
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 32px;">Ask Doubts & Learn Together</h1>
+    <p style="margin-top: 5px;">Get expert answers from verified teachers and peer students in the StudyShare community.</p>
+  </div>
+
+  <!-- Search & Action Bar -->
+  <div class="content-card" style="padding: 25px; border-radius: 20px; margin-bottom: 30px;">
+    <form action="/doubts" method="GET" class="doubts-filter-form">
+      
+      <!-- Search Input -->
+      <div>
+        <input type="text" name="search" value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>" placeholder="Search doubts by keyword, topic, or subject..." style="width: 100%; padding: 12px 16px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+      </div>
+
+      <!-- Subject Filter -->
+      <div>
+        <select name="subject" style="padding: 12px 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          <option value="All">All Subjects</option>
+          <option value="Computer Science" <%= typeof query !== 'undefined' && query.subject === 'Computer Science' ? 'selected' : '' %>>Computer Science</option>
+          <option value="Mathematics" <%= typeof query !== 'undefined' && query.subject === 'Mathematics' ? 'selected' : '' %>>Mathematics</option>
+          <option value="Physics" <%= typeof query !== 'undefined' && query.subject === 'Physics' ? 'selected' : '' %>>Physics</option>
+          <option value="Electronics" <%= typeof query !== 'undefined' && query.subject === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+          <option value="General" <%= typeof query !== 'undefined' && query.subject === 'General' ? 'selected' : '' %>>General</option>
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <select name="status" style="padding: 12px 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          <option value="">All Statuses</option>
+          <option value="open" <%= typeof query !== 'undefined' && query.status === 'open' ? 'selected' : '' %>>Open</option>
+          <option value="answered" <%= typeof query !== 'undefined' && query.status === 'answered' ? 'selected' : '' %>>Answered</option>
+          <option value="resolved" <%= typeof query !== 'undefined' && query.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+        </select>
+      </div>
+
+      <!-- Submit Filter -->
+      <button type="submit" class="secondary-button" style="padding: 12px 20px; font-size: 13px;">
+        Filter
+      </button>
+
+      <!-- Ask Doubt Action -->
+      <a href="/doubts/new" class="primary-button" style="padding: 12px 20px; font-size: 13px; white-space: nowrap;">
+        + Ask a Doubt
+      </a>
+
+    </form>
+  </div>
+
+  <!-- Doubts Grid -->
+  <% if (doubts && doubts.length > 0) { %>
+    <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 35px;">
+      <% doubts.forEach(doubt => { %>
+        <div class="content-card" style="padding: 24px; border-radius: 18px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <!-- Status Badge -->
+              <% if (doubt.status === 'resolved') { %>
+                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                  ✓ Resolved
+                </span>
+              <% } else if (doubt.status === 'answered') { %>
+                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60A5FA; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                  💬 Answered
+                </span>
+              <% } else { %>
+                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(234,179,8,0.2); border: 1px solid rgba(234,179,8,0.4); color: #FDE047; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                  ⏳ Open
+                </span>
+              <% } %>
+
+              <span style="padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.15); color: #C4B5FD; font-size: 11px; font-weight: 600;">
+                <%= doubt.subject %>
+              </span>
+            </div>
+
+            <span style="font-size: 12px; color: var(--muted);">
+              Asked by <strong style="color: white;">@<%= doubt.student ? doubt.student.username : 'student' %></strong> • <%= new Date(doubt.createdAt).toLocaleDateString() %>
+            </span>
+          </div>
+
+          <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin-bottom: 10px; line-height: 1.35;">
+            <a href="/doubts/<%= doubt._id %>" style="color: white; text-decoration: none;" onmouseover="this.style.color='var(--lavender)'" onmouseout="this.style.color='white'">
+              <%= doubt.title %>
+            </a>
+          </h3>
+
+          <p style="color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <%= doubt.description %>
+          </p>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 13px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <% if (doubt.tags && doubt.tags.length > 0) { %>
+                <% doubt.tags.forEach(tag => { %>
+                  <span style="font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.04); padding: 2px 8px; border-radius: 6px;">#<%= tag %></span>
+                <% }) %>
+              <% } %>
+            </div>
+
+            <a href="/doubts/<%= doubt._id %>" style="color: var(--accent-light); font-weight: 600; text-decoration: none;">
+              View Discussion →
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Pagination Controls -->
+    <% if (totalPages > 1) { %>
+      <div style="display: flex; justify-content: center; gap: 8px; margin-top: 30px;">
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <a href="/doubts?page=<%= p %>&search=<%= query.search || '' %>&subject=<%= query.subject || '' %>&status=<%= query.status || '' %>" class="<%= page === p ? 'primary-button' : 'secondary-button' %>" style="padding: 8px 14px; font-size: 12px;">
+            <%= p %>
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+
+  <% } else { %>
+    <div class="content-card" style="padding: 50px; text-align: center; border-radius: 20px; color: var(--muted);">
+      <div style="font-size: 40px; margin-bottom: 12px;">❓</div>
+      <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; color: white; margin-bottom: 8px;">No Student Doubts Found</h3>
+      <p style="font-size: 14px; margin-bottom: 20px;">Be the first student to ask a question in this category!</p>
+      <a href="/doubts/new" class="primary-button" style="display: inline-flex;">+ Ask a Doubt Now</a>
+    </div>
+  <% } %>
+
+</div>

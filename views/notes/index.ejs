@@ -1,0 +1,170 @@
+<div class="page-container">
+  
+  <!-- Page Header -->
+  <div class="page-header" style="margin-bottom: 30px;">
+    <div class="section-badge">ACADEMIC RESOURCES</div>
+    <h1>Explore <span class="gradient-text">Study Notes & PYQs</span></h1>
+    <p>Discover high-quality lecture notes, previous year question papers (PYQs), and semester important questions shared by students and teachers.</p>
+  </div>
+
+  <!-- Resource Type Quick Filter Tabs -->
+  <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+    <a href="/notes" class="<%= typeof query === 'undefined' || !query.resourceType ? 'primary-button' : 'secondary-button' %>" style="padding: 9px 18px; font-size: 13px; border-radius: 20px;">
+      📚 All Resources
+    </a>
+    <a href="/notes?resourceType=pdf" class="<%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'primary-button' : 'secondary-button' %>" style="padding: 9px 18px; font-size: 13px; border-radius: 20px;">
+      📄 Study Notes
+    </a>
+    <a href="/notes?resourceType=pyq" class="<%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'primary-button' : 'secondary-button' %>" style="padding: 9px 18px; font-size: 13px; border-radius: 20px;">
+      📝 Previous Year Papers (PYQ)
+    </a>
+    <a href="/notes?resourceType=important_questions" class="<%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'primary-button' : 'secondary-button' %>" style="padding: 9px 18px; font-size: 13px; border-radius: 20px;">
+      🔥 Important Questions
+    </a>
+  </div>
+
+  <!-- Search & Filter Controls Bar -->
+  <div class="content-card" style="padding: 25px; margin-bottom: 40px; border-radius: 18px;">
+    <form action="/notes" method="GET" class="notes-filter-form">
+      
+      <!-- Hidden Resource Type if active -->
+      <% if (typeof query !== 'undefined' && query.resourceType) { %>
+        <input type="hidden" name="resourceType" value="<%= query.resourceType %>">
+      <% } %>
+
+      <!-- Search Input -->
+      <div>
+        <input 
+          type="text" 
+          name="search" 
+          value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>" 
+          placeholder="⌕ Search by title, subject, tags..." 
+          aria-label="Search study notes by title, subject, or tags"
+          style="width: 100%; padding: 11px 15px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 13px; outline: none;"
+        >
+      </div>
+
+      <!-- Subject Filter -->
+      <div>
+        <select name="subject" aria-label="Filter notes by subject" style="width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <option value="all">All Subjects</option>
+          <option value="Computer Science" <%= typeof query !== 'undefined' && query.subject === 'Computer Science' ? 'selected' : '' %>>Computer Science</option>
+          <option value="Mathematics" <%= typeof query !== 'undefined' && query.subject === 'Mathematics' ? 'selected' : '' %>>Mathematics</option>
+          <option value="Science" <%= typeof query !== 'undefined' && query.subject === 'Science' ? 'selected' : '' %>>Science</option>
+          <option value="Engineering" <%= typeof query !== 'undefined' && query.subject === 'Engineering' ? 'selected' : '' %>>Engineering</option>
+          <option value="General" <%= typeof query !== 'undefined' && query.subject === 'General' ? 'selected' : '' %>>General</option>
+        </select>
+      </div>
+
+      <!-- Semester Filter -->
+      <div>
+        <select name="semester" aria-label="Filter notes by semester" style="width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <option value="">All Semesters</option>
+          <% for(let s = 1; s <= 8; s++) { %>
+            <option value="<%= s %>" <%= typeof query !== 'undefined' && query.semester == s ? 'selected' : '' %>>Semester <%= s %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Resource Type Filter -->
+      <div>
+        <select name="resourceType" aria-label="Filter notes by resource type" style="width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <option value="">All Resource Types</option>
+          <option value="pdf" <%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'selected' : '' %>>Study Notes (PDF)</option>
+          <option value="pyq" <%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'selected' : '' %>>PYQ Question Papers</option>
+          <option value="important_questions" <%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'selected' : '' %>>Important Questions</option>
+        </select>
+      </div>
+
+      <!-- Sort By -->
+      <div>
+        <select name="sort" aria-label="Sort notes list" style="width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <option value="newest" <%= typeof query !== 'undefined' && query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+          <option value="oldest" <%= typeof query !== 'undefined' && query.sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+          <option value="popular" <%= typeof query !== 'undefined' && query.sort === 'popular' ? 'selected' : '' %>>Most Viewed</option>
+          <option value="downloads" <%= typeof query !== 'undefined' && query.sort === 'downloads' ? 'selected' : '' %>>Most Downloaded</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div>
+        <button type="submit" class="primary-button" style="width: 100%; padding: 11px; font-size: 12px; justify-content: center;">
+          Filter
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Note Card Grid -->
+  <div class="notes-cards-grid">
+    <% if (typeof notes !== 'undefined' && notes && notes.length > 0) { %>
+      <% notes.forEach(note => { %>
+        <div class="feature-card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; position: relative;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 6px;">
+            <% if (note.resourceType === 'pyq') { %>
+              <span style="display: inline-block; padding: 4px 10px; border-radius: 6px; background: rgba(234,179,8,0.2); color: #FDE047; font-size: 12px; font-weight: 700;">
+                📝 PYQ <%= note.year ? note.year : '' %> • Sem <%= note.semester %>
+              </span>
+            <% } else if (note.resourceType === 'important_questions') { %>
+              <span style="display: inline-block; padding: 4px 10px; border-radius: 6px; background: rgba(239,68,68,0.2); color: #F87171; font-size: 12px; font-weight: 700;">
+                🔥 Important Qs • Sem <%= note.semester %>
+              </span>
+            <% } else { %>
+              <span style="display: inline-block; padding: 4px 10px; border-radius: 6px; background: rgba(124,58,237,0.15); color: #C084FC; font-size: 12px; font-weight: 700;">
+                <%= note.subject %> • Sem <%= note.semester %>
+              </span>
+            <% } %>
+
+            <span style="color: var(--muted); font-size: 12px;">
+              👁️ <%= note.views %> | 📥 <%= note.downloads %>
+            </span>
+          </div>
+
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin-top: 0; margin-bottom: 8px;">
+            <a href="/notes/<%= note._id %>" style="color: white; transition: 0.2s;" onmouseover="this.style.color='var(--lavender)'" onmouseout="this.style.color='white'">
+              <%= note.title %>
+            </a>
+          </h2>
+
+          <p style="color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; flex-grow: 1;">
+            <%= note.description ? (note.description.length > 110 ? note.description.substring(0, 110) + '...' : note.description) : 'No description provided.' %>
+          </p>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 14px; margin-top: auto; flex-wrap: wrap; gap: 8px;">
+            <%- include('../partials/author_badge', { author: note.author }) %>
+
+            <a href="/notes/<%= note._id %>" style="color: var(--lavender); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+              View Resource →
+            </a>
+          </div>
+
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;" class="content-card">
+        <div style="font-size: 40px; margin-bottom: 15px;">🔍</div>
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 20px;">No Academic Resources Found</h3>
+        <p style="color: var(--muted); margin-top: 8px;">Try adjusting your search keywords or active subject/semester/resource-type filters.</p>
+        <a href="/notes" class="secondary-button" style="margin-top: 20px;">Reset Filters</a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Pagination Controls -->
+  <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 60px;">
+      <% if (page > 1) { %>
+        <a href="/notes?page=<%= page - 1 %>&search=<%= query.search || '' %>&subject=<%= query.subject || '' %>&semester=<%= query.semester || '' %>&resourceType=<%= query.resourceType || '' %>&sort=<%= query.sort || '' %>" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">← Previous</a>
+      <% } %>
+
+      <span style="font-size: 13px; color: var(--muted); padding: 0 10px;">Page <%= page %> of <%= totalPages %></span>
+
+      <% if (page < totalPages) { %>
+        <a href="/notes?page=<%= page + 1 %>&search=<%= query.search || '' %>&subject=<%= query.subject || '' %>&semester=<%= query.semester || '' %>&resourceType=<%= query.resourceType || '' %>&sort=<%= query.sort || '' %>" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">Next →</a>
+      <% } %>
+    </div>
+  <% } %>
+
+</div>

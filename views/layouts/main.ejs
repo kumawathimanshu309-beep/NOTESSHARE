@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'StudyShare — Share Knowledge, Discover Better Notes' %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' && description ? description : 'StudyShare is an open peer-to-peer academic repository for university students and teachers to share notes, PYQs, and study materials.' %>">
+  <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : (typeof reqUrl !== 'undefined' ? reqUrl : 'http://localhost:3000') %>">
+  
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'StudyShare' %>">
+  <meta property="og:description" content="<%= typeof description !== 'undefined' && description ? description : 'Discover and share university study notes, PYQs, and academic resources on StudyShare.' %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= typeof reqUrl !== 'undefined' ? reqUrl : 'http://localhost:3000' %>">
+  <meta property="og:site_name" content="StudyShare">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+  <script defer src="/js/main.js"></script>
+</head>
+<body>
+  <div class="app">
+    <%- include('../partials/navbar') %>
+    <%- include('../partials/flash') %>
+    
+    <main>
+      <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

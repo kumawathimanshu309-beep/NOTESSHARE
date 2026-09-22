@@ -1,0 +1,178 @@
+<section class="hero" id="home">
+
+  <div class="hero-glow glow-one"></div>
+  <div class="hero-glow glow-two"></div>
+
+  <div class="hero-content">
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      A better way to share knowledge
+    </div>
+
+    <h1>
+      Share Knowledge
+      <br />
+      <span class="gradient-text">
+        Discover Better Notes
+      </span>
+    </h1>
+
+    <p class="hero-description">
+      StudyShare is a modern platform where students can
+      discover, organize and share high-quality study notes
+      with each other.
+    </p>
+
+    <div class="hero-buttons">
+      <a href="/notes" class="primary-button">
+        Explore Notes
+        <span>→</span>
+      </a>
+      <a href="<%= typeof isAuthenticated !== 'undefined' && isAuthenticated ? '/notes/new' : '/auth/signup' %>" class="secondary-button">
+        Share Your Notes
+      </a>
+    </div>
+
+    <div class="hero-trust">
+      <div class="avatars">
+        <span>A</span>
+        <span>R</span>
+        <span>S</span>
+        <span>+</span>
+      </div>
+      <div>
+        <div class="stars">
+          ★★★★★
+        </div>
+        <p>
+          Built for students, by students
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dashboard-wrapper">
+    <div class="dashboard-glow"></div>
+
+    <div class="dashboard">
+
+      <div class="dashboard-top">
+        <div class="fake-window-buttons">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        
+        <form action="/notes" method="GET" class="fake-search">
+          <button type="submit" title="Search Notes">
+            <span>⌕</span>
+          </button>
+          <input type="text" name="search" placeholder="Search notes..." aria-label="Search notes" />
+        </form>
+
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated && currentUser) { %>
+          <a href="/profile" class="profile-circle" title="View Profile">
+            <% if (currentUser.avatar && currentUser.avatar !== '/images/logo.png') { %>
+              <img src="<%= currentUser.avatar %>" alt="<%= currentUser.name || currentUser.username %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+            <% } else { %>
+              <%= (currentUser.name || currentUser.username || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() %>
+            <% } %>
+          </a>
+        <% } else { %>
+          <a href="/auth/login" class="profile-circle" title="Sign In">
+            G
+          </a>
+        <% } %>
+      </div>
+
+      <div class="dashboard-body">
+
+        <aside class="sidebar">
+          <a href="/dashboard" class="side-item active">
+            <span>⌂</span>
+            Overview
+          </a>
+          <a href="/notes" class="side-item">
+            <span>◫</span>
+            Explore
+          </a>
+          <a href="<%= typeof isAuthenticated !== 'undefined' && isAuthenticated ? '/dashboard' : '/auth/login' %>" class="side-item">
+            <span>↥</span>
+            My Notes
+          </a>
+          <a href="<%= typeof isAuthenticated !== 'undefined' && isAuthenticated ? '/dashboard' : '/auth/login' %>" class="side-item">
+            <span>♡</span>
+            Saved
+          </a>
+        </aside>
+
+        <div class="dashboard-main">
+
+          <div class="dashboard-heading">
+            <div>
+              <p class="small-label">
+                STUDYSPACE
+              </p>
+              <h3>
+                <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated && currentUser) { %>
+                  Welcome back, <%= currentUser.name || currentUser.username %>
+                <% } else { %>
+                  Welcome to StudyShare
+                <% } %>
+              </h3>
+            </div>
+            <a href="<%= typeof isAuthenticated !== 'undefined' && isAuthenticated ? '/notes/new' : '/auth/signup' %>" class="upload-button">
+              + Upload Note
+            </a>
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <span><%= typeof previewStats !== 'undefined' && previewStats.label1 ? previewStats.label1 : 'Notes Saved' %></span>
+              <strong><%= typeof previewStats !== 'undefined' && previewStats.value1 ? previewStats.value1 : '0' %></strong>
+            </div>
+            <div class="mini-stat">
+              <span><%= typeof previewStats !== 'undefined' && previewStats.label2 ? previewStats.label2 : 'Notes Shared' %></span>
+              <strong><%= typeof previewStats !== 'undefined' && previewStats.value2 ? previewStats.value2 : '0' %></strong>
+            </div>
+            <div class="mini-stat">
+              <span><%= typeof previewStats !== 'undefined' && previewStats.label3 ? previewStats.label3 : 'Downloads' %></span>
+              <strong><%= typeof previewStats !== 'undefined' && previewStats.value3 ? previewStats.value3 : '0' %></strong>
+            </div>
+          </div>
+
+          <div class="preview-title">
+            Popular Notes
+          </div>
+
+          <div class="preview-notes">
+            <% if (typeof previewNotes !== 'undefined' && previewNotes && previewNotes.length > 0) { %>
+              <% previewNotes.forEach(note => { %>
+                <a href="/notes/<%= note.id %>" class="preview-note">
+                  <div class="note-icon">
+                    <%= note.icon %>
+                  </div>
+                  <div class="note-info">
+                    <strong><%= note.title %></strong>
+                    <span><%= note.subject %></span>
+                  </div>
+                  <div class="note-rating">
+                    ★ <%= note.rating %>
+                  </div>
+                </a>
+              <% }) %>
+            <% } else { %>
+              <p style="color: var(--muted); font-size: 11px; grid-column: 1 / -1; padding: 10px 0;">No notes available yet.</p>
+            <% } %>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>

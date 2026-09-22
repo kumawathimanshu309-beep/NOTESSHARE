@@ -1,0 +1,182 @@
+<div class="page-container" style="max-width: 1000px;">
+  
+  <!-- Profile Header Card -->
+  <div class="content-card" style="padding: 35px; border-radius: 24px; margin-bottom: 35px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: var(--gradient); opacity: 0.15; filter: blur(60px); border-radius: 50%; pointer-events: none;"></div>
+    
+    <div style="display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap;">
+      <!-- Avatar -->
+      <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 36px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.4); flex-shrink: 0; overflow: hidden;">
+        <% if (profileUser.avatar && profileUser.avatar !== '/images/logo.png' && (profileUser.avatar.startsWith('/') || profileUser.avatar.startsWith('http://') || profileUser.avatar.startsWith('https://'))) { %>
+          <img src="<%= profileUser.avatar %>" alt="<%= profileUser.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : 'U' %>
+        <% } %>
+      </div>
+
+      <!-- Info -->
+      <div style="flex: 1; min-width: 250px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px;">
+          <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; margin: 0; font-weight: 700;">
+            <%= profileUser.name %>
+          </h1>
+          <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+            <%= profileUser.role %>
+          </span>
+          <% if (profileUser.role === 'teacher' && profileUser.verificationStatus === 'verified') { %>
+            <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-size: 11px; font-weight: 700;">
+              ✓ Verified Teacher
+            </span>
+          <% } %>
+        </div>
+
+        <p style="color: var(--lavender); font-size: 14px; margin-bottom: 12px;">
+          @<%= profileUser.username %> • Joined <%= new Date(profileUser.createdAt).toLocaleDateString() %>
+        </p>
+
+        <% if (profileUser.bio) { %>
+          <p style="color: var(--text); font-size: 14px; line-height: 1.6; max-width: 650px; margin-bottom: 15px;">
+            <%= profileUser.bio %>
+          </p>
+        <% } else { %>
+          <p style="color: var(--muted); font-size: 13px; font-style: italic; margin-bottom: 15px;">No bio added yet.</p>
+        <% } %>
+
+        <% if (profileUser.role === 'teacher') { %>
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+            <% if (profileUser.qualification) { %><span><strong>Qualification:</strong> <%= profileUser.qualification %></span><% } %>
+            <% if (profileUser.experience) { %><span><strong>Experience:</strong> <%= profileUser.experience %></span><% } %>
+          </div>
+        <% } %>
+
+        <% if (typeof isSelf !== 'undefined' && isSelf) { %>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+            <a href="/profile/edit" class="secondary-button" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+              ✏️ Edit Profile
+            </a>
+            <a href="/dashboard" class="primary-button" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+              📊 My Dashboard
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Real Stat Counters -->
+    <div class="stats-grid-4col" style="margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--border);">
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalNotes : 0 %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Shared Notes</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalLikesReceived : 0 %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Likes Received</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalBookmarksReceived : 0 %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Bookmarks Received</div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 22px; font-weight: 700; color: #FDE047;">★ <%= stats && stats.avgRating ? stats.avgRating : '0.0' %></div>
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User's Notes Section -->
+  <div style="margin-bottom: 35px;">
+    <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
+      Published Resources (<%= notes ? notes.length : 0 %>)
+    </h2>
+
+    <% if (notes && notes.length > 0) { %>
+      <div class="notes-cards-grid">
+        <% notes.forEach(note => { %>
+          <div class="content-card" style="padding: 22px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                  <%= note.subject %>
+                </span>
+                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(255,255,255,0.05); color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase;">
+                  Sem <%= note.semester %>
+                </span>
+              </div>
+
+              <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin-bottom: 10px; line-height: 1.35;">
+                <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;">
+                  <%= note.title %>
+                </a>
+              </h3>
+
+              <div style="margin-bottom: 12px;">
+                <%- include('../partials/author_badge', { author: note.author || profileUser }) %>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">
+              <span>👁️ <%= note.views || 0 %> • 📥 <%= note.downloads || 0 %></span>
+              <a href="/notes/<%= note._id %>" style="color: var(--accent-light); font-weight: 600; text-decoration: none;">View Note →</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="content-card" style="padding: 30px; text-align: center; border-radius: 16px; color: var(--muted);">
+        <p style="font-size: 14px; margin: 0;">No public resources published yet.</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Role Specific Contributions: Doubts (Student) / Answers (Teacher) -->
+  <% if (profileUser.role === 'teacher' && answers && answers.length > 0) { %>
+    <div style="margin-bottom: 35px;">
+      <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
+        Teaching Answers Provided (<%= stats.totalAnswersGiven %>)
+      </h2>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <% answers.forEach(ans => { %>
+          <div class="content-card" style="padding: 18px; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 12px; color: var(--lavender);">On question: <strong><%= ans.doubt ? ans.doubt.title : 'Student Question' %></strong></span>
+              <% if (ans.isAccepted) { %><span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #4ADE80;">✓ Accepted Solution</span><% } %>
+            </div>
+            <p style="font-size: 13px; color: var(--text); margin: 0;"><%= ans.content %></p>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Owner-Only Private Activity & Bookmarks Sections -->
+  <% if (typeof isSelf !== 'undefined' && isSelf) { %>
+    <%
+      const safeActivityFeed = (typeof activityFeed !== 'undefined' && Array.isArray(activityFeed)) ? activityFeed : [];
+    %>
+    <!-- Private Activity Feed Timeline -->
+    <% if (safeActivityFeed.length > 0) { %>
+      <div style="margin-bottom: 35px;">
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
+          🔒 Your Recent Activity Feed (Private to You)
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <% safeActivityFeed.forEach(act => { %>
+            <div class="content-card" style="padding: 14px 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 20px;"><%= act.icon %></span>
+                <div>
+                  <a href="<%= act.link %>" style="color: white; font-size: 14px; text-decoration: none; font-weight: 600;"><%= act.title %></a>
+                  <div style="font-size: 11px; color: var(--muted);"><%= new Date(act.createdAt).toLocaleString() %></div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+  <% } %>
+
+</div>

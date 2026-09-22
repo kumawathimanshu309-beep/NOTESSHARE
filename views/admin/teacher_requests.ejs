@@ -1,0 +1,127 @@
+<div class="page-container" style="max-width: 1100px;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        📋 Teacher Governance & Role Requests
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Review student applications and teacher recommendations for role promotion to Verified Teacher.
+      </p>
+    </div>
+  </div>
+
+  <!-- Status Filter Bar -->
+  <div class="content-card" style="padding: 16px 20px; border-radius: 16px; margin-bottom: 25px;">
+    <form action="/admin/teacher-requests" method="GET" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Status Filter:</span>
+      <a href="/admin/teacher-requests" class="secondary-button" style="padding: 6px 14px; font-size: 12px; <%= !query.status ? 'background: rgba(124,58,237,0.2); border-color: rgba(168,85,247,0.4); color: white;' : '' %>">All</a>
+      <a href="/admin/teacher-requests?status=pending" class="secondary-button" style="padding: 6px 14px; font-size: 12px; <%= query.status === 'pending' ? 'background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.4); color: #FBBF24;' : '' %>">Pending</a>
+      <a href="/admin/teacher-requests?status=approved" class="secondary-button" style="padding: 6px 14px; font-size: 12px; <%= query.status === 'approved' ? 'background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); color: #4ADE80;' : '' %>">Approved</a>
+      <a href="/admin/teacher-requests?status=rejected" class="secondary-button" style="padding: 6px 14px; font-size: 12px; <%= query.status === 'rejected' ? 'background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #F87171;' : '' %>">Rejected</a>
+    </form>
+  </div>
+
+  <!-- Requests Listing -->
+  <div class="content-card" style="padding: 24px; border-radius: 20px;">
+    <% if (typeof requests !== 'undefined' && requests.length > 0) { %>
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <% requests.forEach(r => { %>
+          <div style="padding: 20px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 11px; padding: 2px 10px; border-radius: 10px; font-weight: 700; text-transform: uppercase; background: <%= r.status === 'pending' ? 'rgba(245,158,11,0.2)' : (r.status === 'approved' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') %>; color: <%= r.status === 'pending' ? '#FBBF24' : (r.status === 'approved' ? '#4ADE80' : '#F87171') %>;">
+                    <%= r.status %>
+                  </span>
+                  <span style="font-size: 11px; color: var(--muted);">Requested <%= new Date(r.createdAt).toLocaleString() %></span>
+                </div>
+
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin: 0; color: white;">
+                  Candidate: <%= r.candidateUser ? r.candidateUser.name : 'Unknown' %> 
+                  <span style="color: var(--lavender); font-weight: 400; font-size: 14px;">(@<%= r.candidateUser ? r.candidateUser.username : 'user' %>)</span>
+                </h3>
+                <p style="font-size: 12px; color: var(--muted); margin: 2px 0 0 0;">
+                  Requested by: <strong><%= r.requestedBy ? r.requestedBy.name : 'System' %></strong> (@<%= r.requestedBy ? r.requestedBy.username : 'user' %>)
+                </p>
+              </div>
+
+              <!-- Action Controls for Pending Requests -->
+              <% if (r.status === 'pending') { %>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <form action="/admin/teacher-requests/<%= r._id %>/approve" method="POST" onsubmit="return confirm('Approve this candidate and promote user to Teacher role?');">
+                    <button type="submit" class="primary-button" style="padding: 8px 16px; font-size: 12px; cursor: pointer; background: linear-gradient(135deg, #16A34A, #22C55E);">
+                      ✓ Approve & Promote
+                    </button>
+                  </form>
+
+                  <form action="/admin/teacher-requests/<%= r._id %>/reject" method="POST" style="display: flex; gap: 6px;">
+                    <input type="text" name="rejectionReason" placeholder="Rejection reason..." style="padding: 6px 10px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 11px;">
+                    <button type="submit" style="background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer;">
+                      ✗ Reject
+                    </button>
+                  </form>
+                </div>
+              <% } else if (r.reviewedBy) { %>
+                <div style="font-size: 11px; color: var(--muted); text-align: right;">
+                  <div>Reviewed by: @<%= r.reviewedBy.username %></div>
+                  <div>At: <%= new Date(r.reviewedAt).toLocaleDateString() %></div>
+                </div>
+              <% } %>
+            </div>
+
+            <!-- Details grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; font-size: 12px;">
+              <div>
+                <strong style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase;">Qualifications</strong>
+                <span style="color: white;"><%= r.qualifications || 'Not provided' %></span>
+              </div>
+              <div>
+                <strong style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase;">Experience</strong>
+                <span style="color: white;"><%= r.experience || 'Not provided' %></span>
+              </div>
+              <div>
+                <strong style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase;">Subjects Handled</strong>
+                <span style="color: #C4B5FD;"><%= r.subjects && r.subjects.length > 0 ? r.subjects.join(', ') : 'General' %></span>
+              </div>
+            </div>
+
+            <% if (r.reason) { %>
+              <div style="font-size: 12px; color: var(--muted);">
+                <strong style="color: white;">Application Reason:</strong> <%= r.reason %>
+              </div>
+            <% } %>
+
+            <% if (r.status === 'rejected' && r.rejectionReason) { %>
+              <div style="font-size: 12px; color: #F87171; background: rgba(239,68,68,0.1); padding: 8px 12px; border-radius: 8px;">
+                <strong>Rejection Reason:</strong> <%= r.rejectionReason %>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 25px; align-items: center;">
+          <% if (pagination.page > 1) { %>
+            <a href="/admin/teacher-requests?page=<%= pagination.page - 1 %>&status=<%= query.status || '' %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">← Previous</a>
+          <% } %>
+          <span style="font-size: 13px; color: var(--muted);">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+          <% if (pagination.page < pagination.totalPages) { %>
+            <a href="/admin/teacher-requests?page=<%= pagination.page + 1 %>&status=<%= query.status || '' %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">Next →</a>
+          <% } %>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <div style="text-align: center; padding: 40px; color: var(--muted);">
+        <p style="font-size: 14px; margin: 0;">No teacher governance requests match your filter.</p>
+      </div>
+    <% } %>
+  </div>
+
+</div>

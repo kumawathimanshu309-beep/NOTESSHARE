@@ -1,0 +1,61 @@
+<div class="page-container" style="max-width: 750px;">
+  
+  <div style="margin-bottom: 25px;">
+    <a href="/doubts" style="color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+      ← Back to Doubts
+    </a>
+  </div>
+
+  <div class="content-card" style="padding: 35px; border-radius: 20px;">
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin-bottom: 8px;">Ask a Study Doubt</h1>
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 30px;">Describe your question clearly so verified teachers and students can help you.</p>
+
+    <form action="/doubts" method="POST">
+      
+      <!-- Title -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Doubt Title / Question Summary *</label>
+        <input type="text" name="title" value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>" required minlength="5" maxlength="150" placeholder="e.g. How does Dijkstra's shortest path algorithm handle graph weights?" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+      </div>
+
+      <div class="form-grid-2col">
+        <!-- Subject -->
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Subject *</label>
+          <select name="subject" required style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+            <option value="Computer Science">Computer Science</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Physics">Physics</option>
+            <option value="Electronics">Electronics</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Category</label>
+          <input type="text" name="category" value="<%= typeof formData !== 'undefined' && formData.category ? formData.category : 'General' %>" placeholder="e.g. Algorithms, Calculus, Quantum" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Detailed Explanation & Code / Formula Context *</label>
+        <textarea name="description" rows="6" required minlength="10" maxlength="2000" placeholder="Provide full details about what you have tried, where you are stuck, or specific steps you need help understanding..." style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; font-family: inherit; resize: vertical;"><%= typeof formData !== 'undefined' && formData.description ? formData.description : '' %></textarea>
+      </div>
+
+      <!-- Tags -->
+      <div style="margin-bottom: 30px;">
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Tags (comma separated)</label>
+        <input type="text" name="tags" value="<%= typeof formData !== 'undefined' && formData.tags ? formData.tags : '' %>" placeholder="e.g. graph, shortest-path, dijkstra, dsa" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+      </div>
+
+      <div style="display: flex; gap: 15px; justify-content: flex-end;">
+        <a href="/doubts" class="secondary-button" style="padding: 12px 24px;">Cancel</a>
+        <button type="submit" class="primary-button" style="padding: 12px 28px;">Post Question</button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

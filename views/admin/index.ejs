@@ -1,0 +1,42 @@
+<div class="page-container">
+  <div class="page-header" style="text-align: left; max-width: 100%; margin-bottom: 30px;">
+    <div class="section-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #F87171;">
+      ADMINISTRATION CONTROL PANEL
+    </div>
+    <h1>Platform <span class="gradient-text">Overview & Governance</span></h1>
+    <p>Logged in as Administrator: <strong><%= user.name %></strong> (@<%= user.username %>)</p>
+  </div>
+
+  <!-- Admin Quick Overview Cards -->
+  <div class="stats-grid-4col">
+    <div class="mini-stat" style="padding: 20px;">
+      <span>Total Users</span>
+      <strong style="font-size: 24px;">Active</strong>
+    </div>
+    <div class="mini-stat" style="padding: 20px;">
+      <span>Total Notes</span>
+      <strong style="font-size: 24px;">notesshare</strong>
+    </div>
+    <div class="mini-stat" style="padding: 20px;">
+      <span>Pending Reports</span>
+      <strong style="font-size: 24px;">0</strong>
+    </div>
+    <div class="mini-stat" style="padding: 20px;">
+      <span>System Health</span>
+      <strong style="font-size: 24px; color: #34D399;">100%</strong>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <h2>🛡️ Admin Governance Controls</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Administrator authorization verified. Server-side middleware `isAdmin` is enforcing access control.</p>
+    
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <a href="/admin/pending-notes" class="primary-button" style="background: #EAB308; border-color: #EAB308; color: #000; font-weight: 700;">🟡 Pending Note Moderation</a>
+      <a href="/admin/notes" class="secondary-button">📚 All Notes Moderation</a>
+      <a href="/admin/teacher-requests" class="secondary-button">🎓 Teacher Requests</a>
+      <a href="/dashboard" class="secondary-button">Return to Dashboard</a>
+      <a href="/" class="primary-button">View Public Site <span>→</span></a>
+    </div>
+  </div>
+</div>

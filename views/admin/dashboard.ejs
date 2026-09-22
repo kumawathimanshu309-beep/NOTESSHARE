@@ -1,0 +1,94 @@
+<div class="page-container" style="max-width: 1100px;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <div class="section-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #F87171;">
+        🛡️ ADMIN GOVERNANCE & CONTROL PANEL
+      </div>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; margin: 6px 0 0 0; color: white;">
+        Platform <span class="gradient-text">Overview & Governance</span>
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Logged in as Administrator: <strong><%= user.name %></strong> (@<%= user.username %>)
+      </p>
+    </div>
+
+    <!-- Admin Navigation Shortcut Bar -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <a href="/admin/users" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">👥 Users</a>
+      <a href="/admin/notes" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">📚 Notes</a>
+      <a href="/admin/doubts" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">💡 Doubts</a>
+      <a href="/admin/home-content" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">🏠 Home Cards</a>
+      <a href="/admin/audit-logs" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">📋 Audit Logs</a>
+    </div>
+  </div>
+
+  <!-- Real Statistics Grid -->
+  <div class="stats-grid-4col" style="margin-bottom: 30px;">
+    <div class="content-card" style="padding: 20px; border-radius: 16px;">
+      <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700;">Total Users</div>
+      <div style="font-size: 28px; font-weight: 800; color: white; margin-top: 6px;"><%= stats.totalUsers %></div>
+      <div style="font-size: 11px; color: var(--lavender); margin-top: 4px;">
+        🎓 <%= stats.studentCount %> Students • 👨‍🏫 <%= stats.teacherCount %> Teachers • 🛡️ <%= stats.adminCount %> Admins
+      </div>
+    </div>
+
+    <div class="content-card" style="padding: 20px; border-radius: 16px;">
+      <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700;">Total Study Notes</div>
+      <div style="font-size: 28px; font-weight: 800; color: white; margin-top: 6px;"><%= stats.totalNotes %></div>
+      <div style="font-size: 11px; color: #34D399; margin-top: 4px;">
+        Public: <%= stats.publishedNotesCount %> • Private: <%= stats.privateNotesCount %>
+      </div>
+    </div>
+
+    <div class="content-card" style="padding: 20px; border-radius: 16px;">
+      <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700;">Student Doubts</div>
+      <div style="font-size: 28px; font-weight: 800; color: white; margin-top: 6px;"><%= stats.totalDoubts %></div>
+      <div style="font-size: 11px; color: #FDE047; margin-top: 4px;">
+        Open: <%= stats.openDoubtsCount %> • Resolved: <%= stats.resolvedDoubtsCount %>
+      </div>
+    </div>
+
+    <div class="content-card" style="padding: 20px; border-radius: 16px;">
+      <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700;">Answers & Comments</div>
+      <div style="font-size: 28px; font-weight: 800; color: white; margin-top: 6px;"><%= stats.totalAnswers + stats.totalComments %></div>
+      <div style="font-size: 11px; color: var(--lavender); margin-top: 4px;">
+        Answers: <%= stats.totalAnswers %> • Comments: <%= stats.totalComments %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Audit Log Activity Preview -->
+  <div class="content-card" style="padding: 25px; border-radius: 20px; margin-bottom: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+      <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">
+        📋 Recent System Audit Logs
+      </h3>
+      <a href="/admin/audit-logs" style="font-size: 13px; color: var(--lavender); text-decoration: none; font-weight: 600;">
+        View All Logs →
+      </a>
+    </div>
+
+    <% if (typeof recentAuditLogs !== 'undefined' && recentAuditLogs.length > 0) { %>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <% recentAuditLogs.forEach(log => { %>
+          <div style="padding: 12px 16px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 13px;">
+            <div>
+              <span style="padding: 2px 8px; border-radius: 6px; background: rgba(124,58,237,0.2); color: #C4B5FD; font-size: 11px; font-weight: 700; margin-right: 8px;">
+                <%= log.action %>
+              </span>
+              <strong style="color: white;"><%= log.admin ? log.admin.name : 'Admin' %></strong>
+              <span style="color: var(--muted);">performed action on <%= log.targetType %></span>
+            </div>
+            <span style="color: var(--muted); font-size: 11px;">
+              <%= new Date(log.createdAt).toLocaleString() %>
+            </span>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="color: var(--muted); font-size: 13px; margin: 0; font-style: italic;">No audit logs recorded yet.</p>
+    <% } %>
+  </div>
+
+</div>

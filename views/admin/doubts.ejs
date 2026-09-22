@@ -1,0 +1,60 @@
+<div class="page-container" style="max-width: 1100px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        💡 Student Doubt Moderation
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Inspect and moderate student doubts and academic questions.
+      </p>
+    </div>
+  </div>
+
+  <div class="content-card" style="padding: 24px; border-radius: 20px; overflow-x: auto;">
+    <% if (typeof doubts !== 'undefined' && doubts.length > 0) { %>
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
+            <th style="padding: 12px;">TITLE & SUBJECT</th>
+            <th style="padding: 12px;">STUDENT</th>
+            <th style="padding: 12px;">STATUS</th>
+            <th style="padding: 12px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% doubts.forEach(d => { %>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 14px 12px;">
+                <a href="/doubts/<%= d._id %>" style="color: white; font-weight: 700; text-decoration: none;" target="_blank">
+                  <%= d.title %>
+                </a>
+                <span style="font-size: 11px; color: var(--lavender); display: block; margin-top: 2px;">
+                  <%= d.subject %>
+                </span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <strong style="color: white; display: block;"><%= d.student ? d.student.name : 'Unknown' %></strong>
+                <span style="font-size: 11px; color: var(--muted);">@<%= d.student ? d.student.username : 'student' %></span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <span style="padding: 4px 10px; border-radius: 12px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60A5FA; font-weight: 700; font-size: 11px;">
+                  <%= d.status.toUpperCase() %>
+                </span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <form action="/admin/doubts/<%= d._id %>?_method=DELETE" method="POST" style="margin: 0;" onsubmit="return confirm('Delete this doubt?');">
+                  <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 11px; color: #F87171;">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p style="color: var(--muted); font-size: 14px; text-align: center; margin: 20px 0;">No active student doubts found.</p>
+    <% } %>
+  </div>
+</div>

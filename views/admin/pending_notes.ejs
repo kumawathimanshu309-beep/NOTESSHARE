@@ -1,0 +1,104 @@
+<div class="page-container" style="max-width: 1100px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        🟡 Pending Student Note Moderation
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Review student-submitted study notes before approving them for public publication.
+      </p>
+    </div>
+  </div>
+
+  <div class="content-card" style="padding: 24px; border-radius: 20px; overflow-x: auto;">
+    <% if (typeof notes !== 'undefined' && notes.length > 0) { %>
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
+            <th style="padding: 12px;">TITLE & SUBJECT</th>
+            <th style="padding: 12px;">AUTHOR</th>
+            <th style="padding: 12px;">DATE</th>
+            <th style="padding: 12px;">STATUS</th>
+            <th style="padding: 12px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% notes.forEach(n => { %>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 14px 12px;">
+                <span style="color: white; font-weight: 700;">
+                  <%= n.title %>
+                </span>
+                <span style="font-size: 11px; color: var(--lavender); display: block; margin-top: 2px;">
+                  <%= n.subject %> • SEM <%= n.semester %> • <%= n.resourceType ? n.resourceType.toUpperCase() : 'PDF' %>
+                </span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <%- include('../partials/author_badge', { author: n.author }) %>
+              </td>
+              <td style="padding: 14px 12px; color: var(--muted);">
+                <%= new Date(n.createdAt).toLocaleDateString() %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <span style="padding: 4px 10px; border-radius: 12px; background: rgba(234,179,8,0.2); border: 1px solid rgba(234,179,8,0.4); color: #FDE047; font-weight: 700; font-size: 11px;">
+                  🟡 PENDING REVIEW
+                </span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                  <!-- Read-only Preview Link -->
+                  <a href="/notes/<%= n._id %>" target="_blank" rel="noopener" class="secondary-button" style="padding: 6px 12px; font-size: 11px; text-decoration: none;">
+                    👁️ Preview
+                  </a>
+
+                  <!-- Approve Button -->
+                  <form action="/admin/notes/<%= n._id %>/approve" method="POST" style="margin: 0;">
+                    <button type="submit" class="primary-button" style="padding: 6px 14px; font-size: 11px; background: #10B981; border-color: #10B981; color: white;">
+                      ✓ Approve
+                    </button>
+                  </form>
+
+                  <!-- Reject Form Dropdown Inline -->
+                  <details style="position: relative; display: inline-block;">
+                    <summary class="secondary-button" style="padding: 6px 12px; font-size: 11px; color: #F87171; cursor: pointer;">
+                      ✕ Reject
+                    </summary>
+                    <div style="position: absolute; right: 0; top: 110%; background: #0D1124; border: 1px solid var(--border); padding: 14px; border-radius: 12px; width: 260px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+                      <form action="/admin/notes/<%= n._id %>/reject" method="POST">
+                        <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px;">Rejection Reason:</label>
+                        <select name="rejectionReason" style="width: 100%; padding: 6px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 12px; margin-bottom: 10px;">
+                          <option value="Irrelevant content">Irrelevant content</option>
+                          <option value="Adult/inappropriate content">Adult/inappropriate content</option>
+                          <option value="Spam">Spam</option>
+                          <option value="Duplicate">Duplicate</option>
+                          <option value="Poor quality">Poor quality</option>
+                          <option value="Wrong category">Wrong category</option>
+                          <option value="Copyright concern">Copyright concern</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px;">Admin Feedback (Optional):</label>
+                        <textarea name="adminFeedback" rows="2" style="width: 100%; padding: 6px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 11px; margin-bottom: 10px; resize: vertical;" placeholder="Give feedback to student..."></textarea>
+                        <button type="submit" style="width: 100%; padding: 6px; border-radius: 6px; background: #EF4444; color: white; border: none; font-size: 11px; font-weight: 700; cursor: pointer;">
+                          Confirm Rejection
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div style="text-align: center; padding: 40px 20px; color: var(--muted);">
+        <div style="font-size: 36px; margin-bottom: 10px;">🎉</div>
+        <p style="font-size: 15px; margin: 0; color: white; font-weight: 600;">All caught up!</p>
+        <p style="font-size: 13px; margin-top: 4px;">There are no student notes currently waiting for moderation.</p>
+      </div>
+    <% } %>
+  </div>
+</div>

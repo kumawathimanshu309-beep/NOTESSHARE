@@ -1,0 +1,278 @@
+<div class="page-container" style="max-width: 1200px;">
+  
+  <!-- Dashboard Header Bar with Search & Profile Avatar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <a href="/" style="font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; color: white; text-decoration: none; letter-spacing: 0.5px;">
+        STUDY<span class="gradient-text">SHARE</span>
+      </a>
+    </div>
+
+    <!-- Working Header Search Form -->
+    <form action="/notes" method="GET" style="flex: 1; max-width: 480px; min-width: 260px; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 4px 12px;">
+      <span style="color: var(--muted); font-size: 14px; margin-right: 8px;">🔍</span>
+      <input type="text" name="search" placeholder="Search notes by subject, title, topic..." style="width: 100%; background: transparent; border: none; outline: none; color: white; font-size: 13px; padding: 8px 0;">
+      <button type="submit" class="secondary-button" style="padding: 4px 12px; font-size: 11px; margin-left: 6px; flex-shrink: 0;">Search</button>
+    </form>
+
+    <!-- Top-Right Functional User Profile Button -->
+    <a href="/profile" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; text-decoration: none;" onmouseover="this.style.borderColor='var(--lavender)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: white; overflow: hidden; flex-shrink: 0;">
+        <% if (teacher.avatar && teacher.avatar !== '/images/logo.png' && (teacher.avatar.startsWith('/') || teacher.avatar.startsWith('http://') || teacher.avatar.startsWith('https://'))) { %>
+          <img src="<%= teacher.avatar %>" alt="<%= teacher.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : (teacher.username ? teacher.username.charAt(0).toUpperCase() : 'T') %>
+        <% } %>
+      </div>
+      <span style="color: white; font-size: 13px; font-weight: 600;"><%= teacher.name || teacher.username %></span>
+    </a>
+  </div>
+
+  <!-- Dashboard Main Layout Grid: Left Sidebar + Right Main Content -->
+  <div class="layout-grid-2col" style="grid-template-columns: 240px 1fr; align-items: start; gap: 30px;">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;">Teacher Navigation</div>
+      
+      <nav style="display: flex; flex-direction: column; gap: 6px;">
+        <a href="/dashboard" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: white; font-size: 13px; font-weight: 600; text-decoration: none;">
+          📊 Overview
+        </a>
+        <a href="/notes" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          🧭 Explore Notes
+        </a>
+        <a href="/notes" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          📚 Teaching Resources
+        </a>
+        <a href="/doubts" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          ❓ Student Doubts
+        </a>
+        <a href="/notifications" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          <span>🔔 Notifications</span>
+          <% if (typeof unreadNotificationsCount !== 'undefined' && unreadNotificationsCount > 0) { %>
+            <span style="font-size: 10px; padding: 2px 6px; border-radius: 8px; background: #EF4444; color: white; font-weight: 700;"><%= unreadNotificationsCount %></span>
+          <% } %>
+        </a>
+      </nav>
+
+      <div style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 15px;">
+        <form action="/auth/logout" method="POST">
+          <button type="submit" style="width: 100%; background: transparent; border: 1px solid rgba(239,68,68,0.2); color: #F87171; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">
+            Log Out
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+      
+      <!-- Welcome Header Banner -->
+      <div class="content-card" style="padding: 28px; border-radius: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: var(--gradient); opacity: 0.12; filter: blur(50px); border-radius: 50%; pointer-events: none;"></div>
+        
+        <div>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: 700; color: #C4B5FD; text-transform: uppercase; letter-spacing: 0.5px;">TEACHER DASHBOARD</span>
+            <% if (teacher.verificationStatus === 'verified') { %>
+              <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #4ADE80; font-weight: 700;">✓ VERIFIED</span>
+            <% } %>
+          </div>
+          <h1 style="font-family: 'Sora', sans-serif; font-size: 24px; margin: 0; color: white;">
+            Welcome back, <span class="gradient-text">Prof. <%= teacher.name || teacher.username %></span>
+          </h1>
+        </div>
+
+        <a href="/notes/new" class="primary-button" style="padding: 10px 20px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+          + Upload Resource
+        </a>
+      </div>
+
+      <!-- EXACTLY 3 Primary Statistics Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-bottom: 30px;">
+        
+        <!-- Card 1: Notes Shared -->
+        <div class="content-card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Notes Shared</div>
+          <div style="font-size: 32px; font-weight: 800; color: white; font-family: 'Sora', sans-serif;">
+            <%= stats ? stats.resourcesCount : 0 %>
+          </div>
+        </div>
+
+        <!-- Card 2: Total Views -->
+        <div class="content-card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Total Views</div>
+          <div style="font-size: 32px; font-weight: 800; color: #60A5FA; font-family: 'Sora', sans-serif;">
+            <%= stats && typeof stats.totalViewsReceived !== 'undefined' ? stats.totalViewsReceived : 0 %>
+          </div>
+        </div>
+
+        <!-- Card 3: Downloads -->
+        <div class="content-card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Downloads</div>
+          <div style="font-size: 32px; font-weight: 800; color: #C4B5FD; font-family: 'Sora', sans-serif;">
+            <%= stats && typeof stats.totalDownloadsReceived !== 'undefined' ? stats.totalDownloadsReceived : 0 %>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Popular Notes Section -->
+      <div style="margin-bottom: 35px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; margin: 0; color: white;">Popular Notes</h2>
+          <a href="/notes" style="font-size: 12px; color: var(--accent-light); font-weight: 600; text-decoration: none;">View All Notes →</a>
+        </div>
+
+        <% if (typeof popularNotes !== 'undefined' && popularNotes && popularNotes.length > 0) { %>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px;">
+            <% popularNotes.forEach(note => { %>
+              <div class="content-card" style="padding: 20px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 10px; padding: 3px 8px; border-radius: 10px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-weight: 700; text-transform: uppercase;">
+                      <%= note.subject || 'General' %>
+                    </span>
+                    <span style="font-size: 11px; color: var(--muted);">Sem <%= note.semester %></span>
+                  </div>
+
+                  <h3 style="font-family: 'Sora', sans-serif; font-size: 15px; margin: 0 0 8px 0; line-height: 1.35;">
+                    <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;" onmouseover="this.style.color='var(--lavender)'" onmouseout="this.style.color='white'">
+                      <%= note.title %>
+                    </a>
+                  </h3>
+
+                  <div style="margin-bottom: 12px;">
+                    <%- include('../partials/author_badge', { author: note.author }) %>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">
+                  <span>👁️ <%= note.views || 0 %> • 📥 <%= note.downloads || 0 %></span>
+                  <a href="/notes/<%= note._id %>" style="color: var(--accent-light); font-weight: 600; text-decoration: none;">View →</a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="content-card" style="padding: 25px; border-radius: 16px; text-align: center; color: var(--muted);">
+            <p style="font-size: 13px; margin: 0;">No popular notes available at the moment.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Section: Open Student Doubts to Answer -->
+      <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border-color: rgba(168,85,247,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: var(--lavender);">
+            ❓ Open Student Doubts Needing Answers (<%= openDoubts ? openDoubts.length : 0 %>)
+          </h2>
+          <a href="/doubts" style="font-size: 12px; color: var(--accent-light); font-weight: 600; text-decoration: none;">View All Doubts →</a>
+        </div>
+
+        <% if (openDoubts && openDoubts.length > 0) { %>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <% openDoubts.forEach(doubt => { %>
+              <div style="padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <div style="display: flex; gap: 6px; margin-bottom: 4px; align-items: center;">
+                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(234,179,8,0.15); color: #FDE047;"><%= doubt.subject %></span>
+                    <span style="font-size: 11px; color: var(--muted);">Asked by @<%= doubt.student ? doubt.student.username : 'student' %></span>
+                  </div>
+                  <h4 style="font-size: 14px; margin: 0 0 4px 0;">
+                    <a href="/doubts/<%= doubt._id %>" style="color: white; text-decoration: none;"><%= doubt.title %></a>
+                  </h4>
+                </div>
+
+                <a href="/doubts/<%= doubt._id %>" class="primary-button" style="padding: 5px 12px; font-size: 11px; text-decoration: none;">Answer Doubt</a>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">No open student doubts in your subjects at the moment.</p>
+        <% } %>
+      </div>
+
+      <!-- Section: Uploaded Teaching Resources -->
+      <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0;">Uploaded Teaching Resources (<%= uploadedResources ? uploadedResources.length : 0 %>)</h2>
+          <a href="/notes/new" style="font-size: 12px; color: var(--accent-light); font-weight: 600; text-decoration: none;">+ Upload New</a>
+        </div>
+
+        <% if (uploadedResources && uploadedResources.length > 0) { %>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <% uploadedResources.forEach(note => { %>
+              <div style="padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <div style="display: flex; gap: 6px; margin-bottom: 6px; align-items: center; flex-wrap: wrap;">
+                    <%- include('../partials/author_badge', { author: note.author || teacher }) %>
+                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.2); color: #C4B5FD;"><%= note.subject %></span>
+                  </div>
+                  <h4 style="font-size: 14px; margin: 4px 0 0 0;">
+                    <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;"><%= note.title %></a>
+                  </h4>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--muted);">
+                  <span>📥 <%= note.downloads || 0 %> Downloads</span>
+                  <a href="/notes/<%= note._id %>/view?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" target="_blank" style="color: white; text-decoration: none;">View PDF</a>
+                  <a href="/notes/<%= note._id %>/edit" style="color: var(--lavender); text-decoration: none;">Edit</a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">No uploaded teaching resources yet.</p>
+        <% } %>
+      </div>
+
+      <!-- Section: Recommend Candidate for Teacher Role -->
+      <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(124,58,237,0.3); background: radial-gradient(circle at top right, rgba(124,58,237,0.1), transparent 60%);" id="recommend-student">
+        <div style="margin-bottom: 15px;">
+          <span style="font-size: 10px; font-weight: 700; color: #C4B5FD; text-transform: uppercase; letter-spacing: 0.5px;">TEACHER GOVERNANCE RECOMMENDATION</span>
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 2px 0 0 0; color: white;">Recommend a Candidate for Verified Teacher Role</h2>
+          <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+            Know a qualified student or teaching assistant? Recommend them for HOD/Admin governance review. Final promotion requires Admin approval.
+          </p>
+        </div>
+
+        <form action="/teacher-requests" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate User ID</label>
+            <input type="text" name="candidateUserId" placeholder="Enter candidate MongoDB ObjectId" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate Qualifications</label>
+              <input type="text" name="qualifications" placeholder="e.g. M.Sc Physics, B.Tech CSE" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Experience</label>
+              <input type="text" name="experience" placeholder="e.g. 2 Years Teaching Assistant" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Subjects Handled (comma-separated)</label>
+            <input type="text" name="subjects" placeholder="Computer Science, Mathematics" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Recommendation Reason</label>
+            <textarea name="reason" rows="2" placeholder="Explain why you are recommending this candidate..." required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; font-family: inherit;"></textarea>
+          </div>
+
+          <div style="text-align: right; margin-top: 4px;">
+            <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 12px; cursor: pointer;">
+              Submit Recommendation →
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </main>
+
+  </div>
+</div>

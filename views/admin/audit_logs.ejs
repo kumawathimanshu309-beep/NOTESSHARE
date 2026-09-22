@@ -1,0 +1,71 @@
+<div class="page-container" style="max-width: 1100px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        📋 System Audit Logs
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Append-only records of administrator actions and platform governance events.
+      </p>
+    </div>
+  </div>
+
+  <div class="content-card" style="padding: 24px; border-radius: 20px; overflow-x: auto;">
+    <% if (typeof logs !== 'undefined' && logs.length > 0) { %>
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
+            <th style="padding: 12px;">TIMESTAMP</th>
+            <th style="padding: 12px;">ADMINISTRATOR</th>
+            <th style="padding: 12px;">ACTION</th>
+            <th style="padding: 12px;">TARGET</th>
+            <th style="padding: 12px;">DETAILS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% logs.forEach(log => { %>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 14px 12px; color: var(--muted); font-size: 11px; white-space: nowrap;">
+                <%= new Date(log.createdAt).toLocaleString() %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <strong style="color: white;"><%= log.admin ? log.admin.name : 'Admin' %></strong>
+                <span style="font-size: 11px; color: var(--muted); display: block;">@<%= log.admin ? log.admin.username : 'admin' %></span>
+              </td>
+              <td style="padding: 14px 12px;">
+                <span style="padding: 4px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-weight: 700; font-size: 11px;">
+                  <%= log.action %>
+                </span>
+              </td>
+              <td style="padding: 14px 12px; color: var(--lavender);">
+                <%= log.targetType %> (<%= log.targetId || 'N/A' %>)
+              </td>
+              <td style="padding: 14px 12px; color: var(--text); font-family: monospace; font-size: 11px; word-break: break-all;">
+                <%= JSON.stringify(log.details || {}) %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 25px; align-items: center;">
+          <% if (page > 1) { %>
+            <a href="/admin/audit-logs?page=<%= page - 1 %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">← Previous</a>
+          <% } %>
+          <span style="font-size: 13px; color: var(--muted);">Page <%= page %> of <%= totalPages %></span>
+          <% if (page < totalPages) { %>
+            <a href="/admin/audit-logs?page=<%= page + 1 %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">Next →</a>
+          <% } %>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <p style="color: var(--muted); font-size: 14px; text-align: center; margin: 20px 0;">No system audit logs found.</p>
+    <% } %>
+  </div>
+</div>

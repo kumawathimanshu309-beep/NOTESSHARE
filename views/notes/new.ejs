@@ -1,0 +1,142 @@
+<div class="page-container" style="max-width: 720px;">
+  
+  <div class="page-header" style="text-align: left; margin-bottom: 30px;">
+    <div class="section-badge">SHARE KNOWLEDGE</div>
+    <h1>Upload & Share <span class="gradient-text">Study Note</span></h1>
+    <p>Upload your lecture notes, slides, or past paper solutions to help students succeed.</p>
+  </div>
+
+  <div class="content-card" style="padding: 40px; border-radius: 20px;">
+    <form action="/notes" method="POST" enctype="multipart/form-data">
+      
+      <!-- Title -->
+      <div style="margin-bottom: 22px;">
+        <label for="title" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Note Title *</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>" 
+          placeholder="e.g. Data Structures & Algorithms Complete Notes" 
+          required 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+
+      <!-- Grid for Subject, Semester, Resource Type -->
+      <div class="form-grid-3col">
+        
+        <div>
+          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject</label>
+          <select id="subject" name="subject" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="Computer Science">Computer Science</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="Engineering">Engineering</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="semester" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Semester</label>
+          <select id="semester" name="semester" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <% for(let s = 1; s <= 8; s++) { %>
+              <option value="<%= s %>">Semester <%= s %></option>
+            <% } %>
+          </select>
+        </div>
+
+        <div>
+          <label for="resourceType" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Resource Type</label>
+          <select id="resourceType" name="resourceType" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="pdf">PDF Document</option>
+            <option value="ppt">PPT / Presentation</option>
+            <option value="image">Image Note</option>
+            <option value="document">Other Document</option>
+            <option value="video">Video Reference</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- File Attachment Picker -->
+      <div style="margin-bottom: 22px; padding: 25px; border: 2px dashed rgba(168,85,247,0.3); border-radius: 14px; background: rgba(124,58,237,0.04); text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 10px;">📄</div>
+        <label for="file" style="display: block; font-size: 14px; font-weight: 600; color: var(--lavender); margin-bottom: 6px; cursor: pointer;">
+          Choose PDF / Document File to Upload
+        </label>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 15px;">Supported formats: PDF, PPT, PPTX, JPG, PNG, WEBP (Max 15 MB)</p>
+        
+        <input 
+          type="file" 
+          id="file" 
+          name="file" 
+          accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.webp" 
+          style="display: inline-block; font-size: 12px; color: var(--muted);"
+        >
+      </div>
+
+      <!-- Description -->
+      <div style="margin-bottom: 22px;">
+        <label for="description" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase;">Description Summary</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          rows="3" 
+          placeholder="Provide a brief summary of what topics this study note covers..." 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; font-family: inherit;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        ></textarea>
+      </div>
+
+      <!-- Content Text -->
+      <div style="margin-bottom: 22px;">
+        <label for="content" style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-transform: uppercase;">Detailed Text Content (Optional)</label>
+        <textarea 
+          id="content" 
+          name="content" 
+          rows="5" 
+          placeholder="You can also write or paste written study notes, key formulas, or explanation text here..." 
+          style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none; font-family: inherit;"
+          onfocus="this.style.borderColor='var(--violet)'"
+          onblur="this.style.borderColor='var(--border)'"
+        ></textarea>
+      </div>
+
+      <!-- Grid for Tags, Visibility -->
+      <div class="form-grid-2col">
+        <div>
+          <label for="tags" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Tags (Comma separated)</label>
+          <input 
+            type="text" 
+            id="tags" 
+            name="tags" 
+            placeholder="e.g. algorithms, c++, trees, graphs" 
+            style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 13px; outline: none;"
+          >
+        </div>
+
+        <div>
+          <label for="visibility" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Visibility</label>
+          <select id="visibility" name="visibility" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="public">Public (Everyone)</option>
+            <option value="private">Private (Only Me)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div style="display: flex; gap: 15px;">
+        <button type="submit" class="primary-button" style="flex: 1; padding: 14px; justify-content: center; font-size: 14px;">
+          Publish & Share Note <span>→</span>
+        </button>
+        <a href="/notes" class="secondary-button" style="padding: 14px 25px;">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+</div>

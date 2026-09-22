@@ -1,0 +1,19 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="section-badge">PLATFORM FEATURES</div>
+    <h1>Designed for <span class="gradient-text">Academic Excellence</span></h1>
+    <p>Explore the full suite of tools built into StudyShare to optimize how you organize, study, and share knowledge.</p>
+  </div>
+
+  <div class="features-grid">
+    <% if (typeof featuresList !== 'undefined' && featuresList && featuresList.length > 0) { %>
+      <% featuresList.forEach(feat => { %>
+        <div class="feature-card">
+          <div class="feature-icon"><%= feat.icon %></div>
+          <h3><%= feat.title %></h3>
+          <p><%= feat.description %></p>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>

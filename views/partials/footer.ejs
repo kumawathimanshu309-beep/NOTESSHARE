@@ -1,0 +1,51 @@
+<footer id="about">
+
+  <div class="footer-container">
+
+    <div class="footer-brand">
+      <a href="/" class="logo">
+        <img class="w-10 h-10" src="/images/logo.png" alt="StudyShare Logo" width="40" height="40" decoding="async" loading="lazy">
+        <span>
+          Study<span class="logo-purple">Share</span>
+        </span>
+      </a>
+      <p>
+        Share knowledge. Discover better notes.
+      </p>
+    </div>
+
+    <div class="footer-links">
+      <div>
+        <h4>Platform</h4>
+        <a href="/#explore">Explore</a>
+        <a href="<%= typeof isAuthenticated !== 'undefined' && isAuthenticated ? '/notes/new' : '/auth/signup' %>">Upload Notes</a>
+        <a href="/notes">Explore Notes</a>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <a href="/about">About</a>
+        <a href="/features">Features</a>
+        <a href="/about#privacy">Privacy</a>
+      </div>
+
+      <div>
+        <h4>Social</h4>
+        <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>
+      © 2026 StudyShare. All rights reserved.
+    </span>
+    <span>
+      Made for students.
+    </span>
+  </div>
+
+</footer>

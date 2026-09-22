@@ -1,0 +1,131 @@
+<div class="page-container" style="max-width: 1100px;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        🏠 Home Page Content Management
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Manage, publish, enable, and reorder feature cards displayed on the public landing page.
+      </p>
+    </div>
+  </div>
+
+  <!-- Create New Card Form -->
+  <div class="content-card" style="padding: 25px; border-radius: 20px; margin-bottom: 30px;">
+    <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0 0 15px 0; color: white;">
+      ✨ Add New Home Feature Card
+    </h3>
+    
+    <form action="/admin/home-content" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 2; min-width: 200px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">Title</label>
+          <input type="text" name="title" required maxlength="100" placeholder="e.g. Master PYQs & Solutions" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 100px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">Icon / Symbol</label>
+          <input type="text" name="icon" value="★" required placeholder="★, ⌕, 📚" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 100px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">Display Order</label>
+          <input type="number" name="order" value="1" min="0" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">Description</label>
+        <textarea name="description" required rows="2" maxlength="300" placeholder="Short description of the feature or resource category..." style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">CTA Text</label>
+          <input type="text" name="ctaText" value="Explore Resource" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 2; min-width: 250px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px;">Internal Target Relative URL (e.g. /notes, /doubts)</label>
+          <input type="text" name="url" required value="/notes" placeholder="/notes?resourceType=pyq" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="primary-button" style="padding: 10px 20px; font-size: 13px;">
+          Create Home Card
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Cards List -->
+  <div class="content-card" style="padding: 25px; border-radius: 20px;">
+    <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0 0 18px 0; color: white;">
+      📋 Managed Home Page Cards
+    </h3>
+
+    <% if (typeof cards !== 'undefined' && cards.length > 0) { %>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <% cards.forEach(c => { %>
+          <div style="padding: 18px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; <%= !c.isPublished || !c.isEnabled ? 'opacity: 0.7;' : '' %>">
+            
+            <div style="flex: 1; min-width: 250px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                <span style="font-size: 20px;"><%= c.icon %></span>
+                <strong style="font-size: 16px; color: white;"><%= c.title %></strong>
+                <span style="font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px;">Order: <%= c.order %></span>
+                
+                <% if (c.isPublished) { %>
+                  <span style="padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 11px; font-weight: 700;">Published</span>
+                <% } else { %>
+                  <span style="padding: 2px 8px; border-radius: 10px; background: rgba(239,68,68,0.2); color: #F87171; font-size: 11px; font-weight: 700;">Unpublished</span>
+                <% } %>
+
+                <% if (c.isEnabled) { %>
+                  <span style="padding: 2px 8px; border-radius: 10px; background: rgba(59,130,246,0.2); color: #60A5FA; font-size: 11px; font-weight: 700;">Enabled</span>
+                <% } else { %>
+                  <span style="padding: 2px 8px; border-radius: 10px; background: rgba(107,114,128,0.2); color: #9CA3AF; font-size: 11px; font-weight: 700;">Disabled</span>
+                <% } %>
+              </div>
+
+              <p style="color: var(--text); font-size: 13px; margin: 4px 0 8px 0; line-height: 1.5;">
+                <%= c.description %>
+              </p>
+
+              <div style="font-size: 12px; color: var(--lavender);">
+                Target URL: <code><%= c.url %></code>
+              </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <form action="/admin/home-content/<%= c._id %>/toggle-publish?_method=PATCH" method="POST" style="margin: 0;">
+                <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">
+                  <%= c.isPublished ? 'Unpublish' : 'Publish' %>
+                </button>
+              </form>
+
+              <form action="/admin/home-content/<%= c._id %>/toggle-enable?_method=PATCH" method="POST" style="margin: 0;">
+                <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">
+                  <%= c.isEnabled ? 'Disable' : 'Enable' %>
+                </button>
+              </form>
+
+              <form action="/admin/home-content/<%= c._id %>?_method=DELETE" method="POST" style="margin: 0;" onsubmit="return confirm('Soft delete this Home Card?');">
+                <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 12px; color: #F87171;">
+                  Delete
+                </button>
+              </form>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="color: var(--muted); font-size: 14px; text-align: center; margin: 20px 0;">No Home Cards configured in DB yet. Public visitors will see default feature tiles.</p>
+    <% } %>
+  </div>
+
+</div>

@@ -1,0 +1,71 @@
+<section class="explore-section" id="explore">
+
+  <div class="explore-content">
+
+    <div class="section-badge">
+      EXPLORE
+    </div>
+
+    <h2>
+      Find the notes you
+      <span class="gradient-text">
+        need.
+      </span>
+    </h2>
+
+    <p>
+      Browse notes by subject, semester or category
+      and find exactly what you're looking for.
+    </p>
+
+    <a href="/notes" class="primary-button">
+      Explore All Notes
+      <span>→</span>
+    </a>
+
+  </div>
+
+  <div class="subject-grid">
+    <% if (typeof subjects !== 'undefined' && subjects && subjects.length > 0) { %>
+      <% subjects.forEach(subject => { %>
+        <a href="/notes?subject=<%= encodeURIComponent(subject.name) %>" style="text-decoration: none; color: inherit; display: block;">
+          <div class="subject-card <%= subject.isPurple ? 'purple-card' : '' %>" style="cursor: pointer;">
+            <span><%= subject.icon %></span>
+            <strong><%= subject.name %></strong>
+            <small><%= subject.notesCount %></small>
+          </div>
+        </a>
+      <% }) %>
+    <% } else { %>
+      <a href="/notes?subject=Computer%20Science" style="text-decoration: none; color: inherit;">
+        <div class="subject-card purple-card">
+          <span>⌘</span>
+          <strong>Computer Science</strong>
+          <small>Explore notes</small>
+        </div>
+      </a>
+      <a href="/notes?subject=Mathematics" style="text-decoration: none; color: inherit;">
+        <div class="subject-card">
+          <span>∑</span>
+          <strong>Mathematics</strong>
+          <small>Explore notes</small>
+        </div>
+      </a>
+      <a href="/notes?subject=Science" style="text-decoration: none; color: inherit;">
+        <div class="subject-card">
+          <span>⚗</span>
+          <strong>Science</strong>
+          <small>Explore notes</small>
+        </div>
+      </a>
+      <a href="/notes?subject=Engineering" style="text-decoration: none; color: inherit;">
+        <div class="subject-card">
+          <span>◈</span>
+          <strong>Engineering</strong>
+          <small>Explore notes</small>
+        </div>
+      </a>
+    <% } %>
+  </div>
+
+</section>

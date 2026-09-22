@@ -1,0 +1,40 @@
+<section class="features-section" id="features">
+
+  <div class="section-heading">
+
+    <div class="section-badge">
+      WHY STUDYSHARE
+    </div>
+
+    <h2>
+      Everything you need to
+      <span class="gradient-text">
+        study smarter.
+      </span>
+    </h2>
+
+    <p>
+      A simple platform designed to make sharing
+      and discovering notes effortless.
+    </p>
+
+  </div>
+
+  <div class="features-grid">
+    <% if (typeof features !== 'undefined' && features && features.length > 0) { %>
+      <% features.forEach(feature => { %>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <%= feature.icon %>
+          </div>
+          <h3><%= feature.title %></h3>
+          <p><%= feature.description %></p>
+          <a href="/features">
+            Learn more →
+          </a>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+</section>

@@ -1,0 +1,19 @@
+<div class="error-section">
+  <div class="error-card">
+    <div class="error-code gradient-text"><%= typeof statusCode !== 'undefined' ? statusCode : 500 %></div>
+    <h1 class="error-title">Server Error</h1>
+    <p class="error-desc">
+      <%= typeof message !== 'undefined' ? message : 'An unexpected server error occurred. Please try again later.' %>
+    </p>
+
+    <% if (typeof isDev !== 'undefined' && isDev && typeof stack !== 'undefined' && stack) { %>
+      <div style="text-align: left; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 11px; overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border);">
+        <pre><%= stack %></pre>
+      </div>
+    <% } %>
+
+    <a href="/" class="primary-button">
+      Return to Safety <span>→</span>
+    </a>
+  </div>
+</div>

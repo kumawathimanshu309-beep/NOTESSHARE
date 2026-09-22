@@ -1,0 +1,503 @@
+<div class="page-container" style="max-width: 1240px; margin-top: 30px;">
+  
+  <!-- Breadcrumb Navigation -->
+  <div style="font-size: 13px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+    <a href="/notes" style="color: var(--muted); text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">Explore Notes</a>
+    <span>/</span>
+    <a href="/notes?subject=<%= encodeURIComponent(note.subject) %>" style="color: var(--lavender); font-weight: 600; text-decoration: none;"><%= note.subject %></a>
+    <span>/</span>
+    <span style="color: white;">Semester <%= note.semester %></span>
+  </div>
+
+  <!-- Resource Header Card -->
+  <div class="content-card resource-header-card" style="padding: 30px; border-radius: 20px; margin-bottom: 30px; position: relative; z-index: 20;">
+    
+    <!-- Badges Row -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+      <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 12px; font-weight: 700;">
+        <%= note.subject %> • SEMESTER <%= note.semester %> • <%= note.resourceType.toUpperCase() %>
+      </span>
+      <% if (typeof avgRating !== 'undefined' && avgRating > 0) { %>
+        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #FDE047; font-size: 12px; font-weight: 700;">
+          ★ <%= avgRating %> (<%= totalRatings %>)
+        </span>
+      <% } %>
+    </div>
+
+    <!-- Title Row + ⋮ Management Dropdown Menu -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 30px; line-height: 1.25; margin: 0 0 12px 0; color: white;">
+        <%= note.title %>
+      </h1>
+
+      <% if (typeof isOwner !== 'undefined' && (isOwner || isAdmin)) { %>
+        <div class="menu-dropdown-wrapper" style="position: relative; shrink: 0;">
+          <button type="button" class="menu-dropdown-toggle" aria-label="Management options" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 8px 14px; border-radius: 8px; font-size: 18px; cursor: pointer;">
+            ⋮
+          </button>
+          <div class="menu-dropdown-content" style="display: none; position: absolute; right: 0; top: 110%; background: #0D1124; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); padding: 8px; min-width: 170px; z-index: 100;">
+            <a href="/notes/<%= note._id %>/edit" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; color: white; font-size: 13px; text-decoration: none; border-radius: 8px;" onmouseover="this.style.background='rgba(124,58,237,0.2)'" onmouseout="this.style.background='transparent'">
+              ✏️ Edit Resource
+            </a>
+            <form action="/notes/<%= note._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this resource?');" style="margin: 0;">
+              <button type="submit" style="width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; padding: 10px 14px; color: #F87171; background: none; border: none; font-size: 13px; cursor: pointer; border-radius: 8px;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                🗑️ Delete Resource
+              </button>
+            </form>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Short Description -->
+    <% if (note.description) { %>
+      <p style="color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 18px;">
+        <%= note.description %>
+      </p>
+    <% } %>
+
+    <!-- Author Identity & Role Badge -->
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 15px; border-top: 1px solid var(--border); flex-wrap: wrap;">
+      <%- include('../partials/author_badge', { author: note.author }) %>
+      <span style="color: var(--muted); font-size: 12px;">
+        Shared <%= new Date(note.createdAt).toLocaleDateString() %>
+      </span>
+    </div>
+
+    <% if (note.approvalStatus && note.approvalStatus !== 'approved') { %>
+      <div style="margin-top: 18px; padding: 14px 20px; border-radius: 12px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #FDE047; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <span>🟡 Note Pending Moderation — Public interactions (Like, Comment, Rating, Bookmark, Share) are disabled until Admin review.</span>
+        <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+          <a href="/admin/pending-notes" class="primary-button" style="padding: 6px 14px; font-size: 12px; background: #EAB308; border-color: #EAB308; color: #000; text-decoration: none; font-weight: 700;">
+            Review in Admin Panel →
+          </a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <!-- Compact Primary Horizontal Actions Bar -->
+      <div style="display: flex; gap: 12px; align-items: center; margin-top: 22px; flex-wrap: wrap;">
+        <!-- Like Toggle Button -->
+        <form action="/notes/<%= note._id %>/like" method="POST" style="margin: 0;">
+          <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+            <button type="submit" class="secondary-button" style="padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; <%= typeof isLiked !== 'undefined' && isLiked ? 'background: rgba(236,72,153,0.2); border-color: #EC4899; color: #F472B6;' : '' %>">
+              <%= typeof isLiked !== 'undefined' && isLiked ? '❤️ Liked' : '🤍 Like' %> (<%= typeof likeCount !== 'undefined' ? likeCount : 0 %>)
+            </button>
+          <% } else { %>
+            <a href="/auth/login" class="secondary-button" style="padding: 9px 16px; border-radius: 10px; font-size: 13px;">
+              🤍 Like (<%= typeof likeCount !== 'undefined' ? likeCount : 0 %>)
+            </a>
+          <% } %>
+        </form>
+
+        <!-- Bookmark Toggle Button -->
+        <form action="/notes/<%= note._id %>/bookmark" method="POST" style="margin: 0;">
+          <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+            <button type="submit" class="secondary-button" style="padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; <%= typeof isBookmarked !== 'undefined' && isBookmarked ? 'background: rgba(234,179,8,0.2); border-color: #EAB308; color: #FDE047;' : '' %>">
+              <%= typeof isBookmarked !== 'undefined' && isBookmarked ? '🔖 Saved' : '📑 Bookmark' %> (<%= typeof bookmarkCount !== 'undefined' ? bookmarkCount : 0 %>)
+            </button>
+          <% } else { %>
+            <a href="/auth/login" class="secondary-button" style="padding: 9px 16px; border-radius: 10px; font-size: 13px;">
+              📑 Bookmark (<%= typeof bookmarkCount !== 'undefined' ? bookmarkCount : 0 %>)
+            </a>
+          <% } %>
+        </form>
+
+        <!-- Jump to Rate Button -->
+        <a href="#rate-section" class="secondary-button" style="padding: 9px 16px; border-radius: 10px; font-size: 13px;">
+          ⭐ Rate
+        </a>
+
+        <!-- Compact Share Button & Popover Menu -->
+        <div class="share-wrapper" style="position: relative; display: inline-block;">
+          <button type="button" class="secondary-button share-btn" id="shareBtn" aria-label="Share note" aria-haspopup="true" aria-expanded="false" style="padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+            ↗ Share
+          </button>
+
+          <div class="share-menu" id="shareMenu" role="menu" aria-label="Share options">
+            <a href="<%= typeof whatsappShareUrl !== 'undefined' ? whatsappShareUrl : '#' %>" target="_blank" rel="noopener noreferrer" class="share-option" role="menuitem" aria-label="Share on WhatsApp">
+              <span style="color: #25D366; font-size: 15px;">🟢</span> WhatsApp
+            </a>
+            <a href="<%= typeof telegramShareUrl !== 'undefined' ? telegramShareUrl : '#' %>" target="_blank" rel="noopener noreferrer" class="share-option" role="menuitem" aria-label="Share on Telegram">
+              <span style="color: #0088CC; font-size: 15px;">🔵</span> Telegram
+            </a>
+            <button type="button" class="share-option copy-link-btn" id="copyLinkBtn" role="menuitem" aria-label="Copy note link" data-share-url="<%= typeof shareUrl !== 'undefined' ? shareUrl : '' %>">
+              <span style="font-size: 15px;">🔗</span> Copy Link
+            </button>
+          </div>
+
+          <div class="share-toast" id="shareToast" role="status" aria-live="polite">
+            ✓ Link copied!
+          </div>
+        </div>
+
+        <!-- Quick Download Button -->
+        <% if (note.fileUrl) { %>
+          <a href="/notes/<%= note._id %>/download?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" class="primary-button" style="padding: 9px 18px; border-radius: 10px; font-size: 13px;">
+            ↓ Download
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+
+  </div>
+
+  <!-- Layout Grid: Main Document Column + Sidebar Details -->
+  <div class="layout-grid-detail">
+    
+    <!-- Left Main Column (65-70%) -->
+    <div>
+      
+      <!-- DOCUMENT CONTAINER -->
+      <div class="content-card" style="padding: 28px; border-radius: 20px; margin-bottom: 30px;">
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0 0 18px 0; color: white;">
+          📄 Document
+        </h2>
+
+        <% if (note.fileUrl) { %>
+          <!-- Fluid Document Preview Frame -->
+          <div style="border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 18px;">
+            <% if (note.mimeType && note.mimeType.includes('pdf')) { %>
+              <iframe src="<%= note.fileUrl %>?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" style="width: 100%; height: 480px; border: none; display: block;"></iframe>
+            <% } else if (note.mimeType && note.mimeType.includes('image')) { %>
+              <img src="<%= note.fileUrl %>?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" alt="<%= note.title %>" style="width: 100%; max-height: 500px; object-fit: contain; display: block; margin: auto;">
+            <% } else { %>
+              <div style="padding: 40px; text-align: center; color: var(--muted);">
+                <div style="font-size: 42px; margin-bottom: 10px;">📄</div>
+                <p style="font-size: 14px; color: white;">Attached Document: <strong><%= note.fileName %></strong></p>
+                <p style="font-size: 12px; margin-top: 4px;"><%= note.fileSize ? (note.fileSize / (1024 * 1024)).toFixed(2) + ' MB' : '' %></p>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- File Info & Single Row Action Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-top: 10px;">
+            <div>
+              <strong style="color: white; font-size: 14px; display: block;"><%= note.fileName || 'Attached Document' %></strong>
+              <% if (note.fileSize) { %>
+                <span style="font-size: 12px; color: var(--muted);"><%= (note.fileSize / (1024 * 1024)).toFixed(2) %> MB</span>
+              <% } %>
+            </div>
+
+            <!-- Single Row Action Buttons: [ 👁 View PDF ] [ ↓ Download ] -->
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <% if ((note.mimeType && note.mimeType.includes('pdf')) || note.resourceType === 'pdf') { %>
+                <a href="/notes/<%= note._id %>/view?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" target="_blank" rel="noopener" class="secondary-button" style="padding: 10px 18px; font-size: 13px;">
+                  👁 View PDF
+                </a>
+              <% } %>
+              <a href="/notes/<%= note._id %>/download?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>" class="primary-button" style="padding: 10px 18px; font-size: 13px;">
+                ↓ Download
+              </a>
+            </div>
+          </div>
+        <% } else { %>
+          <div style="padding: 30px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 12px;">
+            <p style="margin: 0; font-size: 14px;">No attached document file for this resource.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- About this resource -->
+      <div class="content-card" style="padding: 28px; border-radius: 20px; margin-bottom: 30px;">
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0 0 16px 0; color: white;">
+          About this resource
+        </h2>
+
+        <div style="color: var(--text); font-size: 14px; line-height: 1.8; margin-bottom: 20px; white-space: pre-line;">
+          <%= note.content || note.description || 'No detailed topics or text description provided.' %>
+        </div>
+
+        <!-- Tags List -->
+        <% if (note.tags && note.tags.length > 0) { %>
+          <div style="border-top: 1px solid var(--border); padding-top: 15px; margin-top: 20px;">
+            <h4 style="font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 10px;">Tags</h4>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <% note.tags.forEach(tag => { %>
+                <span style="font-size: 12px; color: var(--lavender); background: rgba(124,58,237,0.12); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(168,85,247,0.25);">
+                  #<%= tag %>
+                </span>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- DISCUSSION SECTION -->
+      <div id="comments" class="content-card" style="padding: 28px; border-radius: 20px;">
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0 0 20px 0; color: white; display: flex; align-items: center; gap: 10px;">
+          💬 Discussion <span style="font-size: 13px; color: var(--muted); font-weight: normal;">(<%= typeof comments !== 'undefined' ? comments.length : 0 %>)</span>
+        </h2>
+
+        <!-- Post Comment Form -->
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+          <form action="/notes/<%= note._id %>/comments" method="POST" style="margin-bottom: 25px;">
+            <div style="margin-bottom: 12px;">
+              <textarea name="content" rows="3" required placeholder="Write a comment or ask a question about this resource..." style="width: 100%; padding: 13px 15px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-family: inherit; font-size: 14px; resize: vertical; outline: none;"></textarea>
+            </div>
+            <button type="submit" class="primary-button" style="padding: 9px 18px; font-size: 13px;">
+              Post Comment
+            </button>
+          </form>
+        <% } else { %>
+          <div style="padding: 14px 18px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); margin-bottom: 22px;">
+            <p style="color: var(--muted); font-size: 13px; margin: 0;">Want to join the conversation? <a href="/auth/login" style="color: var(--lavender); font-weight: 600;">Log in to comment</a>.</p>
+          </div>
+        <% } %>
+
+        <!-- Comments List -->
+        <% if (typeof comments !== 'undefined' && comments.length > 0) { %>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <% comments.forEach(comment => { %>
+              <div style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: white;">
+                      <%= comment.user ? comment.user.name.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <div>
+                      <a href="/profile/<%= comment.user ? comment.user.username : '' %>" style="font-weight: 600; font-size: 13px; color: white; text-decoration: none;">
+                        <%= comment.user ? comment.user.name : 'Anonymous' %>
+                      </a>
+                      <span style="font-size: 12px; color: var(--muted); margin-left: 6px;">@<%= comment.user ? comment.user.username : 'user' %></span>
+                    </div>
+                  </div>
+                  
+                  <span style="font-size: 12px; color: var(--muted);">
+                    <%= new Date(comment.createdAt).toLocaleDateString() %>
+                  </span>
+                </div>
+
+                <p style="color: var(--text); font-size: 14px; line-height: 1.6; margin: 6px 0; overflow-wrap: anywhere; word-break: break-word;"><%= comment.content %></p>
+
+                <% if (typeof currentUser !== 'undefined' && currentUser && (comment.user._id.toString() === currentUser._id.toString() || currentUser.role === 'admin')) { %>
+                  <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 12px;">
+                    <a href="/comments/<%= comment._id %>/edit" style="color: var(--muted); text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">Edit</a>
+                    <form action="/comments/<%= comment._id %>?_method=DELETE" method="POST" style="display: inline;" onsubmit="return confirm('Delete this comment?');">
+                      <button type="submit" style="background: none; border: none; padding: 0; color: #F87171; cursor: pointer; font-size: 12px;">Delete</button>
+                    </form>
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p style="color: var(--muted); font-size: 13px; font-style: italic; margin: 0;">No comments yet. Be the first to start the discussion!</p>
+        <% } %>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar Column (30-35%) -->
+    <div>
+      
+      <!-- RESOURCE DETAILS CARD (Hiding empty/null fields) -->
+      <div class="content-card" style="padding: 24px; border-radius: 18px; margin-bottom: 25px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin: 0 0 16px 0; color: white;">
+          RESOURCE DETAILS
+        </h3>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; color: var(--muted);">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Type</span>
+            <strong style="color: white;"><%= note.resourceType ? note.resourceType.toUpperCase() : 'PDF' %></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Subject</span>
+            <strong style="color: white;"><%= note.subject %></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Semester</span>
+            <strong style="color: white;"><%= note.semester %></strong>
+          </div>
+          <% if (note.fileSize) { %>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Size</span>
+              <strong style="color: white;"><%= (note.fileSize / (1024 * 1024)).toFixed(2) %> MB</strong>
+            </div>
+          <% } %>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Views</span>
+            <strong style="color: white;"><%= note.views || 0 %></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Downloads</span>
+            <strong style="color: white;"><%= note.downloads || 0 %></strong>
+          </div>
+          <% if (typeof avgRating !== 'undefined' && avgRating > 0) { %>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Rating</span>
+              <strong style="color: #FDE047;">★ <%= avgRating %> (<%= totalRatings %>)</strong>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- RATING SECTION CARD -->
+      <div id="rate-section" class="content-card" style="padding: 24px; border-radius: 18px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin: 0 0 15px 0; color: white;">
+          ⭐ RATING
+        </h3>
+
+        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+          <form action="/notes/<%= note._id %>/rate" method="POST">
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px;">Your Rating:</label>
+              <div style="display: flex; gap: 8px;">
+                <% [1, 2, 3, 4, 5].forEach(star => { %>
+                  <label style="cursor: pointer; font-size: 20px;">
+                    <input type="radio" name="rating" value="<%= star %>" <%= typeof userRating !== 'undefined' && userRating === star ? 'checked' : '' %> required style="display: none;" onchange="this.form.querySelectorAll('.star-label').forEach((el, i) => el.style.color = i < <%= star %> ? '#FDE047' : '#4B5563');">
+                    <span class="star-label" style="color: <%= typeof userRating !== 'undefined' && userRating >= star ? '#FDE047' : '#4B5563' %>; transition: 0.2s;">★</span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <input type="text" name="review" placeholder="Optional review comment..." style="width: 100%; padding: 9px 12px; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 12px; outline: none;">
+            </div>
+            <button type="submit" class="primary-button" style="width: 100%; justify-content: center; padding: 10px; font-size: 12px;">
+              Submit Rating
+            </button>
+          </form>
+        <% } else { %>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">Please <a href="/auth/login" style="color: var(--lavender);">log in</a> to rate this resource.</p>
+        <% } %>
+
+        <% if (typeof avgRating !== 'undefined' && avgRating > 0) { %>
+          <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--muted);">
+            Average Rating: <strong style="color: #FDE047;">★ <%= avgRating %></strong> (<%= totalRatings %> votes)
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Client-side script for ⋮ Management Dropdown toggle & Share Note popover -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Management Dropdown Toggle
+    const dropdownToggle = document.querySelector('.menu-dropdown-toggle');
+    const dropdownContent = document.querySelector('.menu-dropdown-content');
+
+    if (dropdownToggle && dropdownContent) {
+      dropdownToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isShown = dropdownContent.style.display === 'block';
+        dropdownContent.style.display = isShown ? 'none' : 'block';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!dropdownContent.contains(e.target) && e.target !== dropdownToggle) {
+          dropdownContent.style.display = 'none';
+        }
+      });
+    }
+
+    // 2. Share Note Menu & Clipboard Logic
+    const shareBtn = document.getElementById('shareBtn');
+    const shareMenu = document.getElementById('shareMenu');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const shareToast = document.getElementById('shareToast');
+
+    if (shareBtn && shareMenu) {
+      const toggleMenu = (show) => {
+        const isVisible = typeof show === 'boolean' ? show : !shareMenu.classList.contains('show');
+        if (isVisible) {
+          shareMenu.classList.add('show');
+          shareBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          shareMenu.classList.remove('show');
+          shareBtn.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+
+      // Close menu on click outside
+      document.addEventListener('click', (e) => {
+        if (!shareMenu.contains(e.target) && !shareBtn.contains(e.target)) {
+          toggleMenu(false);
+        }
+      });
+
+      // Escape key closes menu & restores focus to Share button
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && shareMenu.classList.contains('show')) {
+          toggleMenu(false);
+          shareBtn.focus();
+        }
+      });
+
+      // Close menu when clicking any share option link
+      shareMenu.querySelectorAll('a.share-option').forEach((link) => {
+        link.addEventListener('click', () => {
+          toggleMenu(false);
+        });
+      });
+
+      // Copy Link button click handler with Clipboard API + Fallback
+      if (copyLinkBtn) {
+        let toastTimeout = null;
+
+        const showToast = (message, isError = false) => {
+          if (!shareToast) return;
+          shareToast.textContent = message;
+          shareToast.classList.toggle('toast-error', isError);
+          shareToast.classList.add('show');
+
+          if (toastTimeout) clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            shareToast.classList.remove('show');
+          }, 2500);
+        };
+
+        copyLinkBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const targetUrl = copyLinkBtn.getAttribute('data-share-url') || window.location.href;
+
+          let copied = false;
+          if (navigator.clipboard && window.isSecureContext) {
+            try {
+              await navigator.clipboard.writeText(targetUrl);
+              copied = true;
+            } catch (err) {
+              copied = false;
+            }
+          }
+
+          // Fallback if Clipboard API fails or insecure context
+          if (!copied) {
+            try {
+              const textArea = document.createElement('textarea');
+              textArea.value = targetUrl;
+              textArea.style.position = 'fixed';
+              textArea.style.left = '-999999px';
+              textArea.style.top = '-999999px';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              copied = document.execCommand('copy');
+              document.body.removeChild(textArea);
+            } catch (fallbackErr) {
+              copied = false;
+            }
+          }
+
+          if (copied) {
+            showToast('✓ Link copied!', false);
+          } else {
+            showToast('Unable to copy link', true);
+          }
+
+          toggleMenu(false);
+        });
+      }
+    }
+  });
+</script>

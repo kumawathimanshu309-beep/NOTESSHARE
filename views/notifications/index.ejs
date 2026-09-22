@@ -1,0 +1,139 @@
+<div class="page-container" style="max-width: 900px; margin-top: 30px;">
+
+  <!-- Header & Actions Bar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0 0 6px 0; color: white; display: flex; align-items: center; gap: 10px;">
+        🔔 Notifications
+        <% if (typeof unreadCount !== 'undefined' && unreadCount > 0) { %>
+          <span style="font-size: 12px; font-weight: 700; background: #EF4444; color: white; padding: 2px 8px; border-radius: 12px; font-family: sans-serif;">
+            <%= unreadCount %> NEW
+          </span>
+        <% } %>
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin: 0;">
+        Stay updated on activity regarding your study notes, doubts, and answers.
+      </p>
+    </div>
+
+    <% if (typeof notifications !== 'undefined' && notifications.length > 0 && typeof unreadCount !== 'undefined' && unreadCount > 0) { %>
+      <form action="/notifications/read-all" method="POST" style="margin: 0;">
+        <button type="submit" class="secondary-button" style="padding: 8px 16px; font-size: 13px; font-weight: 600; min-height: 40px;">
+          ✓ Mark all as read
+        </button>
+      </form>
+    <% } %>
+  </div>
+
+  <!-- Notifications List Container -->
+  <% if (typeof notifications !== 'undefined' && notifications.length > 0) { %>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+      <% notifications.forEach(item => { %>
+        <div class="content-card" style="padding: 16px 20px; border-radius: 14px; position: relative; transition: border-color 0.2s; <%= !item.isRead ? 'background: rgba(124,58,237,0.08); border-color: rgba(168,85,247,0.35);' : '' %>">
+          
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            
+            <!-- Actor Avatar / Icon Badge -->
+            <div style="shrink: 0; position: relative;">
+              <% if (item.actor) { %>
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-weight: 700; font-size: 16px; color: white;">
+                  <%= item.actor.name ? item.actor.name.charAt(0).toUpperCase() : 'U' %>
+                </div>
+              <% } else { %>
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: grid; place-items: center; font-size: 18px;">
+                  🔔
+                </div>
+              <% } %>
+
+              <% if (!item.isRead) { %>
+                <span style="position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: #A855F7; border-radius: 50%; border: 2px solid #0B0F19;" title="Unread"></span>
+              <% } %>
+            </div>
+
+            <!-- Content Area -->
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                <a href="<%= item.url %>" style="text-decoration: none; color: inherit; display: block; flex: 1; min-width: 0;">
+                  <h4 style="margin: 0 0 4px 0; font-size: 15px; font-weight: <%= !item.isRead ? '700' : '600' %>; color: white; word-wrap: break-word; overflow-wrap: anywhere;">
+                    <%= item.title %>
+                  </h4>
+                  <p style="margin: 0; font-size: 13px; color: var(--text); line-height: 1.5; word-wrap: break-word; overflow-wrap: anywhere;">
+                    <%= item.message %>
+                  </p>
+                </a>
+
+                <!-- Relative Time Tag -->
+                <span style="font-size: 11px; color: var(--muted); white-space: nowrap;">
+                  <% 
+                    const diffMs = new Date() - new Date(item.createdAt);
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMins / 60);
+                    const diffDays = Math.floor(diffHours / 24);
+                    let timeAgo = 'Just now';
+                    if (diffDays > 0) timeAgo = diffDays + 'd ago';
+                    else if (diffHours > 0) timeAgo = diffHours + 'h ago';
+                    else if (diffMins > 0) timeAgo = diffMins + 'm ago';
+                  %>
+                  <%= timeAgo %>
+                </span>
+              </div>
+
+              <!-- Item Actions Bar -->
+              <div style="display: flex; gap: 12px; align-items: center; margin-top: 10px; font-size: 12px;">
+                <a href="<%= item.url %>" style="color: var(--lavender); font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                  View Resource →
+                </a>
+
+                <% if (!item.isRead) { %>
+                  <form action="/notifications/<%= item._id %>/read?_method=PATCH" method="POST" style="margin: 0;">
+                    <button type="submit" style="background: none; border: none; padding: 0; color: var(--muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">
+                      Mark as read
+                    </button>
+                  </form>
+                <% } %>
+
+                <form action="/notifications/<%= item._id %>?_method=DELETE" method="POST" style="margin: 0;" onsubmit="return confirm('Dismiss this notification?');">
+                  <button type="submit" style="background: none; border: none; padding: 0; color: #F87171; cursor: pointer; font-size: 12px;" onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#F87171'">
+                    Dismiss
+                  </button>
+                </form>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Pagination Controls -->
+    <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+      <div style="display: flex; justify-content: center; gap: 8px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
+        <% if (page > 1) { %>
+          <a href="/notifications?page=<%= page - 1 %>" class="secondary-button" style="padding: 6px 14px; font-size: 12px;">← Previous</a>
+        <% } %>
+        
+        <span style="font-size: 13px; color: var(--muted); padding: 0 10px;">Page <%= page %> of <%= totalPages %></span>
+
+        <% if (page < totalPages) { %>
+          <a href="/notifications?page=<%= page + 1 %>" class="secondary-button" style="padding: 6px 14px; font-size: 12px;">Next →</a>
+        <% } %>
+      </div>
+    <% } %>
+
+  <% } else { %>
+    <!-- Empty State Component -->
+    <div class="content-card" style="padding: 50px 30px; border-radius: 20px; text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 14px;">🔔</div>
+      <h3 style="font-family: 'Sora', sans-serif; font-size: 20px; color: white; margin: 0 0 8px 0;">No Notifications Yet</h3>
+      <p style="color: var(--muted); font-size: 14px; max-width: 460px; margin: 0 auto 20px auto; line-height: 1.6;">
+        You will see notifications here when students or teachers interact with your uploaded notes, ask questions, or respond to your doubts.
+      </p>
+      <a href="/notes" class="primary-button" style="display: inline-flex; padding: 10px 20px; font-size: 13px;">
+        Explore Notes Collection
+      </a>
+    </div>
+  <% } %>
+
+</div>
