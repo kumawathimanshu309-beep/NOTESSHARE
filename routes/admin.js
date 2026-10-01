@@ -45,7 +45,25 @@ router.patch('/home-content/:id/restore', adminController.restoreHomeCard);
 router.post('/home-content/:id/restore', adminController.restoreHomeCard);
 router.delete('/home-content/:id', adminController.deleteHomeCard);
 
+const { validateSubjectInput, validateTopicInput } = require('../validators/subjectValidator');
+
 // 6. Audit Logs
 router.get('/audit-logs', adminController.getAuditLogs);
+
+// 7. Subject Governance
+router.get('/subjects', adminController.getSubjects);
+router.post('/subjects', validateSubjectInput, adminController.postCreateSubject);
+router.patch('/subjects/:id', validateSubjectInput, adminController.patchUpdateSubject);
+router.post('/subjects/:id', validateSubjectInput, adminController.patchUpdateSubject);
+router.patch('/subjects/:id/toggle-active', adminController.patchToggleSubjectActive);
+router.post('/subjects/:id/toggle-active', adminController.patchToggleSubjectActive);
+
+// 8. Topic Governance
+router.get('/subjects/:subjectId/topics', adminController.getSubjectTopics);
+router.post('/subjects/:subjectId/topics', validateTopicInput, adminController.postCreateTopic);
+router.patch('/subjects/:subjectId/topics/:topicId', validateTopicInput, adminController.patchUpdateTopic);
+router.post('/subjects/:subjectId/topics/:topicId', validateTopicInput, adminController.patchUpdateTopic);
+router.patch('/subjects/:subjectId/topics/:topicId/toggle-active', adminController.patchToggleTopicActive);
+router.post('/subjects/:subjectId/topics/:topicId/toggle-active', adminController.patchToggleTopicActive);
 
 module.exports = router;

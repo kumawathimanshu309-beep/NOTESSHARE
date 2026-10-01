@@ -25,17 +25,31 @@
         >
       </div>
 
-      <!-- Grid for Subject, Semester, Resource Type -->
-      <div class="form-grid-3col">
+      <!-- Grid for Subject, Topic, Semester, Resource Type -->
+      <div class="form-grid-2col" style="margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
         
         <div>
-          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject</label>
+          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject *</label>
           <select id="subject" name="subject" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="Computer Science">Computer Science</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Science">Science</option>
-            <option value="Engineering">Engineering</option>
-            <option value="General">General</option>
+            <option value="">Select Subject</option>
+            <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
+              <% activeSubjects.forEach(s => { %>
+                <option value="<%= s.name %>" data-id="<%= s._id %>"><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+              <% }) %>
+            <% } else { %>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Science">Science</option>
+              <option value="Engineering">Engineering</option>
+              <option value="General">General</option>
+            <% } %>
+          </select>
+        </div>
+
+        <div>
+          <label for="topic" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Topic / Module (Optional)</label>
+          <select id="topic" name="topic" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="">Select Topic (Optional)</option>
           </select>
         </div>
 
@@ -140,3 +154,35 @@
   </div>
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const subjectSelect = document.getElementById('subject');
+    const topicSelect = document.getElementById('topic');
+
+    if (subjectSelect && topicSelect) {
+      subjectSelect.addEventListener('change', async function() {
+        const selectedOpt = this.options[this.selectedIndex];
+        const subjectId = selectedOpt.getAttribute('data-id');
+        topicSelect.innerHTML = '<option value="">Select Topic (Optional)</option>';
+
+        if (subjectId) {
+          try {
+            const res = await fetch('/api/subjects/' + subjectId + '/topics');
+            const data = await res.json();
+            if (data.success && Array.isArray(data.topics) && data.topics.length > 0) {
+              data.topics.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.name;
+                opt.textContent = t.name;
+                topicSelect.appendChild(opt);
+              });
+            }
+          } catch (err) {
+            console.error('Error fetching topics:', err);
+          }
+        }
+      });
+    }
+  });
+</script>

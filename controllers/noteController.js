@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const noteService = require('../services/noteService');
 const socialService = require('../services/socialService');
+const academicService = require('../services/academicService');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
 const wrapAsync = require('../middleware/asyncWrapper');
@@ -25,13 +26,15 @@ exports.getNotes = wrapAsync(async (req, res) => {
 
 // @desc    Render Create Note Form
 // @route   GET /notes/new
-exports.getNewNote = (req, res) => {
+exports.getNewNote = wrapAsync(async (req, res) => {
+  const activeSubjects = await academicService.getActiveSubjects();
   res.render('notes/new', {
     title: 'Upload Study Note — StudyShare',
     path: '/notes/new',
     formData: {},
+    activeSubjects,
   });
-};
+});
 
 // @desc    Process New Note Creation & File Upload
 // @route   POST /notes

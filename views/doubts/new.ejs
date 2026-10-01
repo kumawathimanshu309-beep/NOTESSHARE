@@ -1,61 +1,171 @@
 <div class="page-container" style="max-width: 750px;">
   
   <div style="margin-bottom: 25px;">
-    <a href="/doubts" style="color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+    <a href="/doubts" style="color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
       ← Back to Doubts
     </a>
   </div>
 
   <div class="content-card" style="padding: 35px; border-radius: 20px;">
-    <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin-bottom: 8px;">Ask a Study Doubt</h1>
-    <p style="color: var(--muted); font-size: 14px; margin-bottom: 30px;">Describe your question clearly so verified teachers and students can help you.</p>
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin-bottom: 8px; color: white;">Ask a Academic Doubt</h1>
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 30px;">Describe your question clearly so verified teachers and peers can help you solve it.</p>
 
-    <form action="/doubts" method="POST">
+    <form action="/doubts" method="POST" enctype="multipart/form-data" id="askDoubtForm">
       
       <!-- Title -->
       <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Doubt Title / Question Summary *</label>
-        <input type="text" name="title" value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>" required minlength="5" maxlength="150" placeholder="e.g. How does Dijkstra's shortest path algorithm handle graph weights?" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+        <input type="text" name="title" value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>" required minlength="5" maxlength="150" placeholder="e.g. How does Dijkstra's shortest path algorithm handle graph weights?" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; outline: none;">
       </div>
 
       <div class="form-grid-2col">
-        <!-- Subject -->
+        <!-- Subject Selection -->
         <div>
-          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Subject *</label>
-          <select name="subject" required style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
-            <option value="Computer Science">Computer Science</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Physics">Physics</option>
-            <option value="Electronics">Electronics</option>
-            <option value="General">General</option>
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Academic Subject *</label>
+          <select id="subjectSelect" name="subjectId" required style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; outline: none;">
+            <option value="">Select an Academic Subject...</option>
+            <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
+              <% activeSubjects.forEach(s => { %>
+                <option value="<%= s._id %>" data-name="<%= s.name %>" data-dept="<%= s.department || 'General' %>" <%= (typeof formData !== 'undefined' && String(formData.subjectId) === String(s._id)) ? 'selected' : '' %>>
+                  <%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %>
+                </option>
+              <% }) %>
+            <% } %>
           </select>
+          <input type="hidden" id="hiddenSubjectName" name="subject" value="<%= typeof formData !== 'undefined' && formData.subject ? formData.subject : '' %>">
         </div>
 
-        <!-- Category -->
+        <!-- Dependent Topic Selection -->
         <div>
-          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Category</label>
-          <input type="text" name="category" value="<%= typeof formData !== 'undefined' && formData.category ? formData.category : 'General' %>" placeholder="e.g. Algorithms, Calculus, Quantum" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Syllabus Topic *</label>
+          <select id="topicSelect" name="topicId" required disabled style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; outline: none;">
+            <option value="">Select a subject first...</option>
+          </select>
+          <input type="hidden" id="hiddenTopicName" name="topic" value="<%= typeof formData !== 'undefined' && formData.topic ? formData.topic : '' %>">
         </div>
       </div>
 
       <!-- Description -->
       <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Detailed Explanation & Code / Formula Context *</label>
-        <textarea name="description" rows="6" required minlength="10" maxlength="2000" placeholder="Provide full details about what you have tried, where you are stuck, or specific steps you need help understanding..." style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; font-family: inherit; resize: vertical;"><%= typeof formData !== 'undefined' && formData.description ? formData.description : '' %></textarea>
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Detailed Explanation & Context *</label>
+        <textarea name="description" rows="6" required minlength="10" maxlength="2000" placeholder="Provide full details about what you have tried, where you are stuck, or specific steps you need help understanding..." style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; font-family: inherit; resize: vertical; outline: none;"><%= typeof formData !== 'undefined' && formData.description ? formData.description : '' %></textarea>
+      </div>
+
+      <!-- Attachment File -->
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Attachment (Optional, max 15 MB)</label>
+        <input type="file" name="attachment" accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.webp" style="width: 100%; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: var(--muted); font-size: 13px;">
+        <span style="display: block; font-size: 11px; color: var(--muted); margin-top: 4px;">Supported formats: PDF, PPT, PPTX, JPG, PNG, WEBP (Max 15 MB)</span>
       </div>
 
       <!-- Tags -->
       <div style="margin-bottom: 30px;">
         <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Tags (comma separated)</label>
-        <input type="text" name="tags" value="<%= typeof formData !== 'undefined' && formData.tags ? formData.tags : '' %>" placeholder="e.g. graph, shortest-path, dijkstra, dsa" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px;">
+        <input type="text" name="tags" value="<%= typeof formData !== 'undefined' && formData.tags ? formData.tags : '' %>" placeholder="e.g. sql, normalization, join-queries" style="width: 100%; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; outline: none;">
       </div>
 
       <div style="display: flex; gap: 15px; justify-content: flex-end;">
-        <a href="/doubts" class="secondary-button" style="padding: 12px 24px;">Cancel</a>
-        <button type="submit" class="primary-button" style="padding: 12px 28px;">Post Question</button>
+        <a href="/doubts" class="secondary-button" style="padding: 12px 24px; font-size: 13px; border-radius: 10px;">Cancel</a>
+        <button type="submit" class="primary-button" style="padding: 12px 28px; font-size: 13px; border-radius: 10px;">Post Question</button>
       </div>
 
     </form>
   </div>
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const subjectSelect = document.getElementById('subjectSelect');
+    const topicSelect = document.getElementById('topicSelect');
+    const hiddenSubjectName = document.getElementById('hiddenSubjectName');
+    const hiddenTopicName = document.getElementById('hiddenTopicName');
+
+    async function ensureSubjectsLoaded() {
+      if (!subjectSelect || subjectSelect.options.length > 1) return;
+      try {
+        const res = await fetch('/api/subjects');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
+          let html = '<option value="">Select an Academic Subject...</option>';
+          data.subjects.forEach(function(s) {
+            const codeStr = s.code ? ' (' + escapeHtml(s.code) + ')' : '';
+            html += '<option value="' + s._id + '" data-name="' + escapeHtml(s.name) + '" data-dept="' + escapeHtml(s.department || 'General') + '">' + escapeHtml(s.name) + codeStr + '</option>';
+          });
+          subjectSelect.innerHTML = html;
+        }
+      } catch (err) {
+        console.error('Failed to load active subjects via API fallback:', err);
+      }
+    }
+
+    async function loadTopicsForSubject(subjectId) {
+      if (!subjectId) {
+        topicSelect.innerHTML = '<option value="">Select a subject first...</option>';
+        topicSelect.disabled = true;
+        hiddenSubjectName.value = '';
+        hiddenTopicName.value = '';
+        return;
+      }
+
+      const selectedOpt = subjectSelect.options[subjectSelect.selectedIndex];
+      if (selectedOpt && selectedOpt.dataset.name) {
+        hiddenSubjectName.value = selectedOpt.dataset.name;
+      }
+
+      topicSelect.innerHTML = '<option value="">Loading topics...</option>';
+      topicSelect.disabled = true;
+
+      try {
+        const res = await fetch('/api/subjects/' + subjectId + '/topics');
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.topics) && data.topics.length > 0) {
+          let html = '<option value="">Select a syllabus topic...</option>';
+          data.topics.forEach(function(t) {
+            html += '<option value="' + t._id + '" data-name="' + escapeHtml(t.name) + '">' + escapeHtml(t.name) + '</option>';
+          });
+          topicSelect.innerHTML = html;
+          topicSelect.disabled = false;
+        } else {
+          topicSelect.innerHTML = '<option value="default" data-name="General Overview">General Overview (Default)</option>';
+          topicSelect.disabled = false;
+        }
+      } catch (err) {
+        console.error('Failed to load topics:', err);
+        topicSelect.innerHTML = '<option value="default" data-name="General Overview">General Overview (Default)</option>';
+        topicSelect.disabled = false;
+      }
+
+      updateTopicHiddenName();
+    }
+
+    function updateTopicHiddenName() {
+      const selectedTopicOpt = topicSelect.options[topicSelect.selectedIndex];
+      if (selectedTopicOpt && selectedTopicOpt.dataset.name) {
+        hiddenTopicName.value = selectedTopicOpt.dataset.name;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    if (subjectSelect) {
+      ensureSubjectsLoaded().then(function() {
+        if (subjectSelect.value) {
+          loadTopicsForSubject(subjectSelect.value);
+        }
+      });
+
+      subjectSelect.addEventListener('change', function() {
+        loadTopicsForSubject(this.value);
+      });
+    }
+
+    if (topicSelect) {
+      topicSelect.addEventListener('change', updateTopicHiddenName);
+    }
+  });
+</script>

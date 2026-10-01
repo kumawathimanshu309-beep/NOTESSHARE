@@ -46,6 +46,48 @@ const profileUpdateSchema = Joi.object({
   avatar: Joi.string().trim().max(500).allow('').messages({
     'string.max': 'Avatar URL cannot exceed 500 characters.',
   }),
+  course: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Course cannot exceed 100 characters.',
+  }),
+  branch: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Branch cannot exceed 100 characters.',
+  }),
+  semester: Joi.number().integer().min(1).max(8).allow(null, '').messages({
+    'number.min': 'Semester must be between 1 and 8.',
+    'number.max': 'Semester must be between 1 and 8.',
+  }),
+  academicYear: Joi.string().trim().max(50).allow('').messages({
+    'string.max': 'Academic year cannot exceed 50 characters.',
+  }),
+  specialization: Joi.string().trim().max(150).allow('').messages({
+    'string.max': 'Specialization cannot exceed 150 characters.',
+  }),
+  department: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Department cannot exceed 100 characters.',
+  }),
+  interests: Joi.alternatives().try(
+    Joi.array().items(Joi.string().trim()),
+    Joi.string().trim().allow('')
+  ).allow(''),
+  college: Joi.string().trim().max(150).allow('').messages({
+    'string.max': 'College name cannot exceed 150 characters.',
+  }),
+  designation: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Designation cannot exceed 100 characters.',
+  }),
+  qualification: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Qualification cannot exceed 100 characters.',
+  }),
+  experience: Joi.string().trim().max(100).allow('').messages({
+    'string.max': 'Experience cannot exceed 100 characters.',
+  }),
+  teachingBio: Joi.string().trim().max(500).allow('').messages({
+    'string.max': 'Teaching bio cannot exceed 500 characters.',
+  }),
+  subjectsHandled: Joi.alternatives().try(
+    Joi.array().items(Joi.string().trim()),
+    Joi.string().trim().allow('')
+  ).allow(''),
 }).unknown(true); // Allow unknown fields so we can safely strip them in controller/service
 
 module.exports = {

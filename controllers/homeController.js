@@ -196,3 +196,22 @@ exports.getFeatures = wrapAsync(async (req, res) => {
     featuresList,
   });
 });
+
+// @desc    Dynamic XML Sitemap for SEO Crawlers
+// @route   GET /sitemap.xml
+exports.getSitemap = wrapAsync(async (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const staticUrls = ['/', '/about', '/features', '/notes', '/doubts', '/faculty', '/search'];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+  staticUrls.forEach((urlPath) => {
+    xml += `  <url>\n    <loc>${baseUrl}${urlPath}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${urlPath === '/' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+  });
+
+  xml += `</urlset>`;
+
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
+});

@@ -1,0 +1,303 @@
+<div class="page-container" style="max-width: 1100px;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Admin Control Panel
+      </a>
+      <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+        📚 Academic Subject Governance
+      </h1>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Manage academic subjects, departments, and active/inactive status across StudyShare.
+      </p>
+    </div>
+    <div>
+      <button type="button" id="btnOpenCreateSubject" class="primary-button" style="padding: 10px 18px; font-size: 13px;">
+        + Create New Subject
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Department Filter Bar -->
+  <div class="content-card" style="padding: 20px; border-radius: 16px; margin-bottom: 25px;">
+    <form action="/admin/subjects" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <input type="text" name="search" value="<%= query.search || '' %>" placeholder="Search by subject name, code, department..." style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+      
+      <select name="department" style="padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        <option value="">All Departments</option>
+        <% if (typeof departments !== 'undefined' && departments && departments.length > 0) { %>
+          <% departments.filter(Boolean).forEach(dept => { %>
+            <option value="<%= dept %>" <%= query.department === dept ? 'selected' : '' %>><%= dept %></option>
+          <% }) %>
+        <% } %>
+      </select>
+
+      <select name="status" style="padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        <option value="">All Statuses</option>
+        <option value="active" <%= query.status === 'active' ? 'selected' : '' %>>Active</option>
+        <option value="inactive" <%= query.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+      </select>
+
+      <button type="submit" class="primary-button" style="padding: 10px 18px; font-size: 13px;">Filter</button>
+      <% if (query.search || query.department || query.status) { %>
+        <a href="/admin/subjects" class="secondary-button" style="padding: 10px 14px; font-size: 13px;">Clear</a>
+      <% } %>
+    </form>
+  </div>
+
+  <!-- Subjects Table -->
+  <div class="content-card table-responsive" style="padding: 24px; border-radius: 20px;">
+    <% if (typeof subjects !== 'undefined' && subjects.length > 0) { %>
+      <table class="responsive-table">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
+            <th style="padding: 12px;">SUBJECT NAME</th>
+            <th style="padding: 12px;">CODE</th>
+            <th style="padding: 12px;">DEPARTMENT</th>
+            <th style="padding: 12px;">TOPICS</th>
+            <th style="padding: 12px;">STATUS</th>
+            <th style="padding: 12px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% subjects.forEach(s => { %>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 14px 12px;">
+                <strong style="color: white; font-size: 14px; display: block;"><%= s.name %></strong>
+                <% if (s.description) { %>
+                  <span style="font-size: 11px; color: var(--muted); display: block; max-width: 300px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"><%= s.description %></span>
+                <% } %>
+              </td>
+              <td style="padding: 14px 12px; color: var(--lavender); font-weight: 600;">
+                <%= s.code || '—' %>
+              </td>
+              <td style="padding: 14px 12px; color: var(--text);">
+                <%= s.department || 'General' %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <a href="/admin/subjects/<%= s._id %>/topics" style="padding: 4px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-size: 11px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  📌 <%= s.topicCount %> Topics →
+                </a>
+              </td>
+              <td style="padding: 14px 12px;">
+                <% if (s.isActive) { %>
+                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-weight: 700; font-size: 11px;">● Active</span>
+                <% } else { %>
+                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">○ Inactive</span>
+                <% } %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="secondary-button btn-edit-subject" 
+                    data-subject="<%= encodeURIComponent(JSON.stringify({ id: s._id, name: s.name, code: s.code || '', department: s.department || '', description: s.description || '', isActive: s.isActive })) %>" 
+                    style="padding: 5px 10px; font-size: 11px;">
+                    ✏️ Edit
+                  </button>
+
+                  <form action="/admin/subjects/<%= s._id %>/toggle-active" method="POST" style="margin: 0; display: inline;">
+                    <button type="submit" class="secondary-button" style="padding: 5px 10px; font-size: 11px; color: <%= s.isActive ? '#F87171' : '#4ADE80' %>;">
+                      <%= s.isActive ? 'Deactivate' : 'Activate' %>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 25px; align-items: center;">
+          <% if (page > 1) { %>
+            <a href="/admin/subjects?page=<%= page - 1 %>&status=<%= query.status || '' %>&department=<%= encodeURIComponent(query.department || '') %>&search=<%= encodeURIComponent(query.search || '') %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">← Previous</a>
+          <% } %>
+          <span style="font-size: 13px; color: var(--muted);">Page <%= page %> of <%= totalPages %></span>
+          <% if (page < totalPages) { %>
+            <a href="/admin/subjects?page=<%= page + 1 %>&status=<%= query.status || '' %>&department=<%= encodeURIComponent(query.department || '') %>&search=<%= encodeURIComponent(query.search || '') %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">Next →</a>
+          <% } %>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <div style="text-align: center; padding: 40px 20px; color: var(--muted);">
+        <p style="font-size: 15px; margin-bottom: 15px; color: white;">No academic subjects found.</p>
+        <button type="button" class="primary-button btn-trigger-create-empty" style="padding: 10px 20px; font-size: 13px;">
+          + Create First Subject
+        </button>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Create Subject Overlay Modal -->
+  <div id="createSubjectModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+    <div class="content-card" style="width: 100%; max-width: 550px; padding: 25px; border-radius: 20px; border-color: rgba(168,85,247,0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.8); background: #0D1124; margin: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">➕ Create New Subject</h3>
+        <button type="button" class="btn-close-create-modal" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+      
+      <form action="/admin/subjects" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Subject Name *</label>
+          <input type="text" name="name" placeholder="e.g. Database Management Systems" required style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Subject Code</label>
+            <input type="text" name="code" placeholder="e.g. CS301" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Department</label>
+            <input type="text" name="department" placeholder="e.g. Computer Science & Engineering" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Status</label>
+          <select name="isActive" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Description</label>
+          <textarea name="description" rows="3" placeholder="Brief subject overview and course objectives..." style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
+          <button type="button" class="btn-close-create-modal secondary-button" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
+          <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 13px;">Save Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Subject Overlay Modal -->
+  <div id="editSubjectModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+    <div class="content-card" style="width: 100%; max-width: 550px; padding: 25px; border-radius: 20px; border-color: rgba(168,85,247,0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.8); background: #0D1124; margin: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">✏️ Edit Subject Details</h3>
+        <button type="button" class="btn-close-edit-modal" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+
+      <form id="editSubjectForm" action="" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Subject Name *</label>
+          <input type="text" id="edit_name" name="name" required style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Code</label>
+            <input type="text" id="edit_code" name="code" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Department</label>
+            <input type="text" id="edit_department" name="department" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Status</label>
+          <select id="edit_isActive" name="isActive" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Description</label>
+          <textarea id="edit_description" name="description" rows="3" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
+          <button type="button" class="btn-close-edit-modal secondary-button" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
+          <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 13px;">Update Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const createModal = document.getElementById('createSubjectModal');
+    const editModal = document.getElementById('editSubjectModal');
+
+    function openCreateModal() {
+      if (createModal) createModal.style.display = 'flex';
+    }
+
+    function closeCreateModal() {
+      if (createModal) createModal.style.display = 'none';
+    }
+
+    function closeEditModal() {
+      if (editModal) editModal.style.display = 'none';
+    }
+
+    const btnOpenCreate = document.getElementById('btnOpenCreateSubject');
+    if (btnOpenCreate) {
+      btnOpenCreate.addEventListener('click', openCreateModal);
+    }
+
+    document.querySelectorAll('.btn-trigger-create-empty').forEach(function(btn) {
+      btn.addEventListener('click', openCreateModal);
+    });
+
+    document.querySelectorAll('.btn-close-create-modal').forEach(function(btn) {
+      btn.addEventListener('click', closeCreateModal);
+    });
+
+    document.querySelectorAll('.btn-close-edit-modal').forEach(function(btn) {
+      btn.addEventListener('click', closeEditModal);
+    });
+
+    if (createModal) {
+      createModal.addEventListener('click', function(e) {
+        if (e.target === createModal) closeCreateModal();
+      });
+    }
+
+    if (editModal) {
+      editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) closeEditModal();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCreateModal();
+        closeEditModal();
+      }
+    });
+
+    document.querySelectorAll('.btn-edit-subject').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        try {
+          const raw = this.getAttribute('data-subject');
+          if (!raw) return;
+          const data = JSON.parse(decodeURIComponent(raw));
+          
+          document.getElementById('editSubjectForm').action = '/admin/subjects/' + data.id;
+          document.getElementById('edit_name').value = data.name || '';
+          document.getElementById('edit_code').value = data.code || '';
+          document.getElementById('edit_department').value = data.department || '';
+          document.getElementById('edit_description').value = data.description || '';
+          document.getElementById('edit_isActive').value = (data.isActive === true || data.isActive === 'true') ? 'true' : 'false';
+          
+          if (editModal) editModal.style.display = 'flex';
+        } catch (err) {
+          console.error('Error opening edit subject modal:', err);
+        }
+      });
+    });
+  });
+</script>

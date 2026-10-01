@@ -22,8 +22,14 @@
         </div>
 
         <p style="color: var(--lavender); font-size: 14px; margin-bottom: 12px;">
-          @<%= teacher.username %> <%= teacher.qualification ? '• ' + teacher.qualification : '' %>
+          @<%= teacher.username %> <%= teacher.designation ? '• ' + teacher.designation : '' %> <%= teacher.qualification ? '• ' + teacher.qualification : '' %>
         </p>
+
+        <% if (teacher.department || teacher.college || teacher.specialization) { %>
+          <p style="color: var(--muted); font-size: 13px; margin-bottom: 12px;">
+            🏢 <%= [teacher.designation, teacher.department, teacher.college].filter(Boolean).join(' • ') %>
+          </p>
+        <% } %>
 
         <% if (teacher.teachingBio || teacher.bio) { %>
           <p style="color: var(--text); font-size: 14px; line-height: 1.6; max-width: 650px; margin-bottom: 15px;">
@@ -31,9 +37,23 @@
           </p>
         <% } %>
 
-        <% if (teacher.experience) { %>
-          <div style="font-size: 13px; color: var(--muted);">
-            💼 Experience: <strong style="color: white;"><%= teacher.experience %></strong>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 15px;">
+          <% if (teacher.experience) { %>
+            <div>💼 Experience: <strong style="color: white;"><%= teacher.experience %></strong></div>
+          <% } %>
+          <% if (teacher.qualification) { %>
+            <div>🎓 Qualification: <strong style="color: white;"><%= teacher.qualification %></strong></div>
+          <% } %>
+        </div>
+
+        <% if (Array.isArray(teacher.subjectsHandled) && teacher.subjectsHandled.length > 0) { %>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
+            <span style="font-size: 12px; color: var(--muted); font-weight: 600;">📚 Subjects Handled:</span>
+            <% teacher.subjectsHandled.forEach(sub => { %>
+              <span style="font-size: 11px; padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-weight: 600;">
+                <%= sub %>
+              </span>
+            <% }); %>
           </div>
         <% } %>
       </div>

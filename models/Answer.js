@@ -23,6 +23,23 @@ const answerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    helpfulVotes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    unhelpfulVotes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    helpfulCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

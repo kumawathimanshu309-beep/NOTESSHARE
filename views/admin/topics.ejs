@@ -1,0 +1,233 @@
+<div class="page-container" style="max-width: 1000px;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <a href="/admin/subjects" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+        ← Back to Subject Governance
+      </a>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+          📌 Topic Governance
+        </h1>
+        <span style="padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.25); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-size: 12px; font-weight: 700;">
+          Subject: <%= subject.name %> <%= subject.code ? '(' + subject.code + ')' : '' %>
+        </span>
+      </div>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        Manage syllabus topics and modules under <strong><%= subject.name %></strong> (<%= subject.department || 'General' %>).
+      </p>
+    </div>
+    <div>
+      <button type="button" id="btnOpenCreateTopic" class="primary-button" style="padding: 10px 18px; font-size: 13px;">
+        + Create Topic
+      </button>
+    </div>
+  </div>
+
+  <!-- Topics Table -->
+  <div class="content-card table-responsive" style="padding: 24px; border-radius: 20px;">
+    <% if (typeof topics !== 'undefined' && topics.length > 0) { %>
+      <table class="responsive-table">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
+            <th style="padding: 12px;">TOPIC NAME</th>
+            <th style="padding: 12px;">SLUG</th>
+            <th style="padding: 12px;">DESCRIPTION</th>
+            <th style="padding: 12px;">STATUS</th>
+            <th style="padding: 12px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% topics.forEach(t => { %>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 14px 12px;">
+                <strong style="color: white; font-size: 14px;"><%= t.name %></strong>
+              </td>
+              <td style="padding: 14px 12px; color: var(--lavender); font-size: 12px;">
+                <code><%= t.slug %></code>
+              </td>
+              <td style="padding: 14px 12px; color: var(--muted); font-size: 13px;">
+                <%= t.description || '—' %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <% if (t.isActive) { %>
+                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-weight: 700; font-size: 11px;">● Active</span>
+                <% } else { %>
+                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">○ Inactive</span>
+                <% } %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="secondary-button btn-edit-topic" 
+                    data-topic="<%= encodeURIComponent(JSON.stringify({ id: t._id, name: t.name, description: t.description || '', isActive: t.isActive })) %>" 
+                    style="padding: 5px 10px; font-size: 11px;">
+                    ✏️ Edit
+                  </button>
+
+                  <form action="/admin/subjects/<%= subject._id %>/topics/<%= t._id %>/toggle-active" method="POST" style="margin: 0; display: inline;">
+                    <button type="submit" class="secondary-button" style="padding: 5px 10px; font-size: 11px; color: <%= t.isActive ? '#F87171' : '#4ADE80' %>;">
+                      <%= t.isActive ? 'Deactivate' : 'Activate' %>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+    <% } else { %>
+      <div style="text-align: center; padding: 40px 20px; color: var(--muted);">
+        <p style="font-size: 15px; margin-bottom: 15px; color: white;">No topics defined under <strong><%= subject.name %></strong> yet.</p>
+        <button type="button" class="primary-button btn-trigger-create-topic-empty" style="padding: 10px 20px; font-size: 13px;">
+          + Create First Topic
+        </button>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Create Topic Overlay Modal -->
+  <div id="createTopicModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+    <div class="content-card" style="width: 100%; max-width: 500px; padding: 25px; border-radius: 20px; border-color: rgba(168,85,247,0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.8); background: #0D1124; margin: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">➕ Create Topic under <%= subject.name %></h3>
+        <button type="button" class="btn-close-create-topic-modal" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+      
+      <form action="/admin/subjects/<%= subject._id %>/topics" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Topic Name *</label>
+          <input type="text" name="name" placeholder="e.g. Relational Algebra & SQL" required style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Status</label>
+          <select name="isActive" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Description</label>
+          <textarea name="description" rows="3" placeholder="Topic syllabus coverage, key sub-topics..." style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
+          <button type="button" class="btn-close-create-topic-modal secondary-button" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
+          <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 13px;">Save Topic</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Topic Overlay Modal -->
+  <div id="editTopicModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+    <div class="content-card" style="width: 100%; max-width: 500px; padding: 25px; border-radius: 20px; border-color: rgba(168,85,247,0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.8); background: #0D1124; margin: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">✏️ Edit Topic</h3>
+        <button type="button" class="btn-close-edit-topic-modal" style="background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer;">✕</button>
+      </div>
+
+      <form id="editTopicForm" action="" method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Topic Name *</label>
+          <input type="text" id="topic_edit_name" name="name" required style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Status</label>
+          <select id="topic_edit_isActive" name="isActive" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--lavender); margin-bottom: 4px; text-transform: uppercase;">Description</label>
+          <textarea id="topic_edit_description" name="description" rows="3" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px;">
+          <button type="button" class="btn-close-edit-topic-modal secondary-button" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
+          <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 13px;">Update Topic</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const createModal = document.getElementById('createTopicModal');
+    const editModal = document.getElementById('editTopicModal');
+
+    function openCreateModal() {
+      if (createModal) createModal.style.display = 'flex';
+    }
+
+    function closeCreateModal() {
+      if (createModal) createModal.style.display = 'none';
+    }
+
+    function closeEditModal() {
+      if (editModal) editModal.style.display = 'none';
+    }
+
+    const btnOpenCreate = document.getElementById('btnOpenCreateTopic');
+    if (btnOpenCreate) {
+      btnOpenCreate.addEventListener('click', openCreateModal);
+    }
+
+    document.querySelectorAll('.btn-trigger-create-topic-empty').forEach(function(btn) {
+      btn.addEventListener('click', openCreateModal);
+    });
+
+    document.querySelectorAll('.btn-close-create-topic-modal').forEach(function(btn) {
+      btn.addEventListener('click', closeCreateModal);
+    });
+
+    document.querySelectorAll('.btn-close-edit-topic-modal').forEach(function(btn) {
+      btn.addEventListener('click', closeEditModal);
+    });
+
+    if (createModal) {
+      createModal.addEventListener('click', function(e) {
+        if (e.target === createModal) closeCreateModal();
+      });
+    }
+
+    if (editModal) {
+      editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) closeEditModal();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCreateModal();
+        closeEditModal();
+      }
+    });
+
+    document.querySelectorAll('.btn-edit-topic').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        try {
+          const raw = this.getAttribute('data-topic');
+          if (!raw) return;
+          const data = JSON.parse(decodeURIComponent(raw));
+          
+          document.getElementById('editTopicForm').action = '/admin/subjects/<%= subject._id %>/topics/' + data.id;
+          document.getElementById('topic_edit_name').value = data.name || '';
+          document.getElementById('topic_edit_description').value = data.description || '';
+          document.getElementById('topic_edit_isActive').value = (data.isActive === true || data.isActive === 'true') ? 'true' : 'false';
+          
+          if (editModal) editModal.style.display = 'flex';
+        } catch (err) {
+          console.error('Error opening edit topic modal:', err);
+        }
+      });
+    });
+  });
+</script>

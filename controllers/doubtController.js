@@ -1,4 +1,5 @@
 const doubtService = require('../services/doubtService');
+const academicService = require('../services/academicService');
 const { doubtSchema } = require('../validators/doubtValidator');
 const { answerSchema } = require('../validators/answerValidator');
 const wrapAsync = require('../middleware/asyncWrapper');
@@ -23,36 +24,52 @@ exports.getDoubts = wrapAsync(async (req, res) => {
 
 /**
  * GET /doubts/new
- * Render Ask Doubt Form
+ * Render Ask Doubt Form with Active Database Subjects
  */
-exports.getNewDoubtForm = (req, res) => {
+exports.getNewDoubtForm = wrapAsync(async (req, res) => {
+  const activeSubjects = await academicService.getActiveSubjects();
+
   res.render('doubts/new', {
     title: 'Ask a Doubt — StudyShare',
     path: '/doubts/new',
     formData: {},
+    activeSubjects,
   });
-};
+});
 
 /**
  * POST /doubts
- * Submit New Doubt with Identity Derivation
+ * Submit New Doubt with Subject/Topic Validation & File Upload
  */
 exports.postDoubt = wrapAsync(async (req, res) => {
   const { error, value } = doubtSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
     req.flash('error', errorMsg);
-    return res.render('doubts/new', {
+    const activeSubjects = await academicService.getActiveSubjects();
+    return res.status(400).render('doubts/new', {
       title: 'Ask a Doubt — StudyShare',
       path: '/doubts/new',
       formData: req.body,
+      activeSubjects,
     });
   }
 
-  const doubt = await doubtService.createDoubt(req.user._id, value);
+  try {
+    const doubt = await doubtService.createDoubt(req.user._id, value, req.file);
 
-  req.flash('success', 'Your doubt has been posted! Teachers will review and answer soon.');
-  return res.redirect(303, `/doubts/${doubt._id}`);
+    req.flash('success', 'Your doubt has been posted! Teachers will review and answer soon.');
+    return res.redirect(303, `/doubts/${doubt._id}`);
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to post doubt.');
+    const activeSubjects = await academicService.getActiveSubjects();
+    return res.status(err.statusCode || 400).render('doubts/new', {
+      title: 'Ask a Doubt — StudyShare',
+      path: '/doubts/new',
+      formData: req.body,
+      activeSubjects,
+    });
+  }
 });
 
 /**
@@ -228,4 +245,20 @@ exports.acceptAnswer = wrapAsync(async (req, res) => {
 
   req.flash('success', 'Answer accepted as the solution!');
   return res.redirect(303, `/doubts/${result.doubt._id}#answers`);
+});
+
+/**
+ * POST /answers/:id/vote
+ * Vote on Teacher Answer (Helpful / Unhelpful)
+ */
+exports.postVoteAnswer = wrapAsync(async (req, res) => {
+  const voteType = req.body.voteType || 'helpful';
+  const result = await doubtService.voteAnswer(req.params.id, req.user._id, voteType);
+
+  if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || (req.headers['content-type'] && req.headers['content-type'].includes('json'))) {
+    return res.json({ success: true, ...result });
+  }
+
+  req.flash('success', 'Vote recorded.');
+  return res.redirect(303, `/doubts/${result.doubtId}#answers`);
 });

@@ -60,11 +60,66 @@ const userSchema = new mongoose.Schema(
       maxlength: [250, 'Bio cannot exceed 250 characters.'],
       default: '',
     },
+    // Student Academic Profile fields (editable after signup)
+    course: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [100, 'Course cannot exceed 100 characters.'],
+    },
+    branch: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [100, 'Branch cannot exceed 100 characters.'],
+    },
+    semester: {
+      type: Number,
+      min: [1, 'Semester must be at least 1.'],
+      max: [8, 'Semester cannot exceed 8.'],
+      default: 1,
+    },
+    academicYear: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [50, 'Academic year cannot exceed 50 characters.'],
+    },
+    specialization: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [150, 'Specialization cannot exceed 150 characters.'],
+    },
+    department: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [100, 'Department cannot exceed 100 characters.'],
+    },
+    interests: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    college: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [150, 'College/University name cannot exceed 150 characters.'],
+    },
     // Teacher specific fields (optional, populated for teachers)
     qualification: {
       type: String,
       trim: true,
       maxlength: [100, 'Qualification cannot exceed 100 characters.'],
+      default: '',
+    },
+    designation: {
+      type: String,
+      trim: true,
+      maxlength: [100, 'Designation cannot exceed 100 characters.'],
       default: '',
     },
     experience: {

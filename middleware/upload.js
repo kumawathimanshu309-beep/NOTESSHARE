@@ -38,7 +38,7 @@ const upload = multer({
   },
 });
 
-// Middleware wrapper for graceful Multer error handling
+// Middleware wrapper for graceful Multer error handling on Notes
 exports.handleNoteFileUpload = (fieldName) => {
   return (req, res, next) => {
     const uploadSingle = upload.single(fieldName);
@@ -47,7 +47,7 @@ exports.handleNoteFileUpload = (fieldName) => {
       if (err) {
         let errorMsg = 'File upload failed.';
         if (err.code === 'LIMIT_FILE_SIZE') {
-          errorMsg = 'File size is too large. Maximum allowed file size is 15 MB.';
+          errorMsg = 'File too large. Maximum allowed file size is 15 MB.';
         } else if (err.code === 'INVALID_FILE_TYPE') {
           errorMsg = err.message;
         } else {
@@ -55,7 +55,31 @@ exports.handleNoteFileUpload = (fieldName) => {
         }
 
         req.flash('error', errorMsg);
-        return res.status(400).redirect(req.headers.referer || '/notes/new');
+        return res.status(400).redirect(303, req.headers.referer || '/notes/new');
+      }
+      next();
+    });
+  };
+};
+
+// Middleware wrapper for graceful Multer error handling on Doubts
+exports.handleDoubtFileUpload = (fieldName) => {
+  return (req, res, next) => {
+    const uploadSingle = upload.single(fieldName);
+
+    uploadSingle(req, res, (err) => {
+      if (err) {
+        let errorMsg = 'File upload failed.';
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          errorMsg = 'File too large. Maximum allowed file size is 15 MB.';
+        } else if (err.code === 'INVALID_FILE_TYPE') {
+          errorMsg = err.message;
+        } else {
+          errorMsg = err.message || 'An error occurred during file upload.';
+        }
+
+        req.flash('error', errorMsg);
+        return res.status(400).redirect(303, req.headers.referer || '/doubts/new');
       }
       next();
     });

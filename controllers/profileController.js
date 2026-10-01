@@ -72,12 +72,38 @@ exports.updateProfile = wrapAsync(async (req, res) => {
     return res.redirect(303, '/profile/edit');
   }
 
+  // Parse interests input cleanly
+  let parsedInterests = [];
+  if (Array.isArray(value.interests)) {
+    parsedInterests = value.interests.map((s) => String(s).trim()).filter(Boolean);
+  } else if (typeof value.interests === 'string' && value.interests.trim() !== '') {
+    parsedInterests = value.interests
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
   // Pure whitelist extraction prevents role/isAdmin/password manipulation
   const safeData = {
     name: value.name,
     username: value.username,
     bio: value.bio || '',
     avatar: value.avatar || '',
+    course: value.course || '',
+    branch: value.branch || '',
+    semester: value.semester ? Math.min(8, Math.max(1, parseInt(value.semester, 10) || 1)) : 1,
+    academicYear: value.academicYear || '',
+    specialization: value.specialization || '',
+    department: value.department || '',
+    interests: parsedInterests,
+    college: value.college || '',
+    qualification: value.qualification || '',
+    designation: value.designation || '',
+    experience: value.experience || '',
+    teachingBio: value.teachingBio || '',
+    subjectsHandled: Array.isArray(value.subjectsHandled)
+      ? value.subjectsHandled.map((s) => String(s).trim()).filter(Boolean)
+      : (typeof value.subjectsHandled === 'string' ? value.subjectsHandled.split(',').map((s) => s.trim()).filter(Boolean) : undefined),
   };
 
   let updatedUser;

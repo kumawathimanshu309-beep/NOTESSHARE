@@ -26,6 +26,26 @@ const doubtSchema = new mongoose.Schema(
       trim: true,
       default: 'General',
     },
+    subjectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject',
+      default: null,
+    },
+    topic: {
+      type: String,
+      trim: true,
+      default: 'General',
+    },
+    topicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Topic',
+      default: null,
+    },
+    attachment: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     category: {
       type: String,
       trim: true,

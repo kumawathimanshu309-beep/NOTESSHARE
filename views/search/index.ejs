@@ -1,0 +1,209 @@
+<div class="page-container" style="max-width: 1100px;">
+
+  <!-- Header Banner -->
+  <div style="margin-bottom: 30px;">
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: white; margin-bottom: 15px;">
+      🔍 Global Academic Search
+    </h1>
+
+    <!-- Global Search Bar -->
+    <form action="/search" method="GET" class="content-card" style="padding: 16px; border-radius: 16px; margin-bottom: 25px;">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <input 
+          type="text" 
+          name="q" 
+          value="<%= typeof query !== 'undefined' ? query : '' %>" 
+          placeholder="Search study notes, doubts, faculty, subjects..." 
+          required
+          minlength="2"
+          style="flex: 1; min-width: 240px; padding: 12px 16px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 14px; outline: none;"
+        >
+        <button type="submit" class="primary-button" style="padding: 12px 24px; font-size: 14px;">
+          Search
+        </button>
+      </div>
+    </form>
+
+    <!-- Category Filter Tabs -->
+    <% if (query) { %>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px;">
+        <% const currentType = typeof type !== 'undefined' ? type : 'all'; %>
+        
+        <a href="/search?q=<%= encodeURIComponent(query) %>&type=all" 
+           class="secondary-button" 
+           style="padding: 6px 14px; font-size: 12px; text-decoration: none; <%= currentType === 'all' ? 'background: var(--lavender); color: black; border-color: var(--lavender); font-weight: 700;' : '' %>">
+          All Results (<%= counts.all %>)
+        </a>
+        <a href="/search?q=<%= encodeURIComponent(query) %>&type=notes" 
+           class="secondary-button" 
+           style="padding: 6px 14px; font-size: 12px; text-decoration: none; <%= currentType === 'notes' ? 'background: var(--lavender); color: black; border-color: var(--lavender); font-weight: 700;' : '' %>">
+          📚 Notes (<%= counts.notes %>)
+        </a>
+        <a href="/search?q=<%= encodeURIComponent(query) %>&type=doubts" 
+           class="secondary-button" 
+           style="padding: 6px 14px; font-size: 12px; text-decoration: none; <%= currentType === 'doubts' ? 'background: var(--lavender); color: black; border-color: var(--lavender); font-weight: 700;' : '' %>">
+          💡 Doubts (<%= counts.doubts %>)
+        </a>
+        <a href="/search?q=<%= encodeURIComponent(query) %>&type=faculty" 
+           class="secondary-button" 
+           style="padding: 6px 14px; font-size: 12px; text-decoration: none; <%= currentType === 'faculty' ? 'background: var(--lavender); color: black; border-color: var(--lavender); font-weight: 700;' : '' %>">
+          🎓 Faculty (<%= counts.faculty %>)
+        </a>
+        <a href="/search?q=<%= encodeURIComponent(query) %>&type=subjects" 
+           class="secondary-button" 
+           style="padding: 6px 14px; font-size: 12px; text-decoration: none; <%= currentType === 'subjects' ? 'background: var(--lavender); color: black; border-color: var(--lavender); font-weight: 700;' : '' %>">
+          📖 Subjects (<%= counts.subjects %>)
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Search Results List -->
+  <% if (query) { %>
+    <div style="margin-bottom: 35px;">
+      <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">
+        Showing <strong><%= totalResults %></strong> result<%= totalResults === 1 ? '' : 's' %> for "<strong style="color: white;"><%= query %></strong>"
+      </p>
+
+      <% if (results && results.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <% results.forEach(item => { %>
+            
+            <div class="content-card" style="padding: 22px; border-radius: 16px; position: relative;">
+              
+              <!-- RESULT TYPE: NOTE -->
+              <% if (item.resultType === 'note') { %>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                  <span style="padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                    [NOTE] • <%= item.subject %>
+                  </span>
+                  <span style="font-size: 11px; color: var(--muted);">📥 <%= item.downloads %> downloads</span>
+                </div>
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 8px; color: white;">
+                  <a href="/notes/<%= item._id %>" style="color: white; text-decoration: none;">
+                    <%= item.title %>
+                  </a>
+                </h3>
+                <p style="color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  <%= item.description || 'No description provided.' %>
+                </p>
+                <div style="font-size: 12px; color: var(--muted);">
+                  By <strong style="color: white;"><%= item.author ? item.author.name : 'Author' %></strong>
+                </div>
+
+              <!-- RESULT TYPE: FACULTY -->
+              <% } else if (item.resultType === 'faculty') { %>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                  <span style="padding: 3px 10px; border-radius: 12px; background: rgba(59,130,246,0.15); border: 1px solid rgba(96,165,250,0.3); color: #93C5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                    [FACULTY] • Verified Teacher
+                  </span>
+                </div>
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 8px; color: white;">
+                  <a href="/faculty/<%= item._id %>" style="color: white; text-decoration: none;">
+                    <%= item.name %>
+                  </a>
+                </h3>
+                <p style="color: var(--lavender); font-size: 13px; margin: 0 0 8px;">
+                  <%= item.designation || 'Faculty Member' %> <%= item.department ? '• ' + item.department : '' %>
+                </p>
+                <% if (item.specialization) { %>
+                  <p style="color: var(--muted); font-size: 12px; margin: 0;">
+                    Specialization: <%= item.specialization %>
+                  </p>
+                <% } %>
+
+              <!-- RESULT TYPE: DOUBT -->
+              <% } else if (item.resultType === 'doubt') { %>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                  <span style="padding: 3px 10px; border-radius: 12px; background: rgba(234,179,8,0.15); border: 1px solid rgba(250,204,21,0.3); color: #FDE047; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                    [DOUBT] • <%= item.subject %>
+                  </span>
+                  <span style="font-size: 11px; color: var(--muted); text-transform: capitalize;"><%= item.status %></span>
+                </div>
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 8px; color: white;">
+                  <a href="/doubts/<%= item._id %>" style="color: white; text-decoration: none;">
+                    <%= item.title %>
+                  </a>
+                </h3>
+                <p style="color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  <%= item.description %>
+                </p>
+
+              <!-- RESULT TYPE: SUBJECT -->
+              <% } else if (item.resultType === 'subject') { %>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                  <span style="padding: 3px 10px; border-radius: 12px; background: rgba(34,197,94,0.15); border: 1px solid rgba(74,222,128,0.3); color: #4ADE80; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                    [SUBJECT] • <%= item.code || 'Academic' %>
+                  </span>
+                </div>
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 8px; color: white;">
+                  <a href="/notes?subject=<%= encodeURIComponent(item.name) %>" style="color: white; text-decoration: none;">
+                    <%= item.name %>
+                  </a>
+                </h3>
+                <p style="color: var(--muted); font-size: 13px; margin: 0;">
+                  <%= item.department ? item.department + ' • ' : '' %><%= item.description || 'Academic subject catalog item.' %>
+                </p>
+
+              <!-- RESULT TYPE: TOPIC -->
+              <% } else if (item.resultType === 'topic') { %>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                  <span style="padding: 3px 10px; border-radius: 12px; background: rgba(168,85,247,0.15); border: 1px solid rgba(192,132,252,0.3); color: #E9D5FF; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                    [TOPIC] • <%= item.subject ? item.subject.name : 'Topic' %>
+                  </span>
+                </div>
+                <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 8px; color: white;">
+                  <%= item.name %>
+                </h3>
+                <p style="color: var(--muted); font-size: 13px; margin: 0;">
+                  <%= item.description || 'Academic topic module.' %>
+                </p>
+              <% } %>
+
+            </div>
+
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="content-card" style="padding: 40px; text-align: center; border-radius: 20px; color: var(--muted);">
+          <p style="font-size: 16px; margin-bottom: 10px; color: white;">No results found for "<%= query %>".</p>
+          <p style="font-size: 13px; margin-bottom: 0;">Try searching for a different keyword like "DBMS", "Software", or a teacher's name.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Pagination Controls -->
+    <% if (totalPages > 1) { %>
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+        <% if (page > 1) { %>
+          <a href="/search?q=<%= encodeURIComponent(query) %>&type=<%= type %>&page=<%= page - 1 %>" class="secondary-button" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">
+            ← Previous
+          </a>
+        <% } %>
+
+        <span style="color: var(--muted); font-size: 13px;">
+          Page <strong style="color: white;"><%= page %></strong> of <strong><%= totalPages %></strong>
+        </span>
+
+        <% if (page < totalPages) { %>
+          <a href="/search?q=<%= encodeURIComponent(query) %>&type=<%= type %>&page=<%= page + 1 %>" class="secondary-button" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">
+            Next →
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+
+  <% } else { %>
+    <!-- Empty Initial Search State -->
+    <div class="content-card" style="padding: 50px 30px; text-align: center; border-radius: 20px;">
+      <div style="font-size: 40px; margin-bottom: 15px;">🔍</div>
+      <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; color: white; margin-bottom: 10px;">
+        Explore Academic Resources & Faculty
+      </h2>
+      <p style="color: var(--muted); font-size: 14px; max-width: 500px; margin: 0 auto 25px;">
+        Enter a keyword above to search across peer study notes, academic doubts, verified faculty members, subjects, and syllabus topics.
+      </p>
+    </div>
+  <% } %>
+
+</div>

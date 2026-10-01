@@ -44,10 +44,59 @@
 
         <% if (profileUser.role === 'teacher') { %>
           <div style="font-size: 13px; color: var(--muted); margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+            <% if (profileUser.designation) { %><span><strong>Designation:</strong> <%= profileUser.designation %></span><% } %>
             <% if (profileUser.qualification) { %><span><strong>Qualification:</strong> <%= profileUser.qualification %></span><% } %>
             <% if (profileUser.experience) { %><span><strong>Experience:</strong> <%= profileUser.experience %></span><% } %>
           </div>
+          <% if (Array.isArray(profileUser.subjectsHandled) && profileUser.subjectsHandled.length > 0) { %>
+            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Subjects Handled:</span>
+              <% profileUser.subjectsHandled.forEach(sub => { %>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD;">
+                  <%= sub %>
+                </span>
+              <% }); %>
+            </div>
+          <% } %>
         <% } %>
+
+        <!-- Academic Profile Details Badge & Info Row -->
+        <div style="font-size: 13px; color: var(--text); margin-top: 15px; padding: 14px 18px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); max-width: 700px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--lavender); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+            🎓 Academic Background
+          </div>
+          <div style="display: flex; gap: 18px; flex-wrap: wrap; line-height: 1.6;">
+            <% if (profileUser.course || profileUser.branch) { %>
+              <span><strong>Program:</strong> <%= profileUser.course || 'Degree' %> <%= profileUser.branch ? '(' + profileUser.branch + ')' : '' %></span>
+            <% } %>
+            <% if (profileUser.semester) { %>
+              <span><strong>Semester:</strong> Sem <%= profileUser.semester %></span>
+            <% } %>
+            <% if (profileUser.academicYear) { %>
+              <span><strong>Academic Year:</strong> <%= profileUser.academicYear %></span>
+            <% } %>
+            <% if (profileUser.specialization) { %>
+              <span><strong>Specialization:</strong> <%= profileUser.specialization %></span>
+            <% } %>
+            <% if (profileUser.department) { %>
+              <span><strong>Department:</strong> <%= profileUser.department %></span>
+            <% } %>
+            <% if (profileUser.college) { %>
+              <span><strong>Institution:</strong> <%= profileUser.college %></span>
+            <% } %>
+          </div>
+
+          <% if (Array.isArray(profileUser.interests) && profileUser.interests.length > 0) { %>
+            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; color: var(--muted); font-weight: 600;">Interests:</span>
+              <% profileUser.interests.forEach(interest => { %>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD;">
+                  <%= interest %>
+                </span>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
 
         <% if (typeof isSelf !== 'undefined' && isSelf) { %>
           <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">

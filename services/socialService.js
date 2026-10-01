@@ -586,7 +586,24 @@ exports.updateUserProfile = async (userId, profileData) => {
     throw new AppError('Invalid user identifier.', 400);
   }
 
-  const { name, username, bio, avatar, qualification, experience, teachingBio, subjectsHandled } = profileData;
+  const {
+    name,
+    username,
+    bio,
+    avatar,
+    course,
+    branch,
+    semester,
+    academicYear,
+    specialization,
+    department,
+    interests,
+    college,
+    qualification,
+    experience,
+    teachingBio,
+    subjectsHandled,
+  } = profileData;
 
   const updatePayload = {};
 
@@ -633,8 +650,24 @@ exports.updateUserProfile = async (userId, profileData) => {
     }
   }
 
-  if (qualification !== undefined) updatePayload.qualification = qualification.trim().slice(0, 100);
-  if (experience !== undefined) updatePayload.experience = experience.trim().slice(0, 100);
+  // Student Academic Profile Fields
+  if (course !== undefined) updatePayload.course = String(course).trim().slice(0, 100);
+  if (branch !== undefined) updatePayload.branch = String(branch).trim().slice(0, 100);
+  if (semester !== undefined && semester !== null) {
+    const semNum = parseInt(semester, 10);
+    if (!isNaN(semNum) && semNum >= 1 && semNum <= 8) {
+      updatePayload.semester = semNum;
+    }
+  }
+  if (academicYear !== undefined) updatePayload.academicYear = String(academicYear).trim().slice(0, 50);
+  if (specialization !== undefined) updatePayload.specialization = String(specialization).trim().slice(0, 150);
+  if (department !== undefined) updatePayload.department = String(department).trim().slice(0, 100);
+  if (college !== undefined) updatePayload.college = String(college).trim().slice(0, 150);
+  if (Array.isArray(interests)) updatePayload.interests = interests.map((i) => String(i).trim()).filter(Boolean);
+
+  if (qualification !== undefined) updatePayload.qualification = String(qualification).trim().slice(0, 100);
+  if (profileData.designation !== undefined) updatePayload.designation = String(profileData.designation).trim().slice(0, 100);
+  if (experience !== undefined) updatePayload.experience = String(experience).trim().slice(0, 100);
   if (teachingBio !== undefined) updatePayload.teachingBio = teachingBio.trim().slice(0, 500);
   if (Array.isArray(subjectsHandled)) updatePayload.subjectsHandled = subjectsHandled.map((s) => String(s).trim());
 

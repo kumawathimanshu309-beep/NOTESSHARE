@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const doubtController = require('../controllers/doubtController');
 const { isLoggedIn, isTeacher } = require('../middleware/auth');
+const { handleDoubtFileUpload } = require('../middleware/upload');
 
 // Public Doubts Listing & Search
 router.get('/', doubtController.getDoubts);
 
 // Create Doubt Routes (Requires Login)
 router.get('/new', isLoggedIn, doubtController.getNewDoubtForm);
-router.post('/', isLoggedIn, doubtController.postDoubt);
+router.post('/', isLoggedIn, handleDoubtFileUpload('attachment'), doubtController.postDoubt);
 
 // Public Doubt View
 router.get('/:id', doubtController.getDoubt);

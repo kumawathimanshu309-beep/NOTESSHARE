@@ -1,0 +1,165 @@
+<div class="page-container" style="max-width: 1200px;">
+
+  <!-- Header Banner -->
+  <div style="margin-bottom: 30px; text-align: center;">
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 800; color: white; margin-bottom: 10px;">
+      🎓 Faculty & Verified Teachers Directory
+    </h1>
+    <p style="color: var(--muted); font-size: 15px; max-width: 650px; margin: 0 auto 25px;">
+      Discover verified university professors, lecturers, and academic mentors across subjects and departments.
+    </p>
+
+    <!-- Search & Multi-Filter Form -->
+    <form action="/faculty" method="GET" class="content-card" style="padding: 20px; border-radius: 20px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: center;">
+        
+        <!-- Search Field -->
+        <div style="grid-column: span 1;">
+          <input 
+            type="text" 
+            name="search" 
+            value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>" 
+            placeholder="Search by teacher name, subject, department..." 
+            style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;"
+          >
+        </div>
+
+        <!-- Department Filter -->
+        <div>
+          <select name="department" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="All">All Departments</option>
+            <% if (filterOptions && filterOptions.departments) { %>
+              <% filterOptions.departments.forEach(dept => { %>
+                <option value="<%= dept %>" <%= typeof query !== 'undefined' && query.department === dept ? 'selected' : '' %>><%= dept %></option>
+              <% }) %>
+            <% } %>
+          </select>
+        </div>
+
+        <!-- Designation Filter -->
+        <div>
+          <select name="designation" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+            <option value="All">All Designations</option>
+            <% if (filterOptions && filterOptions.designations) { %>
+              <% filterOptions.designations.forEach(desig => { %>
+                <option value="<%= desig %>" <%= typeof query !== 'undefined' && query.designation === desig ? 'selected' : '' %>><%= desig %></option>
+              <% }) %>
+            <% } %>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display: flex; gap: 10px;">
+          <button type="submit" class="primary-button" style="padding: 10px 18px; font-size: 13px; flex: 1;">
+            🔍 Search
+          </button>
+          <% if (typeof query !== 'undefined' && (query.search || (query.department && query.department !== 'All') || (query.designation && query.designation !== 'All') || (query.subject && query.subject !== 'All'))) { %>
+            <a href="/faculty" class="secondary-button" style="padding: 10px 14px; font-size: 13px; text-decoration: none; text-align: center;">
+              Reset
+            </a>
+          <% } %>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Faculty Grid -->
+  <div style="margin-bottom: 35px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; color: white; margin: 0;">
+        Faculty Members <span style="font-size: 14px; color: var(--muted); font-weight: normal;">(<%= totalFaculty %>)</span>
+      </h2>
+    </div>
+
+    <% if (facultyList && facultyList.length > 0) { %>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+        <% facultyList.forEach(teacher => { %>
+          <div class="content-card" style="padding: 25px; border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, border-color 0.2s;">
+            <div>
+              <!-- Avatar & Role Badge -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 24px; font-weight: 700; color: white; border: 2px solid rgba(168,85,247,0.4);">
+                  <%= teacher.name.charAt(0).toUpperCase() %>
+                </div>
+                <span style="padding: 3px 8px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                  🎓 Verified
+                </span>
+              </div>
+
+              <!-- Name & Title -->
+              <h3 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0 0 4px; color: white;">
+                <%= teacher.name %>
+              </h3>
+              <p style="color: var(--lavender); font-size: 12px; margin: 0 0 10px; font-weight: 500;">
+                <%= teacher.designation || 'Faculty Member' %> <%= teacher.department ? '• ' + teacher.department : '' %>
+              </p>
+
+              <!-- Meta info -->
+              <% if (teacher.specialization) { %>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">
+                  🔬 <strong style="color: var(--text);">Specialization:</strong> <%= teacher.specialization %>
+                </div>
+              <% } %>
+
+              <% if (teacher.qualification) { %>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                  📜 <%= teacher.qualification %>
+                </div>
+              <% } %>
+
+              <!-- Handled Subjects Pills -->
+              <% if (Array.isArray(teacher.subjectsHandled) && teacher.subjectsHandled.length > 0) { %>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px;">
+                  <% teacher.subjectsHandled.slice(0, 3).forEach(sub => { %>
+                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.08);">
+                      <%= sub %>
+                    </span>
+                  <% }) %>
+                  <% if (teacher.subjectsHandled.length > 3) { %>
+                    <span style="font-size: 10px; padding: 2px 6px; color: var(--muted);">+<%= teacher.subjectsHandled.length - 3 %> more</span>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+
+            <!-- Card Footer -->
+            <div style="padding-top: 15px; border-top: 1px solid var(--border); text-align: center;">
+              <a href="/faculty/<%= teacher._id %>" class="secondary-button" style="display: block; padding: 8px 14px; font-size: 12px; text-decoration: none;">
+                View Teacher Profile →
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="content-card" style="padding: 40px; text-align: center; border-radius: 20px; color: var(--muted);">
+        <p style="font-size: 16px; margin-bottom: 10px; color: white;">No faculty members matched your criteria.</p>
+        <p style="font-size: 13px; margin-bottom: 20px;">Try adjusting your search terms or clearing department filters.</p>
+        <a href="/faculty" class="primary-button" style="display: inline-block; padding: 8px 18px; font-size: 13px; text-decoration: none;">Clear Filters</a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Pagination Controls -->
+  <% if (totalPages > 1) { %>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+      <% if (page > 1) { %>
+        <a href="/faculty?page=<%= page - 1 %>&search=<%= typeof query !== 'undefined' ? (query.search || '') : '' %>&department=<%= typeof query !== 'undefined' ? (query.department || '') : '' %>" class="secondary-button" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">
+          ← Previous
+        </a>
+      <% } %>
+
+      <span style="color: var(--muted); font-size: 13px;">
+        Page <strong style="color: white;"><%= page %></strong> of <strong><%= totalPages %></strong>
+      </span>
+
+      <% if (page < totalPages) { %>
+        <a href="/faculty?page=<%= page + 1 %>&search=<%= typeof query !== 'undefined' ? (query.search || '') : '' %>&department=<%= typeof query !== 'undefined' ? (query.department || '') : '' %>" class="secondary-button" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">
+          Next →
+        </a>
+      <% } %>
+    </div>
+  <% } %>
+
+</div>

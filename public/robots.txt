@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /notes
+Allow: /doubts
+Allow: /faculty
+Allow: /search
+Allow: /about
+Allow: /features
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /teacher/
+Disallow: /auth/
+Disallow: /profile/edit
+
+Sitemap: http://localhost:3000/sitemap.xml

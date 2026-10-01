@@ -58,7 +58,10 @@
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
               <td style="padding: 14px 12px;">
                 <strong style="color: white; display: block;"><%= u.name %></strong>
-                <span style="font-size: 11px; color: var(--muted);">Joined <%= new Date(u.createdAt).toLocaleDateString() %></span>
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
+                  <span style="font-size: 11px; color: var(--muted);">Joined <%= new Date(u.createdAt).toLocaleDateString() %></span>
+                  <a href="/profile/<%= u.username %>" target="_blank" style="color: #C4B5FD; font-size: 11px; font-weight: 600; text-decoration: none;">🔍 View Profile</a>
+                </div>
               </td>
               <td style="padding: 14px 12px; color: var(--lavender);">
                 @<%= u.username %>

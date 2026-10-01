@@ -1,7 +1,7 @@
 <div class="page-container" style="max-width: 900px;">
   
   <div style="margin-bottom: 25px;">
-    <a href="/doubts" style="color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+    <a href="/doubts" style="color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
       ← Back to Doubts
     </a>
   </div>
@@ -24,11 +24,17 @@
       <% } %>
 
       <span style="padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-        <%= doubt.subject %>
+        📚 <%= doubt.subject %>
       </span>
+
+      <% if (doubt.topic && doubt.topic !== 'General') { %>
+        <span style="padding: 4px 12px; border-radius: 20px; background: rgba(59,130,246,0.15); border: 1px solid rgba(96,165,250,0.3); color: #93C5FD; font-size: 11px; font-weight: 700;">
+          📌 <%= doubt.topic %>
+        </span>
+      <% } %>
     </div>
 
-    <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; line-height: 1.3; margin-bottom: 15px;">
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; line-height: 1.3; margin-bottom: 15px; color: white;">
       <%= doubt.title %>
     </h1>
 
@@ -47,6 +53,16 @@
     <div style="color: var(--text); font-size: 15px; line-height: 1.8; white-space: pre-line; margin-bottom: 25px;">
       <%= doubt.description %>
     </div>
+
+    <% if (doubt.attachment) { %>
+      <div style="margin-bottom: 25px; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 12px;">
+        <span style="font-size: 20px;">📎</span>
+        <div>
+          <strong style="font-size: 13px; color: white; display: block;">Attachment File Included</strong>
+          <a href="<%= doubt.attachment %>" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: var(--lavender); font-weight: 600; text-decoration: none;">View Attachment File →</a>
+        </div>
+      </div>
+    <% } %>
 
     <% if (doubt.tags && doubt.tags.length > 0) { %>
       <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
@@ -76,7 +92,7 @@
       
       <form action="/doubts/<%= doubt._id %>/answers" method="POST">
         <div style="margin-bottom: 15px;">
-          <textarea name="content" rows="5" required minlength="5" maxlength="3000" placeholder="Provide a detailed, step-by-step solution or explanation for the student..." style="width: 100%; padding: 14px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-family: inherit; font-size: 14px; resize: vertical;"></textarea>
+          <textarea name="content" rows="5" required minlength="5" maxlength="3000" placeholder="Provide a detailed, step-by-step solution or explanation for the student..." style="width: 100%; padding: 14px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-family: inherit; font-size: 14px; resize: vertical; outline: none;"></textarea>
         </div>
         <button type="submit" class="primary-button" style="padding: 10px 22px; font-size: 13px;">
           Submit Answer
@@ -85,78 +101,92 @@
     </div>
   <% } else if (typeof isAuthenticated !== 'undefined' && !isAuthenticated) { %>
     <div class="content-card" style="padding: 20px; border-radius: 16px; margin-bottom: 30px; text-align: center;">
-      <p style="color: var(--muted); font-size: 14px; margin: 0;">Are you a teacher or peer student? <a href="/auth/login" style="color: var(--accent-light); font-weight: 600;">Log in to answer</a>.</p>
+      <p style="color: var(--muted); font-size: 14px; margin: 0;">Are you a teacher or peer student? <a href="/auth/login" style="color: var(--lavender); font-weight: 600;">Log in to answer</a>.</p>
     </div>
   <% } %>
 
   <!-- Answers List Section -->
   <div id="answers">
-    <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+    <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: white;">
       Answers & Solutions <span style="font-size: 14px; color: var(--muted); font-weight: normal;">(<%= typeof answers !== 'undefined' ? answers.length : 0 %>)</span>
     </h2>
 
     <% if (typeof answers !== 'undefined' && answers.length > 0) { %>
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <% answers.forEach(answer => { %>
-          <div class="content-card" style="padding: 28px; border-radius: 18px; <%= answer.isAccepted ? 'border: 2px solid #22C55E; background: rgba(34,197,94,0.03);' : '' %>">
-            
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 18px; font-weight: 700; color: white;">
-                  <%= answer.author ? answer.author.name.charAt(0).toUpperCase() : 'T' %>
-                </div>
-                <div>
-                  <h4 style="font-family: 'Sora', sans-serif; font-size: 15px; margin: 0;">
-                    <a href="/teachers/<%= answer.author ? answer.author.username : '' %>" style="color: white; text-decoration: none;">
-                      <%= answer.author ? answer.author.name : 'Teacher' %>
-                    </a>
-                    <% if (answer.author && (answer.author.role === 'teacher' || answer.author.role === 'admin')) { %>
-                      <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.3); color: #C4B5FD; margin-left: 6px;">Verified Teacher</span>
-                    <% } %>
-                  </h4>
-                  <p style="font-size: 12px; color: var(--muted); margin-top: 2px;">
-                    @<%= answer.author ? answer.author.username : 'teacher' %> • <%= new Date(answer.createdAt).toLocaleDateString() %>
-                  </p>
-                </div>
-              </div>
-
-              <!-- Accepted Solution Badge or Accept Button -->
-              <div>
-                <% if (answer.isAccepted) { %>
-                  <span style="padding: 6px 14px; border-radius: 20px; background: rgba(34,197,94,0.25); border: 1px solid #22C55E; color: #4ADE80; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                    ✓ Accepted Solution
-                  </span>
-                <% } else if (typeof isDoubtOwner !== 'undefined' && isDoubtOwner) { %>
-                  <form action="/answers/<%= answer._id %>/accept" method="POST" style="margin: 0;">
-                    <button type="submit" class="secondary-button" style="padding: 6px 14px; font-size: 12px; color: #4ADE80; border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.05);">
-                      ✓ Accept as Solution
-                    </button>
-                  </form>
-                <% } %>
-              </div>
-            </div>
-
-            <!-- Answer Content -->
-            <div style="color: var(--text); font-size: 15px; line-height: 1.8; white-space: pre-line; margin-bottom: 15px;">
-              <%= answer.content %>
-            </div>
-
-            <!-- Author / Admin Controls -->
-            <% if (typeof currentUser !== 'undefined' && currentUser && (answer.author._id.toString() === currentUser._id.toString() || currentUser.role === 'admin')) { %>
-              <div style="display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px;">
-                <a href="/answers/<%= answer._id %>/edit" style="color: var(--muted); text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">Edit Answer</a>
-                <form action="/answers/<%= answer._id %>?_method=DELETE" method="POST" style="display: inline;" onsubmit="return confirm('Delete this answer?');">
-                  <button type="submit" style="background: none; border: none; padding: 0; color: #F87171; cursor: pointer; font-size: 12px;">Delete Answer</button>
-                </form>
+          <div class="content-card" style="padding: 25px; border-radius: 16px; <%= answer.isAccepted ? 'border-color: rgba(34,197,94,0.5); background: rgba(16,185,129,0.04);' : '' %>">
+            <% if (answer.isAccepted) { %>
+              <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-size: 11px; font-weight: 700; margin-bottom: 12px;">
+                ✓ ACCEPTED SOLUTION
               </div>
             <% } %>
 
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-weight: 700; color: white; font-size: 14px;">
+                  <%= answer.author ? answer.author.name.charAt(0).toUpperCase() : 'T' %>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <a href="/profile/<%= answer.author ? answer.author.username : '' %>" style="font-weight: 600; font-size: 14px; color: white; text-decoration: none;">
+                      <%= answer.author ? answer.author.name : 'Teacher' %>
+                    </a>
+                    <% if (answer.author && answer.author.role === 'teacher') { %>
+                      <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(124,58,237,0.25); color: #C4B5FD; font-weight: 700;">TEACHER</span>
+                    <% } %>
+                  </div>
+                  <span style="font-size: 11px; color: var(--muted);"><%= new Date(answer.createdAt).toLocaleString() %></span>
+                </div>
+              </div>
+
+              <% if (isDoubtOwner && !answer.isAccepted) { %>
+                <form action="/answers/<%= answer._id %>/accept" method="POST" style="margin: 0;">
+                  <button type="submit" class="secondary-button" style="padding: 6px 14px; font-size: 11px; color: #4ADE80; border-color: rgba(34,197,94,0.4);">
+                    ✓ Accept as Solution
+                  </button>
+                </form>
+              <% } %>
+            </div>
+
+            <div style="color: var(--text); font-size: 14px; line-height: 1.7; white-space: pre-line;">
+              <%= answer.content %>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
+              <% 
+                const currentUserStr = currentUser ? String(currentUser._id) : '';
+                const hasVotedHelpful = currentUser && Array.isArray(answer.helpfulVotes) && answer.helpfulVotes.some(id => String(id._id || id) === currentUserStr);
+                const hasVotedUnhelpful = currentUser && Array.isArray(answer.unhelpfulVotes) && answer.unhelpfulVotes.some(id => String(id._id || id) === currentUserStr);
+                const helpfulCount = typeof answer.helpfulCount === 'number' ? answer.helpfulCount : (Array.isArray(answer.helpfulVotes) ? answer.helpfulVotes.length : 0);
+                const unhelpfulCount = Array.isArray(answer.unhelpfulVotes) ? answer.unhelpfulVotes.length : 0;
+              %>
+              <form action="/answers/<%= answer._id %>/vote" method="POST" style="display: inline-flex; align-items: center; margin: 0;">
+                <input type="hidden" name="voteType" value="helpful">
+                <button type="submit" class="secondary-button" style="padding: 4px 10px; font-size: 11px; cursor: pointer; <%= hasVotedHelpful ? 'background: rgba(34,197,94,0.25); color: #4ADE80; border-color: rgba(34,197,94,0.5);' : '' %>">
+                  👍 Helpful (<%= helpfulCount %>)
+                </button>
+              </form>
+              <form action="/answers/<%= answer._id %>/vote" method="POST" style="display: inline-flex; align-items: center; margin: 0;">
+                <input type="hidden" name="voteType" value="unhelpful">
+                <button type="submit" class="secondary-button" style="padding: 4px 10px; font-size: 11px; cursor: pointer; <%= hasVotedUnhelpful ? 'background: rgba(239,68,68,0.25); color: #F87171; border-color: rgba(239,68,68,0.5);' : '' %>">
+                  👎 Not Helpful (<%= unhelpfulCount %>)
+                </button>
+              </form>
+
+              <% if (answer.author && ((answer.author._id && answer.author._id.equals(currentUser ? currentUser._id : '')) || String(answer.author) === currentUserStr || isAdmin)) { %>
+                <span style="color: var(--muted); font-size: 11px;">•</span>
+                <a href="/answers/<%= answer._id %>/edit" style="font-size: 11px; color: var(--muted); text-decoration: none;">✏️ Edit</a>
+                <form action="/answers/<%= answer._id %>?_method=DELETE" method="POST" style="display: inline;" onsubmit="return confirm('Delete this answer?');">
+                  <button type="submit" style="background: none; border: none; font-size: 11px; color: #F87171; cursor: pointer; padding: 0;">🗑️ Delete</button>
+                </form>
+              <% } %>
+            </div>
           </div>
         <% }) %>
       </div>
     <% } else { %>
-      <div class="content-card" style="padding: 40px; text-align: center; border-radius: 18px; color: var(--muted);">
-        <p style="font-size: 14px; margin: 0;">No answers posted for this doubt yet.</p>
+      <div class="content-card" style="padding: 30px; text-align: center; color: var(--muted); border-radius: 16px;">
+        <p style="margin: 0; font-size: 14px;">No answers posted yet for this doubt.</p>
       </div>
     <% } %>
   </div>

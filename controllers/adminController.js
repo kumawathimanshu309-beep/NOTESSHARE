@@ -9,6 +9,7 @@ const AuditLog = require('../models/AuditLog');
 const TeacherRequest = require('../models/TeacherRequest');
 const governanceService = require('../services/governanceService');
 const notificationService = require('../services/notificationService');
+const academicService = require('../services/academicService');
 const wrapAsync = require('../middleware/asyncWrapper');
 const AppError = require('../utils/AppError');
 
@@ -707,3 +708,223 @@ exports.postRejectNote = wrapAsync(async (req, res) => {
   req.flash('success', `Note "${note.title}" rejected.`);
   res.redirect(303, '/admin/pending-notes');
 });
+
+// ==========================================
+// SUBJECT GOVERNANCE HANDLERS
+// ==========================================
+
+// @desc    Get Paginated Subjects List for Admin Governance
+// @route   GET /admin/subjects
+exports.getSubjects = wrapAsync(async (req, res) => {
+  const result = await academicService.getAllSubjects(req.query);
+  res.render('admin/subjects', {
+    title: 'Subject Governance — Admin Panel',
+    path: '/admin/subjects',
+    subjects: result.subjects,
+    totalCount: result.totalCount,
+    departments: result.departments,
+    page: result.page,
+    totalPages: result.totalPages,
+    query: req.query,
+  });
+});
+
+// @desc    Create New Subject
+// @route   POST /admin/subjects
+exports.postCreateSubject = wrapAsync(async (req, res) => {
+  try {
+    const subject = await academicService.createSubject(req.body);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: 'SUBJECT_CREATED',
+        targetType: 'Subject',
+        targetId: subject._id,
+        details: { name: subject.name, code: subject.code, department: subject.department },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in postCreateSubject:', auditErr);
+    }
+
+    req.flash('success', `Subject "${subject.name}" created successfully.`);
+    res.redirect(303, '/admin/subjects');
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to create subject.');
+    res.redirect(303, req.headers.referer || '/admin/subjects');
+  }
+});
+
+// @desc    Update Existing Subject
+// @route   PATCH /admin/subjects/:id, POST /admin/subjects/:id
+exports.patchUpdateSubject = wrapAsync(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const subject = await academicService.updateSubject(id, req.body);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: 'SUBJECT_UPDATED',
+        targetType: 'Subject',
+        targetId: subject._id,
+        details: { name: subject.name, code: subject.code, department: subject.department, isActive: subject.isActive },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in patchUpdateSubject:', auditErr);
+    }
+
+    req.flash('success', `Subject "${subject.name}" updated successfully.`);
+    res.redirect(303, '/admin/subjects');
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to update subject.');
+    res.redirect(303, req.headers.referer || '/admin/subjects');
+  }
+});
+
+// @desc    Toggle Subject Active Status (Soft Delete)
+// @route   PATCH /admin/subjects/:id/toggle-active, POST /admin/subjects/:id/toggle-active
+exports.patchToggleSubjectActive = wrapAsync(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const subject = await academicService.toggleSubjectActive(id);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: subject.isActive ? 'SUBJECT_ACTIVATED' : 'SUBJECT_DEACTIVATED',
+        targetType: 'Subject',
+        targetId: subject._id,
+        details: { name: subject.name, isActive: subject.isActive },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in patchToggleSubjectActive:', auditErr);
+    }
+
+    req.flash('success', `Subject "${subject.name}" is now ${subject.isActive ? 'Active' : 'Inactive'}.`);
+    res.redirect(303, '/admin/subjects');
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to toggle subject status.');
+    res.redirect(303, req.headers.referer || '/admin/subjects');
+  }
+});
+
+// ==========================================
+// TOPIC GOVERNANCE HANDLERS
+// ==========================================
+
+// @desc    Get Topics for Selected Subject
+// @route   GET /admin/subjects/:subjectId/topics
+exports.getSubjectTopics = wrapAsync(async (req, res) => {
+  const { subjectId } = req.params;
+  const result = await academicService.getTopicsBySubject(subjectId, req.query);
+
+  res.render('admin/topics', {
+    title: `Topic Governance (${result.subject.name}) — Admin Panel`,
+    path: '/admin/subjects',
+    subject: result.subject,
+    topics: result.topics,
+    query: req.query,
+  });
+});
+
+// @desc    Create New Topic under Subject
+// @route   POST /admin/subjects/:subjectId/topics
+exports.postCreateTopic = wrapAsync(async (req, res) => {
+  const { subjectId } = req.params;
+  try {
+    const topic = await academicService.createTopic(subjectId, req.body);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: 'TOPIC_CREATED',
+        targetType: 'Topic',
+        targetId: topic._id,
+        details: { name: topic.name, subjectId },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in postCreateTopic:', auditErr);
+    }
+
+    req.flash('success', `Topic "${topic.name}" created.`);
+    res.redirect(303, `/admin/subjects/${subjectId}/topics`);
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to create topic.');
+    res.redirect(303, req.headers.referer || `/admin/subjects/${subjectId}/topics`);
+  }
+});
+
+// @desc    Update Topic
+// @route   PATCH /admin/subjects/:subjectId/topics/:topicId, POST /admin/subjects/:subjectId/topics/:topicId
+exports.patchUpdateTopic = wrapAsync(async (req, res) => {
+  const { subjectId, topicId } = req.params;
+  try {
+    const topic = await academicService.updateTopic(topicId, req.body);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: 'TOPIC_UPDATED',
+        targetType: 'Topic',
+        targetId: topic._id,
+        details: { name: topic.name, isActive: topic.isActive },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in patchUpdateTopic:', auditErr);
+    }
+
+    req.flash('success', `Topic "${topic.name}" updated successfully.`);
+    res.redirect(303, `/admin/subjects/${subjectId}/topics`);
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to update topic.');
+    res.redirect(303, req.headers.referer || `/admin/subjects/${subjectId}/topics`);
+  }
+});
+
+// @desc    Toggle Topic Active Status (Soft Delete)
+// @route   PATCH /admin/subjects/:subjectId/topics/:topicId/toggle-active, POST /admin/subjects/:subjectId/topics/:topicId/toggle-active
+exports.patchToggleTopicActive = wrapAsync(async (req, res) => {
+  const { subjectId, topicId } = req.params;
+  try {
+    const topic = await academicService.toggleTopicActive(topicId);
+
+    try {
+      await AuditLog.create({
+        admin: req.user._id,
+        action: topic.isActive ? 'TOPIC_ACTIVATED' : 'TOPIC_DEACTIVATED',
+        targetType: 'Topic',
+        targetId: topic._id,
+        details: { name: topic.name, isActive: topic.isActive },
+      });
+    } catch (auditErr) {
+      console.error('AuditLog error in patchToggleTopicActive:', auditErr);
+    }
+
+    req.flash('success', `Topic "${topic.name}" is now ${topic.isActive ? 'Active' : 'Inactive'}.`);
+    res.redirect(303, `/admin/subjects/${subjectId}/topics`);
+  } catch (err) {
+    req.flash('error', err.message || 'Failed to toggle topic status.');
+    res.redirect(303, req.headers.referer || `/admin/subjects/${subjectId}/topics`);
+  }
+});
+
+// ==========================================
+// PUBLIC API FOR DYNAMIC STUDENT DROPDOWNS
+// ==========================================
+
+// @desc    Get Active Subjects JSON for Dropdowns
+// @route   GET /api/subjects
+exports.getApiActiveSubjects = wrapAsync(async (req, res) => {
+  const subjects = await academicService.getActiveSubjects();
+  res.json({ success: true, subjects });
+});
+
+// @desc    Get Active Topics JSON for Selected Subject
+// @route   GET /api/subjects/:subjectId/topics
+exports.getApiActiveTopics = wrapAsync(async (req, res) => {
+  const { subjectId } = req.params;
+  const topics = await academicService.getActiveTopicsBySubject(subjectId);
+  res.json({ success: true, topics });
+});
+

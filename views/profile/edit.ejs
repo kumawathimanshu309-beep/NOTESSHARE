@@ -45,19 +45,92 @@
         <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">Must start with http://, https://, or / (e.g. /images/logo.png).</small>
       </div>
 
+      <!-- Academic Profile Information -->
+      <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; margin-bottom: 25px;">
+        <h3 style="font-size: 15px; color: var(--lavender); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          🎓 Academic Profile Information
+        </h3>
+
+        <div class="form-grid-2col" style="margin-bottom: 15px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Course / Degree</label>
+            <input type="text" name="course" value="<%= user.course || '' %>" placeholder="e.g. B.Tech / B.Sc / BCA" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Branch / Stream</label>
+            <input type="text" name="branch" value="<%= user.branch || '' %>" placeholder="e.g. Computer Science / IT" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+        </div>
+
+        <div class="form-grid-2col" style="margin-bottom: 15px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Current Semester</label>
+            <select name="semester" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: #0D1124; border: 1px solid var(--border); color: white; font-size: 13px;">
+              <% for(let s = 1; s <= 8; s++) { %>
+                <option value="<%= s %>" <%= user.semester === s ? 'selected' : '' %>>Semester <%= s %></option>
+              <% } %>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Academic Year</label>
+            <input type="text" name="academicYear" value="<%= user.academicYear || '' %>" placeholder="e.g. 2025-2026 / 3rd Year" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+        </div>
+
+        <div class="form-grid-2col" style="margin-bottom: 15px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Specialization / Domain</label>
+            <input type="text" name="specialization" value="<%= user.specialization || '' %>" placeholder="e.g. Artificial Intelligence / Web Dev" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Department</label>
+            <input type="text" name="department" value="<%= user.department || '' %>" placeholder="e.g. Dept of Computer Engineering" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">College / University</label>
+          <input type="text" name="college" value="<%= user.college || '' %>" placeholder="e.g. Delhi Technological University" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Academic Interests (Comma Separated)</label>
+          <input type="text" name="interests" value="<%= Array.isArray(user.interests) ? user.interests.join(', ') : (user.interests || '') %>" placeholder="e.g. AI/ML, Web Development, Algorithms, Databases" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          <small style="color: var(--muted); font-size: 11px; margin-top: 4px; display: block;">Separate multiple interests with commas.</small>
+        </div>
+      </div>
+
       <% if (user.role === 'teacher') { %>
         <!-- Teacher Specific Fields -->
         <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; margin-bottom: 20px;">
-          <h3 style="font-size: 15px; color: var(--lavender); margin-bottom: 15px;">Teacher Information</h3>
+          <h3 style="font-size: 15px; color: var(--lavender); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            👨‍🏫 Professional Faculty Profile
+          </h3>
 
-          <div style="margin-bottom: 15px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Qualification</label>
-            <input type="text" name="qualification" value="<%= user.qualification || '' %>" placeholder="e.g. M.Tech Computer Science" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          <div class="form-grid-2col" style="margin-bottom: 15px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Academic Qualification</label>
+              <input type="text" name="qualification" value="<%= user.qualification || '' %>" placeholder="e.g. M.Tech / Ph.D. Computer Science" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Academic Designation</label>
+              <input type="text" name="designation" value="<%= user.designation || '' %>" placeholder="e.g. Assistant Professor / Senior Faculty" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+            </div>
           </div>
 
           <div style="margin-bottom: 15px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Teaching Experience</label>
-            <input type="text" name="experience" value="<%= user.experience || '' %>" placeholder="e.g. 5+ Years Senior Assistant Professor" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Teaching Experience</label>
+            <input type="text" name="experience" value="<%= user.experience || '' %>" placeholder="e.g. 8+ Years Senior Assistant Professor" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Subjects Taught (Comma Separated)</label>
+            <input type="text" name="subjectsHandled" value="<%= Array.isArray(user.subjectsHandled) ? user.subjectsHandled.join(', ') : (user.subjectsHandled || '') %>" placeholder="e.g. DBMS, Operating Systems, Computer Networks" style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px;">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Teaching Philosophy / Detailed Bio</label>
+            <textarea name="teachingBio" rows="3" maxlength="500" placeholder="Describe your teaching philosophy, research interests, or office hours..." style="width: 100%; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 13px; font-family: inherit; resize: vertical;"><%= user.teachingBio || '' %></textarea>
           </div>
         </div>
       <% } %>

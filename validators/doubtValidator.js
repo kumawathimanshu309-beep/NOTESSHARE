@@ -13,8 +13,11 @@ const doubtSchema = Joi.object({
     'string.max': 'Description cannot exceed 2000 characters.',
     'any.required': 'Description is required.',
   }),
-  subject: Joi.string().trim().max(50).default('General').allow(''),
-  category: Joi.string().trim().max(50).default('General').allow(''),
+  subjectId: Joi.string().trim().allow(''),
+  topicId: Joi.string().trim().allow(''),
+  subject: Joi.string().trim().max(100).default('General').allow(''),
+  topic: Joi.string().trim().max(120).default('General').allow(''),
+  category: Joi.string().trim().max(100).default('General').allow(''),
   tags: Joi.alternatives()
     .try(Joi.array().items(Joi.string().trim()), Joi.string().trim().allow(''))
     .default([]),

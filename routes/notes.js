@@ -26,10 +26,12 @@ router.post('/:id/unbookmark', isLoggedIn, socialController.toggleBookmark);
 router.post('/:id/rate', isLoggedIn, socialController.rateNote);
 router.post('/:id/comments', isLoggedIn, socialController.addComment);
 
-// Public Note View & Secure Download / Stream
+// Public Note View & Stream (Guest View Allowed)
 router.get('/:id', noteController.getNote);
 router.get('/:id/view', noteController.viewNote);
-router.get('/:id/download', noteController.downloadNote);
+
+// Secure Download (Requires Login)
+router.get('/:id/download', isLoggedIn, noteController.downloadNote);
 
 // Edit Note Routes (Requires Login & Ownership)
 router.get('/:id/edit', isLoggedIn, isOwner(getNoteModel), noteController.getEditNote);
