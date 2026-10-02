@@ -5,13 +5,24 @@
     <p>StudyShare is a modern, student-first platform built to eliminate learning barriers by enabling seamless knowledge sharing across universities and disciplines.</p>
   </div>
 
-  <div class="content-card">
-    <h2>🎯 Our Mission</h2>
-    <p>Every student deserves access to high-quality academic materials. StudyShare provides a centralized hub where students and teachers can upload, discover, download, and discuss study notes, past papers (PYQs), lecture slides, and reference solutions.</p>
-  </div>
+  <div class="about-cards-list" style="display: flex; flex-direction: column; gap: 20px;">
+    <% if (typeof aboutCards !== 'undefined' && aboutCards && aboutCards.length > 0) { %>
+      <% aboutCards.forEach(card => { %>
+        <div class="content-card">
+          <h2><%= card.icon ? card.icon + ' ' : '' %><%= card.title %></h2>
+          <p><%= card.description %></p>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="content-card">
+        <h2>🎯 Our Mission</h2>
+        <p>Every student deserves access to high-quality academic materials. StudyShare provides a centralized hub where students and teachers can upload, discover, download, and discuss study notes, past papers (PYQs), lecture slides, and reference solutions.</p>
+      </div>
 
-  <div class="content-card">
-    <h2>💡 Key Platform Principles</h2>
-    <p>Built with quality, accessibility, and speed in mind. Our platform combines intuitive navigation, strong community moderation, server-side performance, and robust security controls.</p>
+      <div class="content-card">
+        <h2>💡 Key Platform Principles</h2>
+        <p>Built with quality, accessibility, and speed in mind. Our platform combines intuitive navigation, strong community moderation, server-side performance, and robust security controls.</p>
+      </div>
+    <% } %>
   </div>
 </div>

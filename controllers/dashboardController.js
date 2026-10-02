@@ -1,5 +1,6 @@
 const wrapAsync = require('../middleware/asyncWrapper');
 const socialService = require('../services/socialService');
+const academicService = require('../services/academicService');
 
 // @desc    Render Protected Dashboard with role-specific views and analytics
 // @route   GET /dashboard
@@ -9,7 +10,10 @@ exports.getDashboard = wrapAsync(async (req, res) => {
     return res.redirect('/admin');
   }
 
-  const dashboardData = await socialService.getUserDashboardData(req.user._id, req.user.role, req.query);
+  const [dashboardData, activeSubjects] = await Promise.all([
+    socialService.getUserDashboardData(req.user._id, req.user.role, req.query),
+    academicService.getActiveSubjects(),
+  ]);
 
   if (req.user.role === 'teacher') {
     return res.render('teacher/dashboard', {
@@ -32,6 +36,7 @@ exports.getDashboard = wrapAsync(async (req, res) => {
     title: `${req.user.name}'s Dashboard — StudyShare`,
     path: '/dashboard',
     user: dashboardData.user,
+    activeSubjects,
     uploadedNotes: dashboardData.uploadedNotes,
     bookmarkedNotes: dashboardData.bookmarkedNotes,
     likedNotes: dashboardData.likedNotes,
@@ -45,3 +50,4 @@ exports.getDashboard = wrapAsync(async (req, res) => {
     pagination: dashboardData.pagination,
   });
 });
+

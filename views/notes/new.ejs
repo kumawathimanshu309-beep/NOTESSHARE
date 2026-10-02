@@ -34,7 +34,7 @@
             <option value="">Select Subject</option>
             <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
               <% activeSubjects.forEach(s => { %>
-                <option value="<%= s.name %>" data-id="<%= s._id %>"><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+                <option value="<%= s.name %>" data-id="<%= s._id %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %>><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
               <% }) %>
             <% } else { %>
               <option value="Computer Science">Computer Science</option>
@@ -160,28 +160,40 @@
     const subjectSelect = document.getElementById('subject');
     const topicSelect = document.getElementById('topic');
 
-    if (subjectSelect && topicSelect) {
-      subjectSelect.addEventListener('change', async function() {
-        const selectedOpt = this.options[this.selectedIndex];
-        const subjectId = selectedOpt.getAttribute('data-id');
-        topicSelect.innerHTML = '<option value="">Select Topic (Optional)</option>';
-
-        if (subjectId) {
-          try {
-            const res = await fetch('/api/subjects/' + subjectId + '/topics');
-            const data = await res.json();
-            if (data.success && Array.isArray(data.topics) && data.topics.length > 0) {
-              data.topics.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.name;
-                opt.textContent = t.name;
-                topicSelect.appendChild(opt);
-              });
-            }
-          } catch (err) {
-            console.error('Error fetching topics:', err);
+    async function loadTopics(subjectId, selectedTopicName) {
+      if (!topicSelect) return;
+      topicSelect.innerHTML = '<option value="">Select Topic (Optional)</option>';
+      if (subjectId) {
+        try {
+          const res = await fetch('/api/subjects/' + subjectId + '/topics');
+          const data = await res.json();
+          if (data.success && Array.isArray(data.topics) && data.topics.length > 0) {
+            data.topics.forEach(t => {
+              const opt = document.createElement('option');
+              opt.value = t.name;
+              opt.textContent = t.name;
+              if (selectedTopicName && t.name.toLowerCase() === selectedTopicName.toLowerCase()) {
+                opt.selected = true;
+              }
+              topicSelect.appendChild(opt);
+            });
           }
+        } catch (err) {
+          console.error('Error fetching topics:', err);
         }
+      }
+    }
+
+    if (subjectSelect && topicSelect) {
+      const initOpt = subjectSelect.options[subjectSelect.selectedIndex];
+      if (initOpt && initOpt.getAttribute('data-id')) {
+        loadTopics(initOpt.getAttribute('data-id'), '<%= typeof defaultTopic !== "undefined" ? defaultTopic : "" %>');
+      }
+
+      subjectSelect.addEventListener('change', function() {
+        const selectedOpt = this.options[this.selectedIndex];
+        const subjectId = selectedOpt ? selectedOpt.getAttribute('data-id') : null;
+        loadTopics(subjectId, '');
       });
     }
   });

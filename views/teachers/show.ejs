@@ -6,9 +6,16 @@
     
     <div style="display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap;">
       <!-- Avatar -->
-      <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 38px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.5); flex-shrink: 0;">
-        <%= teacher.name.charAt(0).toUpperCase() %>
-      </div>
+      <% if (teacher.avatar && teacher.avatar !== '/images/logo.png' && (teacher.avatar.startsWith('/') || teacher.avatar.startsWith('http://') || teacher.avatar.startsWith('https://'))) { %>
+        <img src="<%= teacher.avatar %>" alt="<%= teacher.name %>" style="width: 95px; height: 95px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(168,85,247,0.5); flex-shrink: 0;" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+        <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--gradient); display: none; place-items: center; font-size: 38px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.5); flex-shrink: 0;">
+          <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : 'T' %>
+        </div>
+      <% } else { %>
+        <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 38px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.5); flex-shrink: 0;">
+          <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : 'T' %>
+        </div>
+      <% } %>
 
       <!-- Info -->
       <div style="flex: 1; min-width: 250px;">

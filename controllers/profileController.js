@@ -2,6 +2,9 @@ const socialService = require('../services/socialService');
 const { profileUpdateSchema } = require('../validators/socialValidator');
 const wrapAsync = require('../middleware/asyncWrapper');
 const AppError = require('../utils/AppError');
+const path = require('path');
+const fs = require('fs');
+const blobService = require('../services/blobService');
 
 /**
  * GET /profile
@@ -105,6 +108,36 @@ exports.updateProfile = wrapAsync(async (req, res) => {
       ? value.subjectsHandled.map((s) => String(s).trim()).filter(Boolean)
       : (typeof value.subjectsHandled === 'string' ? value.subjectsHandled.split(',').map((s) => s.trim()).filter(Boolean) : undefined),
   };
+
+  // Handle avatar file upload (overrides URL if file provided)
+  if (req.file && req.file.buffer) {
+    try {
+      if (blobService.isBlobConfigured()) {
+        // Use Vercel Blob if configured
+        const uploadResult = await blobService.uploadBufferToBlob(
+          `avatar-${userId}${path.extname(req.file.originalname).toLowerCase()}`,
+          req.file.buffer,
+          req.file.mimetype
+        );
+        safeData.avatar = uploadResult.url;
+      } else {
+        // Save locally to public/uploads/avatars/
+        const avatarsDir = path.join(__dirname, '../public/uploads/avatars');
+        if (!fs.existsSync(avatarsDir)) {
+          fs.mkdirSync(avatarsDir, { recursive: true });
+        }
+        const ext = path.extname(req.file.originalname).toLowerCase();
+        const filename = `avatar-${userId}-${Date.now()}${ext}`;
+        const localPath = path.join(avatarsDir, filename);
+        fs.writeFileSync(localPath, req.file.buffer);
+        safeData.avatar = `/uploads/avatars/${filename}`;
+      }
+    } catch (uploadErr) {
+      console.error('Avatar upload error:', uploadErr.message);
+      req.flash('error', 'Avatar upload failed. Please try a URL instead.');
+      return res.redirect(303, '/profile/edit');
+    }
+  }
 
   let updatedUser;
   try {

@@ -2,6 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const Note = require('../models/Note');
+const User = require('../models/User');
+const Subject = require('../models/Subject');
+const Topic = require('../models/Topic');
+const academicService = require('./academicService');
 const blobService = require('./blobService');
 const AppError = require('../utils/AppError');
 
@@ -38,7 +42,45 @@ class NoteService {
    * Create a new Note record with role-aware moderation default
    */
   async createNote(authorId, data, file, userRole = 'student') {
-    const { title, description, content, subject, category, semester, tags, resourceType, visibility, isPublished, videoUrl } = data;
+    const { title, description, content, subject, topic, category, semester, tags, resourceType, visibility, isPublished, videoUrl } = data;
+
+    // Verify subject & teacher assignment
+    let subjectDoc = null;
+    if (subject && subject.trim()) {
+      subjectDoc = await Subject.findOne({
+        $or: [
+          { name: { $regex: `^${subject.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+          ...(mongoose.Types.ObjectId.isValid(subject.trim()) ? [{ _id: subject.trim() }] : [])
+        ],
+        isActive: true,
+      });
+    }
+
+    if (userRole === 'teacher') {
+      const author = await User.findById(authorId).lean();
+      if (!subjectDoc || !academicService.isTeacherAssignedToSubject(author, subjectDoc)) {
+        throw new AppError(`You are not assigned to publish resources under subject "${subject || 'Unknown'}".`, 403);
+      }
+    }
+
+    // Verify topic belongs to selected subject
+    let topicDoc = null;
+    if (topic && topic.trim()) {
+      if (!subjectDoc) {
+        throw new AppError('A valid subject is required to associate a topic.', 400);
+      }
+      topicDoc = await Topic.findOne({
+        subject: subjectDoc._id,
+        $or: [
+          { name: { $regex: `^${topic.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+          ...(mongoose.Types.ObjectId.isValid(topic.trim()) ? [{ _id: topic.trim() }] : [])
+        ],
+        isActive: true,
+      });
+      if (!topicDoc) {
+        throw new AppError(`Selected topic "${topic}" does not exist under subject "${subjectDoc.name}".`, 400);
+      }
+    }
 
     // Process tags into array
     let parsedTags = [];
@@ -89,7 +131,10 @@ class NoteService {
       description: description ? description.trim() : '',
       content: content ? content.trim() : '',
       author: authorId,
-      subject: subject || 'General',
+      subject: subjectDoc ? subjectDoc.name : (subject || 'General'),
+      subjectId: subjectDoc ? subjectDoc._id : null,
+      topic: topicDoc ? topicDoc.name : '',
+      topicId: topicDoc ? topicDoc._id : null,
       category: category || 'Notes',
       semester: Number(semester) || 1,
       tags: parsedTags,
@@ -253,7 +298,55 @@ class NoteService {
     if (typeof updateData.title !== 'undefined') note.title = updateData.title.trim();
     if (typeof updateData.description !== 'undefined') note.description = updateData.description.trim();
     if (typeof updateData.content !== 'undefined') note.content = updateData.content.trim();
-    if (typeof updateData.subject !== 'undefined') note.subject = updateData.subject;
+
+    // Subject & Topic Validation during note update
+    const targetSubjectName = typeof updateData.subject !== 'undefined' ? updateData.subject : note.subject;
+    let subjectDoc = null;
+    if (targetSubjectName && targetSubjectName.trim()) {
+      subjectDoc = await Subject.findOne({
+        $or: [
+          { name: { $regex: `^${targetSubjectName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+          ...(mongoose.Types.ObjectId.isValid(targetSubjectName.trim()) ? [{ _id: targetSubjectName.trim() }] : [])
+        ],
+        isActive: true,
+      });
+    }
+
+    if (currentUser.role === 'teacher' && typeof updateData.subject !== 'undefined') {
+      if (!subjectDoc || !academicService.isTeacherAssignedToSubject(currentUser, subjectDoc)) {
+        throw new AppError(`You are not assigned to publish resources under subject "${updateData.subject}".`, 403);
+      }
+    }
+
+    if (typeof updateData.subject !== 'undefined') {
+      note.subject = subjectDoc ? subjectDoc.name : updateData.subject;
+      note.subjectId = subjectDoc ? subjectDoc._id : null;
+    }
+
+    if (typeof updateData.topic !== 'undefined') {
+      if (updateData.topic && updateData.topic.trim()) {
+        if (!subjectDoc) {
+          throw new AppError('A valid subject is required to associate a topic.', 400);
+        }
+        const topicDoc = await Topic.findOne({
+          subject: subjectDoc._id,
+          $or: [
+            { name: { $regex: `^${updateData.topic.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+            ...(mongoose.Types.ObjectId.isValid(updateData.topic.trim()) ? [{ _id: updateData.topic.trim() }] : [])
+          ],
+          isActive: true,
+        });
+        if (!topicDoc) {
+          throw new AppError(`Selected topic "${updateData.topic}" does not exist under subject "${subjectDoc.name}".`, 400);
+        }
+        note.topic = topicDoc.name;
+        note.topicId = topicDoc._id;
+      } else {
+        note.topic = '';
+        note.topicId = null;
+      }
+    }
+
     if (typeof updateData.category !== 'undefined') note.category = updateData.category;
     if (typeof updateData.semester !== 'undefined') note.semester = Number(updateData.semester);
     if (typeof updateData.resourceType !== 'undefined') note.resourceType = updateData.resourceType;

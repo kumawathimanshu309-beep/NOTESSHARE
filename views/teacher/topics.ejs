@@ -1,0 +1,261 @@
+<div class="page-container" style="max-width: 1200px;">
+  
+  <!-- Dashboard Header Bar with Search & Profile Avatar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <a href="/" style="font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; color: white; text-decoration: none; letter-spacing: 0.5px;">
+        STUDY<span class="gradient-text">SHARE</span>
+      </a>
+    </div>
+
+    <!-- Working Header Search Form -->
+    <form action="/notes" method="GET" style="flex: 1; max-width: 480px; min-width: 260px; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 4px 12px;">
+      <span style="color: var(--muted); font-size: 14px; margin-right: 8px;">🔍</span>
+      <input type="text" name="search" placeholder="Search notes by subject, title, topic..." style="width: 100%; background: transparent; border: none; outline: none; color: white; font-size: 13px; padding: 8px 0;">
+      <button type="submit" class="secondary-button" style="padding: 4px 12px; font-size: 11px; margin-left: 6px; flex-shrink: 0;">Search</button>
+    </form>
+
+    <!-- Top-Right Functional User Profile Button -->
+    <a href="/profile" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; text-decoration: none;" onmouseover="this.style.borderColor='var(--lavender)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: white; overflow: hidden; flex-shrink: 0;">
+        <% if (teacher.avatar && teacher.avatar !== '/images/logo.png' && (teacher.avatar.startsWith('/') || teacher.avatar.startsWith('http://') || teacher.avatar.startsWith('https://'))) { %>
+          <img src="<%= teacher.avatar %>" alt="<%= teacher.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : (teacher.username ? teacher.username.charAt(0).toUpperCase() : 'T') %>
+        <% } %>
+      </div>
+      <span style="color: white; font-size: 13px; font-weight: 600;"><%= teacher.name || teacher.username %></span>
+    </a>
+  </div>
+
+  <!-- Dashboard Main Layout Grid: Left Sidebar + Right Main Content -->
+  <div class="layout-grid-2col" style="grid-template-columns: 240px 1fr; align-items: start; gap: 30px;">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;">Teacher Navigation</div>
+      
+      <nav style="display: flex; flex-direction: column; gap: 6px;">
+        <a href="/dashboard" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          📊 Overview
+        </a>
+        <a href="/teacher/subjects" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: white; font-size: 13px; font-weight: 600; text-decoration: none;">
+          📚 My Subjects
+        </a>
+        <a href="/notes" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          🧭 Explore Notes
+        </a>
+        <a href="/notes" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          📚 Teaching Resources
+        </a>
+        <a href="/doubts" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          ❓ Student Doubts
+        </a>
+        <a href="/notifications" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; color: var(--muted); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+          <span>🔔 Notifications</span>
+          <% if (typeof unreadNotificationsCount !== 'undefined' && unreadNotificationsCount > 0) { %>
+            <span style="font-size: 10px; padding: 2px 6px; border-radius: 8px; background: #EF4444; color: white; font-weight: 700;"><%= unreadNotificationsCount %></span>
+          <% } %>
+        </a>
+      </nav>
+
+      <div style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 15px;">
+        <form action="/auth/logout" method="POST">
+          <button type="submit" style="width: 100%; background: transparent; border: 1px solid rgba(239,68,68,0.2); color: #F87171; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">
+            Log Out
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+      
+      <!-- Back Link & Subject Header Banner -->
+      <div style="margin-bottom: 16px;">
+        <a href="/teacher/subjects" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">
+          ← Back to My Subjects
+        </a>
+      </div>
+
+      <div class="content-card" style="padding: 26px; border-radius: 20px; margin-bottom: 25px; position: relative; overflow: hidden; border: 1px solid rgba(124,58,237,0.3); background: radial-gradient(circle at top right, rgba(124,58,237,0.1), transparent 60%);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+          <div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 10px; padding: 3px 10px; border-radius: 10px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-weight: 700; text-transform: uppercase;">
+                <%= subject.department || 'General' %>
+              </span>
+              <% if (subject.code) { %>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-weight: 600;">
+                  <%= subject.code %>
+                </span>
+              <% } %>
+            </div>
+            <h1 style="font-family: 'Sora', sans-serif; font-size: 24px; margin: 0; color: white;">
+              <%= subject.name %>
+            </h1>
+            <% if (subject.description) { %>
+              <p style="font-size: 13px; color: var(--muted); margin: 6px 0 0 0; max-width: 600px;">
+                <%= subject.description %>
+              </p>
+            <% } %>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="/notes/new?subject=<%= encodeURIComponent(subject.name) %>" class="primary-button" style="padding: 9px 18px; font-size: 12px; text-decoration: none;">
+              + Create Resource for Subject
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- + Add Topic Card (Subject is AUTOMATICALLY Linked) -->
+      <div class="content-card" style="padding: 24px; border-radius: 18px; margin-bottom: 30px; border: 1px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 17px; margin: 0; color: white; display: flex; align-items: center; gap: 8px;">
+            <span>➕</span> Add New Topic to <span class="gradient-text"><%= subject.name %></span>
+          </h2>
+          <span style="font-size: 11px; color: var(--muted);">Subject automatically linked</span>
+        </div>
+
+        <form action="/teacher/subjects/<%= subject._id %>/topics" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+            <div>
+              <label for="topicName" style="display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 5px; text-transform: uppercase;">
+                Topic Name *
+              </label>
+              <input 
+                type="text" 
+                id="topicName" 
+                name="name" 
+                placeholder="e.g. Normalization & Functional Dependencies" 
+                required 
+                style="width: 100%; padding: 10px 14px; border-radius: 9px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: white; font-size: 13px; outline: none;"
+                onfocus="this.style.borderColor='var(--violet)'"
+                onblur="this.style.borderColor='var(--border)'"
+              >
+            </div>
+
+            <div>
+              <label for="topicDesc" style="display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 5px; text-transform: uppercase;">
+                Description (Optional)
+              </label>
+              <input 
+                type="text" 
+                id="topicDesc" 
+                name="description" 
+                placeholder="Brief summary of syllabus coverage..." 
+                style="width: 100%; padding: 10px 14px; border-radius: 9px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: white; font-size: 13px; outline: none;"
+                onfocus="this.style.borderColor='var(--violet)'"
+                onblur="this.style.borderColor='var(--border)'"
+              >
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 4px;">
+            <button type="submit" class="primary-button" style="padding: 9px 22px; font-size: 12px; cursor: pointer;">
+              Create Topic
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Topics Listing Section -->
+      <div style="margin-bottom: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 0; color: white;">
+            Curriculum Topics (<%= topics ? topics.length : 0 %>)
+          </h2>
+          <span style="font-size: 12px; color: var(--muted);">Click edit to update name or description</span>
+        </div>
+
+        <% if (topics && topics.length > 0) { %>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <% topics.forEach((t, idx) => { %>
+              <div class="content-card" style="padding: 18px 22px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;" id="topic-card-<%= t._id %>">
+                <div style="flex: 1; min-width: 240px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <span style="font-size: 12px; color: var(--muted); font-weight: 600;">#<%= idx + 1 %></span>
+                    <h3 style="font-family: 'Sora', sans-serif; font-size: 15px; margin: 0; color: white;" id="topic-title-<%= t._id %>">
+                      <%= t.name %>
+                    </h3>
+                    <span style="font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: 600; background: <%= t.isActive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)' %>; color: <%= t.isActive ? '#4ADE80' : '#F87171' %>;">
+                      <%= t.isActive ? 'Active' : 'Inactive' %>
+                    </span>
+                  </div>
+
+                  <% if (t.description) { %>
+                    <p style="font-size: 12px; color: var(--muted); margin: 0; line-height: 1.4;" id="topic-desc-<%= t._id %>">
+                      <%= t.description %>
+                    </p>
+                  <% } %>
+                </div>
+
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <a href="/notes/new?subject=<%= encodeURIComponent(subject.name) %>&topic=<%= encodeURIComponent(t.name) %>" class="secondary-button" style="padding: 6px 12px; font-size: 11px; text-decoration: none;" title="Create note for this topic">
+                    + Resource
+                  </a>
+
+                  <!-- Toggle Edit Form Button -->
+                  <button type="button" onclick="toggleEditTopic('<%= t._id %>')" class="secondary-button" style="padding: 6px 12px; font-size: 11px; cursor: pointer; color: #C4B5FD;">
+                    ✏️ Edit
+                  </button>
+
+                  <!-- Toggle Active / Inactive Status Form -->
+                  <form action="/teacher/subjects/<%= subject._id %>/topics/<%= t._id %>/toggle-active" method="POST" style="display: inline;">
+                    <button type="submit" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; cursor: pointer; border: 1px solid <%= t.isActive ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)' %>; background: <%= t.isActive ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)' %>; color: <%= t.isActive ? '#F87171' : '#4ADE80' %>;">
+                      <%= t.isActive ? 'Deactivate' : 'Activate' %>
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Hidden Inline Edit Form -->
+                <div id="edit-form-<%= t._id %>" style="display: none; width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);">
+                  <form action="/teacher/subjects/<%= subject._id %>/topics/<%= t._id %>/edit" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                      <div>
+                        <label style="display: block; font-size: 10px; color: var(--muted); margin-bottom: 3px; text-transform: uppercase;">Edit Name</label>
+                        <input type="text" name="name" value="<%= t.name %>" required style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; font-size: 12px;">
+                      </div>
+                      <div>
+                        <label style="display: block; font-size: 10px; color: var(--muted); margin-bottom: 3px; text-transform: uppercase;">Edit Description</label>
+                        <input type="text" name="description" value="<%= t.description || '' %>" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; font-size: 12px;">
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                      <button type="button" onclick="toggleEditTopic('<%= t._id %>')" style="background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;">
+                        Cancel
+                      </button>
+                      <button type="submit" class="primary-button" style="padding: 5px 16px; font-size: 11px; cursor: pointer;">
+                        Save Changes
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="content-card" style="padding: 35px; border-radius: 16px; text-align: center; border: 1px dashed var(--border);">
+            <div style="font-size: 32px; margin-bottom: 10px;">📑</div>
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin: 0 0 6px 0; color: white;">No Topics Created Yet</h3>
+            <p style="color: var(--muted); font-size: 12px; margin: 0;">
+              Use the form above to add your first topic under <strong><%= subject.name %></strong>.
+            </p>
+          </div>
+        <% } %>
+      </div>
+
+    </main>
+  </div>
+
+</div>
+
+<script>
+  function toggleEditTopic(topicId) {
+    const formEl = document.getElementById('edit-form-' + topicId);
+    if (formEl) {
+      formEl.style.display = (formEl.style.display === 'none' || !formEl.style.display) ? 'block' : 'none';
+    }
+  }
+</script>

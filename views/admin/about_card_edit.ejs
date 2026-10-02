@@ -1,0 +1,50 @@
+<div class="page-container" style="max-width: 800px;">
+  <div style="margin-bottom: 25px;">
+    <a href="/admin/about-cards" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px;">
+      ← Back to About Cards
+    </a>
+    <h1 style="font-family: 'Sora', sans-serif; font-size: 26px; margin: 0; color: white;">
+      ✏️ Edit About Card
+    </h1>
+    <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+      Modify mission or principle card details, display order, or active status on the About page.
+    </p>
+  </div>
+
+  <div class="content-card" style="padding: 25px; border-radius: 20px;">
+    <form action="/admin/about-cards/<%= card._id %>/edit" method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 2; min-width: 200px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px;">Card Title *</label>
+          <input type="text" name="title" value="<%= card.title %>" required maxlength="100" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 100px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px;">Icon / Emoji *</label>
+          <input type="text" name="icon" value="<%= card.icon %>" required maxlength="30" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 100px;">
+          <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px;">Display Order</label>
+          <input type="number" name="order" value="<%= card.order %>" min="0" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px;">Status</label>
+        <select name="isActive" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: #0D1124; border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+          <option value="true" <%= card.isActive ? 'selected' : '' %>>Active</option>
+          <option value="false" <%= !card.isActive ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size: 12px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px;">Content / Description *</label>
+        <textarea name="description" required rows="4" maxlength="1000" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none; resize: vertical;"><%= card.description %></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button type="submit" class="primary-button" style="padding: 10px 22px; font-size: 13px;">Save Changes</button>
+        <a href="/admin/about-cards" class="secondary-button" style="padding: 10px 18px; font-size: 13px; text-decoration: none;">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

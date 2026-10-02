@@ -5,6 +5,8 @@ const Doubt = require('../models/Doubt');
 const Answer = require('../models/Answer');
 const Comment = require('../models/Comment');
 const HomeCard = require('../models/HomeCard');
+const FeatureCard = require('../models/FeatureCard');
+const AboutCard = require('../models/AboutCard');
 const AuditLog = require('../models/AuditLog');
 const TeacherRequest = require('../models/TeacherRequest');
 const governanceService = require('../services/governanceService');
@@ -927,4 +929,345 @@ exports.getApiActiveTopics = wrapAsync(async (req, res) => {
   const topics = await academicService.getActiveTopicsBySubject(subjectId);
   res.json({ success: true, topics });
 });
+
+// ==========================================
+// FEATURES CARDS MANAGEMENT
+// ==========================================
+
+// @desc    List All Managed Feature Cards
+// @route   GET /admin/features-cards
+exports.getFeatureCards = wrapAsync(async (req, res) => {
+  const cards = await FeatureCard.find({ isDeleted: false })
+    .populate('createdBy', 'name username')
+    .sort({ order: 1, createdAt: -1 })
+    .lean();
+
+  res.render('admin/features_cards', {
+    title: 'Features Cards Management - Admin Panel',
+    path: '/admin/features-cards',
+    cards,
+  });
+});
+
+// @desc    Create New Feature Card
+// @route   POST /admin/features-cards
+exports.postFeatureCard = wrapAsync(async (req, res) => {
+  const { title, description, icon, order } = req.body;
+
+  if (!title || !title.trim()) {
+    throw new AppError('Feature Card title is required.', 400);
+  }
+  if (!description || !description.trim()) {
+    throw new AppError('Feature Card description is required.', 400);
+  }
+
+  const card = await FeatureCard.create({
+    title: title.trim(),
+    description: description.trim(),
+    icon: icon && icon.trim() ? icon.trim() : '✨',
+    order: parseInt(order, 10) || 0,
+    isActive: true,
+    createdBy: req.user._id,
+    updatedBy: req.user._id,
+  });
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'FEATURE_CARD_CREATED',
+      targetType: 'FeatureCard',
+      targetId: card._id,
+      details: { title: card.title },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in postFeatureCard:', auditErr);
+  }
+
+  req.flash('success', `Feature Card "${card.title}" created successfully.`);
+  res.redirect(303, '/admin/features-cards');
+});
+
+// @desc    Render Edit Feature Card Form
+// @route   GET /admin/features-cards/:id/edit
+exports.getEditFeatureCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await FeatureCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('Feature Card not found.', 404);
+
+  res.render('admin/features_card_edit', {
+    title: `Edit Feature Card — ${card.title} - Admin Panel`,
+    path: '/admin/features-cards',
+    card,
+  });
+});
+
+// @desc    Edit Existing Feature Card
+// @route   POST /admin/features-cards/:id/edit
+exports.postEditFeatureCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  const { title, description, icon, order, isActive } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+  if (!title || !title.trim()) throw new AppError('Feature Card title is required.', 400);
+  if (!description || !description.trim()) throw new AppError('Feature Card description is required.', 400);
+
+  const card = await FeatureCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('Feature Card not found.', 404);
+
+  card.title = title.trim();
+  card.description = description.trim();
+  card.icon = icon && icon.trim() ? icon.trim() : '✨';
+  card.order = parseInt(order, 10) || 0;
+  if (isActive !== undefined) {
+    card.isActive = isActive === 'true' || isActive === true || isActive === '1';
+  }
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'FEATURE_CARD_UPDATED',
+      targetType: 'FeatureCard',
+      targetId: card._id,
+      details: { title: card.title, order: card.order, isActive: card.isActive },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in postEditFeatureCard:', auditErr);
+  }
+
+  req.flash('success', `Feature Card "${card.title}" updated successfully.`);
+  res.redirect(303, '/admin/features-cards');
+});
+
+// @desc    Toggle Feature Card Active State
+// @route   POST /admin/features-cards/:id/toggle-active
+exports.patchToggleFeatureCardActive = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await FeatureCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('Feature Card not found.', 404);
+
+  card.isActive = !card.isActive;
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'FEATURE_CARD_TOGGLED',
+      targetType: 'FeatureCard',
+      targetId: card._id,
+      details: { title: card.title, isActive: card.isActive },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in patchToggleFeatureCardActive:', auditErr);
+  }
+
+  req.flash('success', `Feature Card "${card.title}" is now ${card.isActive ? 'Active' : 'Inactive'}.`);
+  res.redirect(303, '/admin/features-cards');
+});
+
+// @desc    Soft Delete Feature Card
+// @route   POST /admin/features-cards/:id/delete
+exports.deleteFeatureCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await FeatureCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('Feature Card not found.', 404);
+
+  card.isDeleted = true;
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'FEATURE_CARD_DELETED',
+      targetType: 'FeatureCard',
+      targetId: card._id,
+      details: { title: card.title },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in deleteFeatureCard:', auditErr);
+  }
+
+  req.flash('success', `Feature Card "${card.title}" deleted.`);
+  res.redirect(303, '/admin/features-cards');
+});
+
+// ==========================================
+// ABOUT CARDS MANAGEMENT
+// ==========================================
+
+// @desc    List All Managed About Cards
+// @route   GET /admin/about-cards
+exports.getAboutCards = wrapAsync(async (req, res) => {
+  const cards = await AboutCard.find({ isDeleted: false })
+    .populate('createdBy', 'name username')
+    .sort({ order: 1, createdAt: -1 })
+    .lean();
+
+  res.render('admin/about_cards', {
+    title: 'About Cards Management - Admin Panel',
+    path: '/admin/about-cards',
+    cards,
+  });
+});
+
+// @desc    Create New About Card
+// @route   POST /admin/about-cards
+exports.postAboutCard = wrapAsync(async (req, res) => {
+  const { title, description, icon, order } = req.body;
+
+  if (!title || !title.trim()) {
+    throw new AppError('About Card title is required.', 400);
+  }
+  if (!description || !description.trim()) {
+    throw new AppError('About Card description is required.', 400);
+  }
+
+  const card = await AboutCard.create({
+    title: title.trim(),
+    description: description.trim(),
+    icon: icon && icon.trim() ? icon.trim() : 'ℹ️',
+    order: parseInt(order, 10) || 0,
+    isActive: true,
+    createdBy: req.user._id,
+    updatedBy: req.user._id,
+  });
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'ABOUT_CARD_CREATED',
+      targetType: 'AboutCard',
+      targetId: card._id,
+      details: { title: card.title },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in postAboutCard:', auditErr);
+  }
+
+  req.flash('success', `About Card "${card.title}" created successfully.`);
+  res.redirect(303, '/admin/about-cards');
+});
+
+// @desc    Render Edit About Card Form
+// @route   GET /admin/about-cards/:id/edit
+exports.getEditAboutCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await AboutCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('About Card not found.', 404);
+
+  res.render('admin/about_card_edit', {
+    title: `Edit About Card — ${card.title} - Admin Panel`,
+    path: '/admin/about-cards',
+    card,
+  });
+});
+
+// @desc    Edit Existing About Card
+// @route   POST /admin/about-cards/:id/edit
+exports.postEditAboutCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  const { title, description, icon, order, isActive } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+  if (!title || !title.trim()) throw new AppError('About Card title is required.', 400);
+  if (!description || !description.trim()) throw new AppError('About Card description is required.', 400);
+
+  const card = await AboutCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('About Card not found.', 404);
+
+  card.title = title.trim();
+  card.description = description.trim();
+  card.icon = icon && icon.trim() ? icon.trim() : 'ℹ️';
+  card.order = parseInt(order, 10) || 0;
+  if (isActive !== undefined) {
+    card.isActive = isActive === 'true' || isActive === true || isActive === '1';
+  }
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'ABOUT_CARD_UPDATED',
+      targetType: 'AboutCard',
+      targetId: card._id,
+      details: { title: card.title, order: card.order, isActive: card.isActive },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in postEditAboutCard:', auditErr);
+  }
+
+  req.flash('success', `About Card "${card.title}" updated successfully.`);
+  res.redirect(303, '/admin/about-cards');
+});
+
+// @desc    Toggle About Card Active State
+// @route   POST /admin/about-cards/:id/toggle-active
+exports.patchToggleAboutCardActive = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await AboutCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('About Card not found.', 404);
+
+  card.isActive = !card.isActive;
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'ABOUT_CARD_TOGGLED',
+      targetType: 'AboutCard',
+      targetId: card._id,
+      details: { title: card.title, isActive: card.isActive },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in patchToggleAboutCardActive:', auditErr);
+  }
+
+  req.flash('success', `About Card "${card.title}" is now ${card.isActive ? 'Active' : 'Inactive'}.`);
+  res.redirect(303, '/admin/about-cards');
+});
+
+// @desc    Soft Delete About Card
+// @route   POST /admin/about-cards/:id/delete
+exports.deleteAboutCard = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new AppError('Invalid card identifier.', 400);
+
+  const card = await AboutCard.findById(id);
+  if (!card || card.isDeleted) throw new AppError('About Card not found.', 404);
+
+  card.isDeleted = true;
+  card.updatedBy = req.user._id;
+  await card.save();
+
+  try {
+    await AuditLog.create({
+      admin: req.user._id,
+      action: 'ABOUT_CARD_DELETED',
+      targetType: 'AboutCard',
+      targetId: card._id,
+      details: { title: card.title },
+    });
+  } catch (auditErr) {
+    console.error('AuditLog error in deleteAboutCard:', auditErr);
+  }
+
+  req.flash('success', `About Card "${card.title}" deleted.`);
+  res.redirect(303, '/admin/about-cards');
+});
+
 

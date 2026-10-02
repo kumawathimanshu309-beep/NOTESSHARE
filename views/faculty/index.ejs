@@ -79,9 +79,16 @@
             <div>
               <!-- Avatar & Role Badge -->
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 24px; font-weight: 700; color: white; border: 2px solid rgba(168,85,247,0.4);">
-                  <%= teacher.name.charAt(0).toUpperCase() %>
-                </div>
+                <% if (teacher.avatar && teacher.avatar !== '/images/logo.png' && (teacher.avatar.startsWith('/') || teacher.avatar.startsWith('http://') || teacher.avatar.startsWith('https://'))) { %>
+                  <img src="<%= teacher.avatar %>" alt="<%= teacher.name %>" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(168,85,247,0.4);" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                  <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); display: none; place-items: center; font-size: 24px; font-weight: 700; color: white; border: 2px solid rgba(168,85,247,0.4);">
+                    <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : 'T' %>
+                  </div>
+                <% } else { %>
+                  <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 24px; font-weight: 700; color: white; border: 2px solid rgba(168,85,247,0.4);">
+                    <%= teacher.name ? teacher.name.charAt(0).toUpperCase() : 'T' %>
+                  </div>
+                <% } %>
                 <span style="padding: 3px 8px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
                   🎓 Verified
                 </span>

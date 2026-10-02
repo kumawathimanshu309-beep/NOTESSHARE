@@ -41,9 +41,9 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "blob:"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
         frameSrc: ["'self'"],
       },
     },
@@ -129,7 +129,11 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 9. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
+// 9. CSRF Token Middleware
+const { csrfTokenMiddleware } = require('./middleware/csrf');
+app.use(csrfTokenMiddleware);
+
+// 10. Global Response Locals Middleware (Auth state, Flash messages & Unread Notification count)
 app.use(async (req, res, next) => {
   res.locals.isAuthenticated = req.isAuthenticated();
   res.locals.currentUser = req.user || null;

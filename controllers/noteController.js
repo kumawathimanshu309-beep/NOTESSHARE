@@ -27,12 +27,23 @@ exports.getNotes = wrapAsync(async (req, res) => {
 // @desc    Render Create Note Form
 // @route   GET /notes/new
 exports.getNewNote = wrapAsync(async (req, res) => {
-  const activeSubjects = await academicService.getActiveSubjects();
+  let activeSubjects = await academicService.getActiveSubjects();
+
+  // If user is a verified teacher, restrict subjects ONLY to assigned subjects
+  if (req.user && req.user.role === 'teacher') {
+    activeSubjects = activeSubjects.filter((s) => academicService.isTeacherAssignedToSubject(req.user, s));
+  }
+
+  const defaultSubject = req.query.subject || '';
+  const defaultTopic = req.query.topic || '';
+
   res.render('notes/new', {
     title: 'Upload Study Note — StudyShare',
     path: '/notes/new',
-    formData: {},
+    formData: { subject: defaultSubject, topic: defaultTopic },
     activeSubjects,
+    defaultSubject,
+    defaultTopic,
   });
 });
 
@@ -77,6 +88,8 @@ exports.getNote = wrapAsync(async (req, res) => {
   const whatsappMessage = `StudyShare: ${note.title}\n${shareUrl}`;
   const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
   const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(note.title)}`;
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+  const emailShareUrl = `mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(`Check out this study resource on StudyShare: ${shareUrl}`)}`;
 
   res.render('notes/show', {
     title: `${note.title} — StudyShare`,
@@ -95,6 +108,8 @@ exports.getNote = wrapAsync(async (req, res) => {
     shareUrl,
     whatsappShareUrl,
     telegramShareUrl,
+    linkedinShareUrl,
+    emailShareUrl,
     shareTitle: note.title,
   });
 });
@@ -174,10 +189,16 @@ exports.getEditNote = wrapAsync(async (req, res) => {
     return res.status(403).redirect(`/notes/${note._id}`);
   }
 
+  let activeSubjects = await academicService.getActiveSubjects();
+  if (req.user && req.user.role === 'teacher') {
+    activeSubjects = activeSubjects.filter((s) => academicService.isTeacherAssignedToSubject(req.user, s));
+  }
+
   res.render('notes/edit', {
     title: `Edit ${note.title} — StudyShare`,
     path: '/notes',
     note,
+    activeSubjects,
   });
 });
 

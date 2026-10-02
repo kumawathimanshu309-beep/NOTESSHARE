@@ -52,6 +52,9 @@ exports.rateNote = wrapAsync(async (req, res) => {
   const { error, value } = ratingSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
+    if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.headers.accept?.includes('application/json')) {
+      return res.status(400).json({ success: false, message: errorMsg });
+    }
     req.flash('error', errorMsg);
     return res.redirect(303, `/notes/${noteId}`);
   }
@@ -64,7 +67,7 @@ exports.rateNote = wrapAsync(async (req, res) => {
     value.review || ''
   );
 
-  if (req.xhr || req.headers.accept?.includes('application/json')) {
+  if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.headers.accept?.includes('application/json')) {
     return res.json({
       success: true,
       userRating: result.userRating,
@@ -88,11 +91,28 @@ exports.addComment = wrapAsync(async (req, res) => {
   const { error, value } = commentSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
+    if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.headers.accept?.includes('application/json')) {
+      return res.status(400).json({ success: false, message: errorMsg });
+    }
     req.flash('error', errorMsg);
     return res.redirect(303, `/notes/${noteId}#comments`);
   }
 
-  await socialService.addComment(noteId, userId, userRole, value.content);
+  const comment = await socialService.addComment(noteId, userId, userRole, value.content);
+
+  if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.headers.accept?.includes('application/json')) {
+    return res.json({
+      success: true,
+      comment: {
+        _id: comment._id,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        user: comment.user
+          ? { name: req.user.name, username: req.user.username, avatar: req.user.avatar || '' }
+          : null,
+      },
+    });
+  }
 
   req.flash('success', 'Comment posted successfully.');
   return res.redirect(303, `/notes/${noteId}#comments`);
@@ -133,6 +153,9 @@ exports.updateComment = wrapAsync(async (req, res) => {
   const { error, value } = commentSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMsg = error.details.map((d) => d.message).join(' ');
+    if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.headers.accept?.includes('application/json')) {
+      return res.status(400).json({ success: false, message: errorMsg });
+    }
     req.flash('error', errorMsg);
     return res.redirect(303, `/comments/${commentId}/edit`);
   }
@@ -157,6 +180,10 @@ exports.deleteComment = wrapAsync(async (req, res) => {
   const userRole = req.user.role;
 
   const deletedComment = await socialService.deleteComment(commentId, userId, userRole);
+
+  if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+    return res.json({ success: true, commentId });
+  }
 
   req.flash('success', 'Comment removed.');
   return res.redirect(303, `/notes/${deletedComment.note}#comments`);

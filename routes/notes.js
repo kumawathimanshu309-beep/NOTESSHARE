@@ -7,6 +7,7 @@ const Note = require('../models/Note');
 const { isLoggedIn, isOwner } = require('../middleware/auth');
 const { handleNoteFileUpload } = require('../middleware/upload');
 const { validateNote } = require('../validators/noteValidator');
+const { verifyCsrfToken } = require('../middleware/csrf');
 
 // Helper to provide Model reference to isOwner closure
 const getNoteModel = () => Note;
@@ -23,8 +24,8 @@ router.post('/:id/like', isLoggedIn, socialController.toggleLike);
 router.post('/:id/unlike', isLoggedIn, socialController.toggleLike);
 router.post('/:id/bookmark', isLoggedIn, socialController.toggleBookmark);
 router.post('/:id/unbookmark', isLoggedIn, socialController.toggleBookmark);
-router.post('/:id/rate', isLoggedIn, socialController.rateNote);
-router.post('/:id/comments', isLoggedIn, socialController.addComment);
+router.post('/:id/rate', isLoggedIn, verifyCsrfToken, socialController.rateNote);
+router.post('/:id/comments', isLoggedIn, verifyCsrfToken, socialController.addComment);
 
 // Public Note View & Stream (Guest View Allowed)
 router.get('/:id', noteController.getNote);

@@ -112,12 +112,6 @@
                   <%= c.isEnabled ? 'Disable' : 'Enable' %>
                 </button>
               </form>
-
-              <form action="/admin/home-content/<%= c._id %>?_method=DELETE" method="POST" style="margin: 0;" onsubmit="return confirm('Soft delete this Home Card?');">
-                <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 12px; color: #F87171;">
-                  Delete
-                </button>
-              </form>
             </div>
 
           </div>

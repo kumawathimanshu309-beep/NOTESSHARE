@@ -1,197 +1,213 @@
 <div class="page-container" style="max-width: 1000px;">
-  
+
   <!-- Profile Header Card -->
-  <div class="content-card" style="padding: 35px; border-radius: 24px; margin-bottom: 35px; position: relative; overflow: hidden;">
-    <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: var(--gradient); opacity: 0.15; filter: blur(60px); border-radius: 50%; pointer-events: none;"></div>
-    
-    <div style="display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap;">
+  <div class="profile-header-card">
+    <!-- Decorative glow -->
+    <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: var(--gradient); opacity: 0.12; filter: blur(70px); border-radius: 50%; pointer-events: none;"></div>
+
+    <div class="profile-hero">
       <!-- Avatar -->
-      <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-size: 36px; font-weight: 700; color: white; border: 3px solid rgba(168,85,247,0.4); flex-shrink: 0; overflow: hidden;">
+      <div class="profile-avatar-lg">
         <% if (profileUser.avatar && profileUser.avatar !== '/images/logo.png' && (profileUser.avatar.startsWith('/') || profileUser.avatar.startsWith('http://') || profileUser.avatar.startsWith('https://'))) { %>
-          <img src="<%= profileUser.avatar %>" alt="<%= profileUser.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="<%= profileUser.avatar %>" alt="<%= profileUser.name %>'s avatar">
         <% } else { %>
           <%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : 'U' %>
         <% } %>
       </div>
 
       <!-- Info -->
-      <div style="flex: 1; min-width: 250px;">
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px;">
-          <h1 style="font-family: 'Sora', sans-serif; font-size: 28px; margin: 0; font-weight: 700;">
-            <%= profileUser.name %>
-          </h1>
-          <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-            <%= profileUser.role %>
-          </span>
+      <div class="profile-meta">
+        <div class="profile-name-row">
+          <h1 class="profile-name"><%= profileUser.name %></h1>
+          <span class="profile-role-badge"><%= profileUser.role %></span>
           <% if (profileUser.role === 'teacher' && profileUser.verificationStatus === 'verified') { %>
-            <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-size: 11px; font-weight: 700;">
-              ✓ Verified Teacher
-            </span>
+            <span class="profile-role-badge verified">✓ Verified Teacher</span>
           <% } %>
         </div>
 
-        <p style="color: var(--lavender); font-size: 14px; margin-bottom: 12px;">
-          @<%= profileUser.username %> • Joined <%= new Date(profileUser.createdAt).toLocaleDateString() %>
+        <p class="profile-username">
+          @<%= profileUser.username %> · Joined <%= new Date(profileUser.createdAt).toLocaleDateString() %>
         </p>
 
         <% if (profileUser.bio) { %>
-          <p style="color: var(--text); font-size: 14px; line-height: 1.6; max-width: 650px; margin-bottom: 15px;">
-            <%= profileUser.bio %>
-          </p>
+          <p class="profile-bio"><%= profileUser.bio %></p>
         <% } else { %>
-          <p style="color: var(--muted); font-size: 13px; font-style: italic; margin-bottom: 15px;">No bio added yet.</p>
+          <p style="color: var(--muted); font-size: 13px; font-style: italic; margin-bottom: 14px;">No bio added yet.</p>
         <% } %>
 
+        <!-- Teacher-specific info -->
         <% if (profileUser.role === 'teacher') { %>
-          <div style="font-size: 13px; color: var(--muted); margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 12px; display: flex; gap: 14px; flex-wrap: wrap;">
             <% if (profileUser.designation) { %><span><strong>Designation:</strong> <%= profileUser.designation %></span><% } %>
             <% if (profileUser.qualification) { %><span><strong>Qualification:</strong> <%= profileUser.qualification %></span><% } %>
             <% if (profileUser.experience) { %><span><strong>Experience:</strong> <%= profileUser.experience %></span><% } %>
           </div>
           <% if (Array.isArray(profileUser.subjectsHandled) && profileUser.subjectsHandled.length > 0) { %>
-            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Subjects Handled:</span>
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; color: var(--muted); font-weight: 600;">Subjects Handled:</span>
               <% profileUser.subjectsHandled.forEach(sub => { %>
-                <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD;">
-                  <%= sub %>
-                </span>
+                <span class="interest-chip"><%= sub %></span>
               <% }); %>
             </div>
           <% } %>
         <% } %>
 
-        <!-- Academic Profile Details Badge & Info Row -->
-        <div style="font-size: 13px; color: var(--text); margin-top: 15px; padding: 14px 18px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); max-width: 700px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--lavender); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-            🎓 Academic Background
-          </div>
-          <div style="display: flex; gap: 18px; flex-wrap: wrap; line-height: 1.6;">
-            <% if (profileUser.course || profileUser.branch) { %>
-              <span><strong>Program:</strong> <%= profileUser.course || 'Degree' %> <%= profileUser.branch ? '(' + profileUser.branch + ')' : '' %></span>
-            <% } %>
-            <% if (profileUser.semester) { %>
-              <span><strong>Semester:</strong> Sem <%= profileUser.semester %></span>
-            <% } %>
-            <% if (profileUser.academicYear) { %>
-              <span><strong>Academic Year:</strong> <%= profileUser.academicYear %></span>
-            <% } %>
-            <% if (profileUser.specialization) { %>
-              <span><strong>Specialization:</strong> <%= profileUser.specialization %></span>
-            <% } %>
-            <% if (profileUser.department) { %>
-              <span><strong>Department:</strong> <%= profileUser.department %></span>
-            <% } %>
-            <% if (profileUser.college) { %>
-              <span><strong>Institution:</strong> <%= profileUser.college %></span>
-            <% } %>
-          </div>
+        <!-- Academic Background -->
+        <%
+          const hasAcademic = profileUser.course || profileUser.branch || profileUser.semester ||
+            profileUser.academicYear || profileUser.specialization || profileUser.department || profileUser.college;
+        %>
+        <% if (hasAcademic) { %>
+          <div class="profile-academic-section">
+            <div class="profile-academic-section-title">🎓 Academic Background</div>
+            <div class="profile-academic-grid">
+              <% if (profileUser.course) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Course / Degree</div>
+                  <div class="profile-academic-item-value"><%= profileUser.course %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.branch) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Branch / Stream</div>
+                  <div class="profile-academic-item-value"><%= profileUser.branch %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.semester) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Semester</div>
+                  <div class="profile-academic-item-value">Sem <%= profileUser.semester %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.academicYear) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Academic Year</div>
+                  <div class="profile-academic-item-value"><%= profileUser.academicYear %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.specialization) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Specialization</div>
+                  <div class="profile-academic-item-value"><%= profileUser.specialization %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.department) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Department</div>
+                  <div class="profile-academic-item-value"><%= profileUser.department %></div>
+                </div>
+              <% } %>
+              <% if (profileUser.college) { %>
+                <div class="profile-academic-item">
+                  <div class="profile-academic-item-label">Institution</div>
+                  <div class="profile-academic-item-value"><%= profileUser.college %></div>
+                </div>
+              <% } %>
+            </div>
 
-          <% if (Array.isArray(profileUser.interests) && profileUser.interests.length > 0) { %>
-            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 11px; color: var(--muted); font-weight: 600;">Interests:</span>
+            <!-- Academic Interests -->
+            <% if (Array.isArray(profileUser.interests) && profileUser.interests.length > 0) { %>
+              <div style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px;">
+                <div class="profile-academic-section-title" style="margin-bottom: 8px;">Academic Interests</div>
+                <div class="profile-interests">
+                  <% profileUser.interests.forEach(interest => { %>
+                    <span class="interest-chip"><%= interest %></span>
+                  <% }); %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } else if (Array.isArray(profileUser.interests) && profileUser.interests.length > 0) { %>
+          <!-- Show interests even if no other academic info -->
+          <div class="profile-academic-section">
+            <div class="profile-academic-section-title">Academic Interests</div>
+            <div class="profile-interests" style="margin-top: 8px;">
               <% profileUser.interests.forEach(interest => { %>
-                <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD;">
-                  <%= interest %>
-                </span>
+                <span class="interest-chip"><%= interest %></span>
               <% }); %>
             </div>
-          <% } %>
-        </div>
+          </div>
+        <% } %>
 
+        <!-- CTA buttons if self -->
         <% if (typeof isSelf !== 'undefined' && isSelf) { %>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-            <a href="/profile/edit" class="secondary-button" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-              ✏️ Edit Profile
-            </a>
-            <a href="/dashboard" class="primary-button" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-              📊 My Dashboard
-            </a>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;">
+            <a href="/profile/edit" class="action-btn" style="text-decoration: none; font-size: 13px;">✏️ Edit Profile</a>
+            <a href="/dashboard" class="action-btn action-btn-primary" style="text-decoration: none; font-size: 13px;">📊 My Dashboard</a>
           </div>
         <% } %>
       </div>
     </div>
 
-    <!-- Real Stat Counters -->
-    <div class="stats-grid-4col" style="margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--border);">
-      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalNotes : 0 %></div>
-        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Shared Notes</div>
+    <!-- Profile Stats -->
+    <div class="profile-stats-grid">
+      <div class="profile-stat-item">
+        <span class="profile-stat-value"><%= stats ? stats.totalNotes : 0 %></span>
+        <span class="profile-stat-label">Notes Shared</span>
       </div>
-
-      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalLikesReceived : 0 %></div>
-        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Likes Received</div>
+      <div class="profile-stat-item">
+        <span class="profile-stat-value"><%= stats ? stats.totalLikesReceived : 0 %></span>
+        <span class="profile-stat-label">Likes Received</span>
       </div>
-
-      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-        <div style="font-size: 22px; font-weight: 700; color: white;"><%= stats ? stats.totalBookmarksReceived : 0 %></div>
-        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Bookmarks Received</div>
+      <div class="profile-stat-item">
+        <span class="profile-stat-value"><%= stats ? stats.totalBookmarksReceived : 0 %></span>
+        <span class="profile-stat-label">Bookmarks</span>
       </div>
-
-      <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-        <div style="font-size: 22px; font-weight: 700; color: #FDE047;">★ <%= stats && stats.avgRating ? stats.avgRating : '0.0' %></div>
-        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px;">Avg Rating</div>
+      <div class="profile-stat-item">
+        <span class="profile-stat-value" style="color: #FDE047;">★ <%= stats && stats.avgRating ? stats.avgRating : '0.0' %></span>
+        <span class="profile-stat-label">Avg Rating</span>
       </div>
     </div>
-  </div>
+  </div><!-- end profile-header-card -->
 
-  <!-- User's Notes Section -->
-  <div style="margin-bottom: 35px;">
-    <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
+  <!-- Published Resources -->
+  <div style="margin-bottom: 32px;">
+    <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; margin-bottom: 18px;">
       Published Resources (<%= notes ? notes.length : 0 %>)
     </h2>
 
     <% if (notes && notes.length > 0) { %>
       <div class="notes-cards-grid">
         <% notes.forEach(note => { %>
-          <div class="content-card" style="padding: 22px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="content-card" style="padding: 20px; border-radius: 14px; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-              <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                  <%= note.subject %>
-                </span>
-                <span style="padding: 3px 10px; border-radius: 12px; background: rgba(255,255,255,0.05); color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase;">
-                  Sem <%= note.semester %>
-                </span>
+              <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+                <span style="padding: 3px 9px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: #C4B5FD; font-size: 10px; font-weight: 700; text-transform: uppercase;"><%= note.subject %></span>
+                <span style="padding: 3px 9px; border-radius: 12px; background: rgba(255,255,255,0.05); color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase;">Sem <%= note.semester %></span>
               </div>
-
-              <h3 style="font-family: 'Sora', sans-serif; font-size: 16px; margin-bottom: 10px; line-height: 1.35;">
-                <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;">
-                  <%= note.title %>
-                </a>
+              <h3 style="font-family: 'Sora', sans-serif; font-size: 15px; margin-bottom: 8px; line-height: 1.35;">
+                <a href="/notes/<%= note._id %>" style="color: white; text-decoration: none;"><%= note.title %></a>
               </h3>
-
-              <div style="margin-bottom: 12px;">
+              <div style="margin-bottom: 10px;">
                 <%- include('../partials/author_badge', { author: note.author || profileUser }) %>
               </div>
             </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">
-              <span>👁️ <%= note.views || 0 %> • 📥 <%= note.downloads || 0 %></span>
-              <a href="/notes/<%= note._id %>" style="color: var(--accent-light); font-weight: 600; text-decoration: none;">View Note →</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">
+              <span>👁️ <%= note.views || 0 %> · 📥 <%= note.downloads || 0 %></span>
+              <a href="/notes/<%= note._id %>" style="color: var(--lavender); font-weight: 600; text-decoration: none; font-size: 12px;">View →</a>
             </div>
           </div>
         <% }) %>
       </div>
     <% } else { %>
-      <div class="content-card" style="padding: 30px; text-align: center; border-radius: 16px; color: var(--muted);">
+      <div class="content-card" style="padding: 28px; text-align: center; border-radius: 14px; color: var(--muted);">
         <p style="font-size: 14px; margin: 0;">No public resources published yet.</p>
       </div>
     <% } %>
   </div>
 
-  <!-- Role Specific Contributions: Doubts (Student) / Answers (Teacher) -->
+  <!-- Teacher Answers -->
   <% if (profileUser.role === 'teacher' && answers && answers.length > 0) { %>
-    <div style="margin-bottom: 35px;">
-      <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
+    <div style="margin-bottom: 32px;">
+      <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; margin-bottom: 18px;">
         Teaching Answers Provided (<%= stats.totalAnswersGiven %>)
       </h2>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 10px;">
         <% answers.forEach(ans => { %>
-          <div class="content-card" style="padding: 18px; border-radius: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 12px; color: var(--lavender);">On question: <strong><%= ans.doubt ? ans.doubt.title : 'Student Question' %></strong></span>
-              <% if (ans.isAccepted) { %><span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #4ADE80;">✓ Accepted Solution</span><% } %>
+          <div class="content-card" style="padding: 16px; border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+              <span style="font-size: 12px; color: var(--lavender);">On: <strong><%= ans.doubt ? ans.doubt.title : 'Student Question' %></strong></span>
+              <% if (ans.isAccepted) { %><span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #4ADE80; white-space: nowrap;">✓ Accepted</span><% } %>
             </div>
             <p style="font-size: 13px; color: var(--text); margin: 0;"><%= ans.content %></p>
           </div>
@@ -200,24 +216,23 @@
     </div>
   <% } %>
 
-  <!-- Owner-Only Private Activity & Bookmarks Sections -->
+  <!-- Owner-only Activity Feed -->
   <% if (typeof isSelf !== 'undefined' && isSelf) { %>
     <%
       const safeActivityFeed = (typeof activityFeed !== 'undefined' && Array.isArray(activityFeed)) ? activityFeed : [];
     %>
-    <!-- Private Activity Feed Timeline -->
     <% if (safeActivityFeed.length > 0) { %>
-      <div style="margin-bottom: 35px;">
-        <h2 style="font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: 20px;">
-          🔒 Your Recent Activity Feed (Private to You)
+      <div style="margin-bottom: 32px;">
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 20px; margin-bottom: 18px;">
+          🔒 Your Recent Activity (Private)
         </h2>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
           <% safeActivityFeed.forEach(act => { %>
-            <div class="content-card" style="padding: 14px 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-size: 20px;"><%= act.icon %></span>
+            <div class="content-card" style="padding: 12px 18px; border-radius: 10px; display: flex; align-items: center; gap: 12px; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 18px;"><%= act.icon %></span>
                 <div>
-                  <a href="<%= act.link %>" style="color: white; font-size: 14px; text-decoration: none; font-weight: 600;"><%= act.title %></a>
+                  <a href="<%= act.link %>" style="color: white; font-size: 13px; text-decoration: none; font-weight: 600;"><%= act.title %></a>
                   <div style="font-size: 11px; color: var(--muted);"><%= new Date(act.createdAt).toLocaleString() %></div>
                 </div>
               </div>

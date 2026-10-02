@@ -1,14 +1,30 @@
 const wrapAsync = require('../middleware/asyncWrapper');
 const Note = require('../models/Note');
+const User = require('../models/User');
+const Subject = require('../models/Subject');
 const HomeCard = require('../models/HomeCard');
+const FeatureCard = require('../models/FeatureCard');
+const AboutCard = require('../models/AboutCard');
 const Bookmark = require('../models/Bookmark');
 const Rating = require('../models/Rating');
 
 // @desc    Render Landing / Home Page with Dynamic Category Counts & Top Popular Notes
 // @route   GET /
 exports.getHome = wrapAsync(async (req, res) => {
-  // Fetch dynamic published public notes count per category & popular notes
-  const [csCount, mathCount, sciCount, engCount, dbHomeCards, popularNotesDocs] = await Promise.all([
+  // Fetch dynamic published public notes count per category, popular notes & platform stats
+  const [
+    csCount,
+    mathCount,
+    sciCount,
+    engCount,
+    dbHomeCards,
+    dbFeatureCards,
+    popularNotesDocs,
+    totalNotesCount,
+    totalStudentsCount,
+    totalSubjectsCount,
+    totalDownloadsResult,
+  ] = await Promise.all([
     Note.countDocuments({ subject: 'Computer Science', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
     Note.countDocuments({ subject: 'Mathematics', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
     Note.countDocuments({ subject: 'Science', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
@@ -16,11 +32,21 @@ exports.getHome = wrapAsync(async (req, res) => {
     HomeCard.find({ isPublished: true, isEnabled: true, isDeleted: false })
       .sort({ order: 1, createdAt: -1 })
       .lean(),
+    FeatureCard.find({ isActive: true, isDeleted: false })
+      .sort({ order: 1, createdAt: 1 })
+      .lean(),
     Note.find({ isPublished: true, visibility: 'public', isDeleted: false, approvalStatus: 'approved' })
       .populate('author', 'name username avatar role')
       .sort({ downloads: -1, views: -1, createdAt: -1 })
       .limit(3)
       .lean(),
+    Note.countDocuments({ isDeleted: false, isPublished: true }),
+    User.countDocuments({ role: 'student' }),
+    Subject.countDocuments({ isActive: { $ne: false } }),
+    Note.aggregate([
+      { $match: { isDeleted: false, isPublished: true } },
+      { $group: { _id: null, totalDownloads: { $sum: '$downloads' } } },
+    ]),
   ]);
 
   // Query ratings for popular notes to aggregate real average rating
@@ -136,7 +162,11 @@ exports.getHome = wrapAsync(async (req, res) => {
     },
   ];
 
-  const features = dbHomeCards.length > 0 ? dbHomeCards : defaultFeatures;
+  const features = dbFeatureCards.length > 0
+    ? dbFeatureCards
+    : dbHomeCards.length > 0
+      ? dbHomeCards
+      : defaultFeatures;
 
   const subjects = [
     { name: 'Computer Science', icon: '⌘', notesCount: `${csCount} notes`, isPurple: true },
@@ -145,11 +175,19 @@ exports.getHome = wrapAsync(async (req, res) => {
     { name: 'Engineering', icon: '◈', notesCount: `${engCount} notes`, isPurple: false },
   ];
 
+  const platformStats = {
+    notes: totalNotesCount || 0,
+    students: totalStudentsCount || 0,
+    subjects: totalSubjectsCount || 0,
+    downloads: (totalDownloadsResult.length > 0 && totalDownloadsResult[0].totalDownloads) ? totalDownloadsResult[0].totalDownloads : 0,
+  };
+
   res.render('home/index', {
     title: 'StudyShare — Share Knowledge, Discover Better Notes',
     path: '/',
     previewNotes,
     previewStats,
+    platformStats,
     features,
     subjects,
   });
@@ -158,16 +196,25 @@ exports.getHome = wrapAsync(async (req, res) => {
 // @desc    Render About Page
 // @route   GET /about
 exports.getAbout = wrapAsync(async (req, res) => {
+  const aboutCards = await AboutCard.find({ isActive: true, isDeleted: false })
+    .sort({ order: 1, createdAt: 1 })
+    .lean();
+
   res.render('home/about', {
     title: 'About StudyShare — Student Knowledge Sharing',
     path: '/about',
+    aboutCards,
   });
 });
 
 // @desc    Render Features Page
 // @route   GET /features
 exports.getFeatures = wrapAsync(async (req, res) => {
-  const featuresList = [
+  const dbFeatures = await FeatureCard.find({ isActive: true, isDeleted: false })
+    .sort({ order: 1, createdAt: 1 })
+    .lean();
+
+  const defaultFeaturesList = [
     {
       title: 'Comprehensive Study Notes',
       description: 'Access curated notes covering Computer Science, Mathematics, Science, Engineering and more.',
@@ -189,6 +236,8 @@ exports.getFeatures = wrapAsync(async (req, res) => {
       icon: '💡',
     },
   ];
+
+  const featuresList = dbFeatures && dbFeatures.length > 0 ? dbFeatures : defaultFeaturesList;
 
   res.render('home/features', {
     title: 'Platform Features — StudyShare',

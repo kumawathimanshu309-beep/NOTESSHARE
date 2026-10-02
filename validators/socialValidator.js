@@ -11,6 +11,7 @@ const ratingSchema = Joi.object({
   review: Joi.string().trim().max(500).allow('').messages({
     'string.max': 'Review comment cannot exceed 500 characters.',
   }),
+  _csrf: Joi.string().allow('').optional(),
 });
 
 const commentSchema = Joi.object({
@@ -20,6 +21,7 @@ const commentSchema = Joi.object({
     'string.max': 'Comment cannot exceed 1000 characters.',
     'any.required': 'Comment content is required.',
   }),
+  _csrf: Joi.string().allow('').optional(),
 });
 
 const profileUpdateSchema = Joi.object({

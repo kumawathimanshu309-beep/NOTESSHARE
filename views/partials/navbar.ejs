@@ -10,49 +10,147 @@
 
     <div class="nav-menu-wrapper">
       <div class="nav-links">
-        <a href="/" class="<%= typeof path !== 'undefined' && path === '/' ? 'active' : '' %>">Home</a>
-        <a href="/notes" class="<%= typeof path !== 'undefined' && path === '/notes' ? 'active' : '' %>">Explore Notes</a>
-        <a href="/doubts" class="<%= typeof path !== 'undefined' && path === '/doubts' ? 'active' : '' %>">Doubts Q&A</a>
-        <a href="/faculty" class="<%= typeof path !== 'undefined' && path === '/faculty' ? 'active' : '' %>">Faculty</a>
-        <a href="/search" class="<%= typeof path !== 'undefined' && path === '/search' ? 'active' : '' %>">🔍 Search</a>
-        <a href="/features" class="<%= typeof path !== 'undefined' && path === '/features' ? 'active' : '' %>">Features</a>
-        <a href="/about" class="<%= typeof path !== 'undefined' && path === '/about' ? 'active' : '' %>">About</a>
-        
-        <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-          <a href="/notifications" class="<%= typeof path !== 'undefined' && path === '/notifications' ? 'active' : '' %>" style="position: relative; display: inline-flex; align-items: center; gap: 6px;" aria-label="Notifications (<%= typeof unreadNotificationCount !== 'undefined' ? unreadNotificationCount : 0 %> unread)">
-            🔔 Notifications
-            <% if (typeof unreadNotificationCount !== 'undefined' && unreadNotificationCount > 0) { %>
-              <span style="background: #EF4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; font-family: sans-serif; line-height: 1;">
-                <%= unreadNotificationCount > 99 ? '99+' : unreadNotificationCount %>
-              </span>
-            <% } %>
-          </a>
-          <a href="/dashboard" class="<%= typeof path !== 'undefined' && path === '/dashboard' ? 'active' : '' %>">Dashboard</a>
-          <% if (currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')) { %>
-            <a href="/teacher/dashboard" class="<%= typeof path !== 'undefined' && path === '/teacher/dashboard' ? 'active' : '' %>" style="color: #C4B5FD;">Teacher Portal</a>
-          <% } %>
-          <% if (currentUser && currentUser.role === 'admin') { %>
-            <a href="/admin" class="<%= typeof path !== 'undefined' && path === '/admin' ? 'active' : '' %>" style="color: var(--lavender);">Admin Panel</a>
-          <% } %>
-        <% } %>
+        <a href="/" class="nav-item<%= typeof path !== 'undefined' && path === '/' ? ' active' : '' %>">
+          <i class="fa-solid fa-house"></i>
+          <span>Home</span>
+        </a>
+        <a href="/notes" class="nav-item<%= typeof path !== 'undefined' && path === '/notes' ? ' active' : '' %>">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Explore Notes</span>
+        </a>
+        <a href="/doubts" class="nav-item<%= typeof path !== 'undefined' && path === '/doubts' ? ' active' : '' %>">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>Doubts Q&A</span>
+        </a>
+        <a href="/faculty" class="nav-item<%= typeof path !== 'undefined' && path === '/faculty' ? ' active' : '' %>">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <span>Faculty</span>
+        </a>
+        <a href="/search" class="nav-item<%= typeof path !== 'undefined' && path === '/search' ? ' active' : '' %>">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+        </a>
+        <a href="/features" class="nav-item<%= typeof path !== 'undefined' && path === '/features' ? ' active' : '' %>">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Features</span>
+        </a>
+        <a href="/about" class="nav-item<%= typeof path !== 'undefined' && path === '/about' ? ' active' : '' %>">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>About</span>
+        </a>
       </div>
 
       <div class="nav-actions">
         <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated && currentUser) { %>
-          <a href="/profile/<%= currentUser.username %>" style="font-size: 13px; color: var(--muted); text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted)'">
-            👤 <strong style="color: white;"><%= currentUser.name.split(' ')[0] %></strong>
-          </a>
-          <form action="/auth/logout" method="POST" style="display: inline;">
-            <button type="submit" class="secondary-button" style="padding: 8px 14px; font-size: 12px;">
-              Log out
+          <div class="nav-user-links">
+            <a href="/notifications" class="nav-item nav-bell-link<%= typeof path !== 'undefined' && path === '/notifications' ? ' active' : '' %>" aria-label="Notifications (<%= typeof unreadNotificationCount !== 'undefined' ? unreadNotificationCount : 0 %> unread)" title="Notifications">
+              <span class="nav-bell-wrapper">
+                <i class="fa-solid fa-bell"></i>
+                <% if (typeof unreadNotificationCount !== 'undefined' && unreadNotificationCount > 0) { %>
+                  <span class="nav-badge"><%= unreadNotificationCount > 99 ? '99+' : unreadNotificationCount %></span>
+                <% } %>
+              </span>
+              <span class="nav-mobile-label">Notifications</span>
+            </a>
+            <a href="/dashboard" class="nav-item<%= typeof path !== 'undefined' && path === '/dashboard' ? ' active' : '' %>">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>Dashboard</span>
+            </a>
+            <% if (currentUser.role === 'teacher' || currentUser.role === 'admin') { %>
+              <a href="/teacher/dashboard" class="nav-item nav-teacher-portal<%= typeof path !== 'undefined' && path === '/teacher/dashboard' ? ' active' : '' %>">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>Teacher Portal</span>
+              </a>
+            <% } %>
+            <% if (currentUser.role === 'admin') { %>
+              <a href="/admin" class="nav-item nav-admin-panel<%= typeof path !== 'undefined' && path === '/admin' ? ' active' : '' %>">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Admin Panel</span>
+              </a>
+            <% } %>
+          </div>
+
+          <div class="nav-user-account" id="navUserAccount">
+            <button type="button" class="nav-profile-chip-btn" id="navProfileChipBtn" aria-expanded="false" aria-haspopup="true" aria-label="Account menu for <%= currentUser.name %>">
+              <% if (currentUser.avatar && currentUser.avatar !== '/images/logo.png' && (currentUser.avatar.startsWith('/') || currentUser.avatar.startsWith('http://') || currentUser.avatar.startsWith('https://'))) { %>
+                <img src="<%= currentUser.avatar %>" alt="<%= currentUser.name %>" class="nav-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-grid';">
+                <span class="nav-avatar-fallback" style="display: none;"><%= currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U' %></span>
+              <% } else { %>
+                <span class="nav-avatar-fallback"><%= currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U' %></span>
+              <% } %>
+              <span class="nav-user-name"><%= currentUser.name ? currentUser.name.split(' ')[0] : 'Profile' %></span>
+              <i class="fa-solid fa-chevron-down nav-chip-arrow" aria-hidden="true"></i>
             </button>
-          </form>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="nav-profile-dropdown" id="navProfileDropdown" role="menu" aria-label="User account menu">
+              <!-- Dropdown Header: Avatar, Name, Handle, Role Badge -->
+              <div class="nav-dropdown-header">
+                <div class="nav-dropdown-avatar">
+                  <% if (currentUser.avatar && currentUser.avatar !== '/images/logo.png' && (currentUser.avatar.startsWith('/') || currentUser.avatar.startsWith('http://') || currentUser.avatar.startsWith('https://'))) { %>
+                    <img src="<%= currentUser.avatar %>" alt="<%= currentUser.name %>" class="nav-dropdown-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-grid';">
+                    <span class="nav-dropdown-avatar-fallback" style="display: none;"><%= currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U' %></span>
+                  <% } else { %>
+                    <span class="nav-dropdown-avatar-fallback"><%= currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U' %></span>
+                  <% } %>
+                </div>
+                <div class="nav-dropdown-user-info">
+                  <div class="nav-dropdown-user-name"><%= currentUser.name %></div>
+                  <div class="nav-dropdown-user-handle">@<%= currentUser.username %></div>
+                  <span class="nav-dropdown-role-badge role-<%= currentUser.role || 'student' %>">
+                    <%= (currentUser.role || 'student').toUpperCase() %>
+                  </span>
+                </div>
+              </div>
+
+              <div class="nav-dropdown-divider"></div>
+
+              <!-- Navigation Links -->
+              <div class="nav-dropdown-items">
+                <a href="/profile/<%= currentUser.username %>" class="nav-dropdown-item" role="menuitem">
+                  <i class="fa-solid fa-user"></i>
+                  <span>My Profile</span>
+                </a>
+                <a href="/dashboard" class="nav-dropdown-item" role="menuitem">
+                  <i class="fa-solid fa-gauge-high"></i>
+                  <span>Dashboard</span>
+                </a>
+                <% if (currentUser.role === 'teacher' || currentUser.role === 'admin') { %>
+                  <a href="/teacher/dashboard" class="nav-dropdown-item" role="menuitem">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span>Teacher Portal</span>
+                  </a>
+                <% } %>
+                <% if (currentUser.role === 'admin') { %>
+                  <a href="/admin" class="nav-dropdown-item" role="menuitem">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Admin Panel</span>
+                  </a>
+                <% } %>
+              </div>
+
+              <div class="nav-dropdown-divider"></div>
+
+              <!-- Logout -->
+              <div class="nav-dropdown-footer">
+                <form action="/auth/logout" method="POST" class="nav-dropdown-logout-form">
+                  <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                  <button type="submit" class="nav-dropdown-logout-btn" role="menuitem" title="Log out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Log out</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         <% } else { %>
-          <a href="/auth/login" class="login">
-            Log in
+          <a href="/auth/login" class="nav-item nav-login-link<%= typeof path !== 'undefined' && path === '/auth/login' ? ' active' : '' %>">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>Log in</span>
           </a>
-          <a href="/auth/signup" class="nav-button">
-            Get Started
+          <a href="/auth/signup" class="nav-button nav-signup-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Get Started</span>
           </a>
         <% } %>
       </div>

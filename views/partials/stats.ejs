@@ -1,25 +1,50 @@
-<section class="stats-section">
+<%
+  function formatCompactNumber(num) {
+    if (num == null || isNaN(num)) return '0';
+    const n = Number(num);
+    if (n < 1000) return `${n}`;
+    if (n < 1000000) {
+      const thousands = n / 1000;
+      const formatted = thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1).replace(/\.0$/, '');
+      return `${formatted}K+`;
+    }
+    const millions = n / 1000000;
+    const formatted = millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1).replace(/\.0$/, '');
+    return `${formatted}M+`;
+  }
+
+  const stats = typeof platformStats !== 'undefined' ? platformStats : { notes: 0, students: 0, subjects: 0, downloads: 0 };
+%>
+<section class="stats-section" aria-label="Platform Statistics">
 
   <div class="stats-container">
 
     <div class="stat">
-      <strong>10K+</strong>
-      <span>Study Notes</span>
+      <strong class="stat-number" data-target="<%= stats.notes %>" data-format="compact">
+        <%= formatCompactNumber(stats.notes) %>
+      </strong>
+      <span class="stat-label">Study Notes</span>
     </div>
 
     <div class="stat">
-      <strong>5K+</strong>
-      <span>Students</span>
+      <strong class="stat-number" data-target="<%= stats.students %>" data-format="compact">
+        <%= formatCompactNumber(stats.students) %>
+      </strong>
+      <span class="stat-label">Students</span>
     </div>
 
     <div class="stat">
-      <strong>50+</strong>
-      <span>Subjects</span>
+      <strong class="stat-number" data-target="<%= stats.subjects %>" data-format="compact">
+        <%= formatCompactNumber(stats.subjects) %>
+      </strong>
+      <span class="stat-label">Subjects</span>
     </div>
 
     <div class="stat">
-      <strong>25K+</strong>
-      <span>Downloads</span>
+      <strong class="stat-number" data-target="<%= stats.downloads %>" data-format="compact">
+        <%= formatCompactNumber(stats.downloads) %>
+      </strong>
+      <span class="stat-label">Downloads</span>
     </div>
 
   </div>

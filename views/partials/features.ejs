@@ -29,8 +29,8 @@
           </div>
           <h3><%= feature.title %></h3>
           <p><%= feature.description %></p>
-          <a href="/features">
-            Learn more →
+          <a href="<%= (typeof feature !== 'undefined' && feature.url) ? feature.url : '/features' %>">
+            <%= (typeof feature !== 'undefined' && feature.ctaText) ? feature.ctaText : 'Learn more →' %>
           </a>
         </div>
       <% }) %>

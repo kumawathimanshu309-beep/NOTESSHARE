@@ -315,3 +315,30 @@ exports.toggleTopicActive = async (topicId) => {
   await topic.save();
   return topic;
 };
+
+/**
+ * Check if a teacher or user is authorized / assigned to manage a subject.
+ * System admin has global authority.
+ * Teacher must have subject name, ID, or code in user.subjectsHandled.
+ */
+exports.isTeacherAssignedToSubject = (user, subjectDoc) => {
+  if (!user) return false;
+  if (user.role === 'admin' || user.isAdmin) return true;
+  if (user.role !== 'teacher') return false;
+  if (!subjectDoc) return false;
+  if (!Array.isArray(user.subjectsHandled) || user.subjectsHandled.length === 0) return false;
+
+  const targetId = subjectDoc._id ? subjectDoc._id.toString() : '';
+  const targetName = subjectDoc.name ? subjectDoc.name.trim().toLowerCase() : '';
+  const targetCode = subjectDoc.code ? subjectDoc.code.trim().toLowerCase() : '';
+
+  return user.subjectsHandled.some((handled) => {
+    if (!handled) return false;
+    const itemStr = String(handled).trim().toLowerCase();
+    if (targetId && itemStr === targetId.toLowerCase()) return true;
+    if (targetName && itemStr === targetName) return true;
+    if (targetCode && itemStr === targetCode) return true;
+    return false;
+  });
+};
+

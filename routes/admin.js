@@ -45,6 +45,30 @@ router.patch('/home-content/:id/restore', adminController.restoreHomeCard);
 router.post('/home-content/:id/restore', adminController.restoreHomeCard);
 router.delete('/home-content/:id', adminController.deleteHomeCard);
 
+// Features Cards Management
+router.get('/features-cards', adminController.getFeatureCards);
+router.post('/features-cards', adminController.postFeatureCard);
+router.get('/features-cards/:id/edit', adminController.getEditFeatureCard);
+router.post('/features-cards/:id/edit', adminController.postEditFeatureCard);
+router.post('/features-cards/:id', adminController.postEditFeatureCard);
+router.put('/features-cards/:id', adminController.postEditFeatureCard);
+router.patch('/features-cards/:id/toggle-active', adminController.patchToggleFeatureCardActive);
+router.post('/features-cards/:id/toggle-active', adminController.patchToggleFeatureCardActive);
+router.delete('/features-cards/:id', adminController.deleteFeatureCard);
+router.post('/features-cards/:id/delete', adminController.deleteFeatureCard);
+
+// About Cards Management
+router.get('/about-cards', adminController.getAboutCards);
+router.post('/about-cards', adminController.postAboutCard);
+router.get('/about-cards/:id/edit', adminController.getEditAboutCard);
+router.post('/about-cards/:id/edit', adminController.postEditAboutCard);
+router.post('/about-cards/:id', adminController.postEditAboutCard);
+router.put('/about-cards/:id', adminController.postEditAboutCard);
+router.patch('/about-cards/:id/toggle-active', adminController.patchToggleAboutCardActive);
+router.post('/about-cards/:id/toggle-active', adminController.patchToggleAboutCardActive);
+router.delete('/about-cards/:id', adminController.deleteAboutCard);
+router.post('/about-cards/:id/delete', adminController.deleteAboutCard);
+
 const { validateSubjectInput, validateTopicInput } = require('../validators/subjectValidator');
 
 // 6. Audit Logs

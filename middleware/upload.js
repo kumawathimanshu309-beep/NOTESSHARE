@@ -85,3 +85,45 @@ exports.handleDoubtFileUpload = (fieldName) => {
     });
   };
 };
+
+// Avatar-specific multer: images only, 5 MB
+const avatarAllowedMime = ['image/jpeg', 'image/png', 'image/webp'];
+const avatarAllowedExt = ['.jpg', '.jpeg', '.png', '.webp'];
+
+const avatarFileFilter = (req, file, cb) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+  const mime = file.mimetype.toLowerCase();
+  if (avatarAllowedMime.includes(mime) && avatarAllowedExt.includes(ext)) {
+    return cb(null, true);
+  }
+  const err = new Error('Invalid file type. Only JPG, PNG, and WEBP images are allowed for avatars.');
+  err.code = 'INVALID_FILE_TYPE';
+  cb(err, false);
+};
+
+const avatarUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: avatarFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+});
+
+exports.handleAvatarUpload = (fieldName) => {
+  return (req, res, next) => {
+    const uploadSingle = avatarUpload.single(fieldName);
+    uploadSingle(req, res, (err) => {
+      if (err) {
+        let errorMsg = 'Avatar upload failed.';
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          errorMsg = 'Avatar image must be smaller than 5 MB.';
+        } else if (err.code === 'INVALID_FILE_TYPE') {
+          errorMsg = err.message;
+        } else {
+          errorMsg = err.message || 'An error occurred during avatar upload.';
+        }
+        req.flash('error', errorMsg);
+        return res.status(400).redirect(303, req.headers.referer || '/profile/edit');
+      }
+      next();
+    });
+  };
+};
