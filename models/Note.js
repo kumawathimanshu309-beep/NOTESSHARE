@@ -25,6 +25,16 @@ const noteSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Author reference is required.'],
     },
+    field: {
+      type: String,
+      trim: true,
+      default: 'Engineering',
+    },
+    branch: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     subject: {
       type: String,
       trim: true,
@@ -169,6 +179,8 @@ noteSchema.index({ title: 'text', description: 'text', tags: 'text', subject: 't
 noteSchema.index({ author: 1 });
 noteSchema.index({ subject: 1, category: 1, semester: 1, resourceType: 1, year: 1 });
 noteSchema.index({ isPublished: 1, visibility: 1, isDeleted: 1, createdAt: -1 });
+noteSchema.index({ field: 1, branch: 1, semester: 1 });
+noteSchema.index({ branch: 1, subject: 1 });
 noteSchema.index({ approvalStatus: 1, isPublished: 1, isDeleted: 1, visibility: 1 });
 
 const Note = mongoose.model('Note', noteSchema);

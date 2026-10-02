@@ -42,43 +42,94 @@ class NoteService {
    * Create a new Note record with role-aware moderation default
    */
   async createNote(authorId, data, file, userRole = 'student') {
-    const { title, description, content, subject, topic, category, semester, tags, resourceType, visibility, isPublished, videoUrl } = data;
+    const {
+      title,
+      description,
+      content,
+      field,
+      branch,
+      subject,
+      subjectId,
+      topic,
+      topicId,
+      category,
+      semester,
+      tags,
+      resourceType,
+      visibility,
+      isPublished,
+      videoUrl,
+    } = data;
 
-    // Verify subject & teacher assignment
+    // 1. Verify Field
+    const finalField = field && field.trim() ? field.trim() : 'Engineering';
+    if (finalField.toLowerCase() !== 'engineering') {
+      throw new AppError(`Invalid academic field "${finalField}". Currently only "Engineering" is supported.`, 400);
+    }
+
+    // 2. Verify Subject
     let subjectDoc = null;
-    if (subject && subject.trim()) {
+    const rawSubject = subjectId || subject;
+    if (rawSubject && String(rawSubject).trim()) {
+      const term = String(rawSubject).trim();
       subjectDoc = await Subject.findOne({
         $or: [
-          { name: { $regex: `^${subject.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
-          ...(mongoose.Types.ObjectId.isValid(subject.trim()) ? [{ _id: subject.trim() }] : [])
+          { name: { $regex: `^${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+          ...(mongoose.Types.ObjectId.isValid(term) ? [{ _id: term }] : []),
         ],
         isActive: true,
       });
+      if (!subjectDoc) {
+        throw new AppError(`Selected subject "${subject || subjectId}" was not found or is inactive.`, 400);
+      }
     }
 
+    // 3. Verify Branch and its relation to Subject
+    const branchName = branch && branch.trim() ? branch.trim() : (subjectDoc ? subjectDoc.department : '');
+    if (branchName) {
+      const activeBranches = await academicService.getActiveBranches();
+      const branchExists = activeBranches.some((b) => b.toLowerCase() === branchName.toLowerCase());
+      if (!branchExists) {
+        throw new AppError(`Invalid or inactive academic branch "${branchName}".`, 400);
+      }
+
+      if (subjectDoc && subjectDoc.department.toLowerCase() !== branchName.toLowerCase()) {
+        throw new AppError(`Subject "${subjectDoc.name}" belongs to branch "${subjectDoc.department}", not "${branchName}".`, 400);
+      }
+    }
+
+    // 4. Verify Semester
+    const parsedSem = Number(semester) || 1;
+    if (parsedSem < 1 || parsedSem > 8) {
+      throw new AppError('Semester must be between 1 and 8.', 400);
+    }
+
+    // 5. Verify teacher assignment
     if (userRole === 'teacher') {
       const author = await User.findById(authorId).lean();
       if (!subjectDoc || !academicService.isTeacherAssignedToSubject(author, subjectDoc)) {
-        throw new AppError(`You are not assigned to publish resources under subject "${subject || 'Unknown'}".`, 403);
+        throw new AppError(`You are not assigned to publish resources under subject "${subjectDoc ? subjectDoc.name : (subject || 'Unknown')}".`, 403);
       }
     }
 
-    // Verify topic belongs to selected subject
+    // 6. Verify topic belongs to selected subject
     let topicDoc = null;
-    if (topic && topic.trim()) {
+    const rawTopic = topicId || topic;
+    if (rawTopic && String(rawTopic).trim()) {
       if (!subjectDoc) {
         throw new AppError('A valid subject is required to associate a topic.', 400);
       }
+      const tTerm = String(rawTopic).trim();
       topicDoc = await Topic.findOne({
         subject: subjectDoc._id,
         $or: [
-          { name: { $regex: `^${topic.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
-          ...(mongoose.Types.ObjectId.isValid(topic.trim()) ? [{ _id: topic.trim() }] : [])
+          { name: { $regex: `^${tTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+          ...(mongoose.Types.ObjectId.isValid(tTerm) ? [{ _id: tTerm }] : []),
         ],
         isActive: true,
       });
       if (!topicDoc) {
-        throw new AppError(`Selected topic "${topic}" does not exist under subject "${subjectDoc.name}".`, 400);
+        throw new AppError(`Selected topic "${topic || topicId}" does not exist under subject "${subjectDoc.name}".`, 400);
       }
     }
 
@@ -131,12 +182,14 @@ class NoteService {
       description: description ? description.trim() : '',
       content: content ? content.trim() : '',
       author: authorId,
+      field: finalField,
+      branch: subjectDoc ? subjectDoc.department : (branchName || ''),
       subject: subjectDoc ? subjectDoc.name : (subject || 'General'),
       subjectId: subjectDoc ? subjectDoc._id : null,
       topic: topicDoc ? topicDoc.name : '',
       topicId: topicDoc ? topicDoc._id : null,
       category: category || 'Notes',
-      semester: Number(semester) || 1,
+      semester: parsedSem,
       tags: parsedTags,
       resourceType: resourceType || (mimeType ? this.detectResourceType(mimeType) : 'pdf'),
       fileUrl,
@@ -174,13 +227,55 @@ class NoteService {
         { title: searchRegex },
         { description: searchRegex },
         { subject: searchRegex },
+        { branch: searchRegex },
+        { topic: searchRegex },
         { tags: searchRegex },
       ];
     }
 
-    if (options.subject && options.subject.trim() && options.subject !== 'all') {
-      query.subject = new RegExp(`^${options.subject.trim()}$`, 'i');
+    if (options.field && options.field.trim() && options.field !== 'all') {
+      const fieldRegex = new RegExp(`^${options.field.trim()}$`, 'i');
+      query.$and = query.$and || [];
+      query.$and.push({
+        $or: [{ field: fieldRegex }, { field: { $exists: false } }, { field: '' }],
+      });
     }
+
+    if (options.branch && options.branch.trim() && options.branch !== 'all') {
+      const branchName = options.branch.trim();
+      const branchRegex = new RegExp(`^${branchName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+      const branchSubjects = await Subject.find({ department: branchRegex }).select('_id name').lean();
+      const subjectIds = branchSubjects.map((s) => s._id);
+      const subjectNames = branchSubjects.map((s) => s.name);
+
+      query.$and = query.$and || [];
+      query.$and.push({
+        $or: [
+          { branch: branchRegex },
+          ...(subjectIds.length > 0 ? [{ subjectId: { $in: subjectIds } }] : []),
+          ...(subjectNames.length > 0
+            ? [{ subject: { $in: subjectNames.map((n) => new RegExp(`^${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) } }]
+            : []),
+        ],
+      });
+    }
+
+    if (options.subject && options.subject.trim() && options.subject !== 'all') {
+      const subj = options.subject.trim();
+      const subjRegex = new RegExp(`^${subj.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+      query.$and = query.$and || [];
+      if (mongoose.Types.ObjectId.isValid(subj)) {
+        query.$and.push({
+          $or: [{ subjectId: subj }, { subject: subjRegex }],
+        });
+      } else {
+        query.$and.push({
+          $or: [{ subject: subjRegex }],
+        });
+      }
+    }
+
+
 
     if (options.semester && !isNaN(options.semester)) {
       query.semester = Number(options.semester);
@@ -317,6 +412,10 @@ class NoteService {
         throw new AppError(`You are not assigned to publish resources under subject "${updateData.subject}".`, 403);
       }
     }
+
+    if (typeof updateData.field !== 'undefined') note.field = updateData.field.trim();
+    if (typeof updateData.branch !== 'undefined') note.branch = updateData.branch.trim();
+    else if (subjectDoc) note.branch = subjectDoc.department;
 
     if (typeof updateData.subject !== 'undefined') {
       note.subject = subjectDoc ? subjectDoc.name : updateData.subject;

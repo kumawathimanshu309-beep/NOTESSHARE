@@ -1010,10 +1010,26 @@ exports.patchToggleTopicActive = wrapAsync(async (req, res) => {
 // PUBLIC API FOR DYNAMIC STUDENT DROPDOWNS
 // ==========================================
 
+// @desc    Get Active Fields JSON for Dropdowns
+// @route   GET /api/fields
+exports.getApiActiveFields = wrapAsync(async (req, res) => {
+  const fields = await academicService.getActiveFields();
+  res.json({ success: true, fields });
+});
+
+// @desc    Get Active Branches JSON for Dropdowns
+// @route   GET /api/branches
+exports.getApiActiveBranches = wrapAsync(async (req, res) => {
+  const { field } = req.query;
+  const branches = await academicService.getActiveBranches(field, req.user);
+  res.json({ success: true, branches });
+});
+
 // @desc    Get Active Subjects JSON for Dropdowns
 // @route   GET /api/subjects
 exports.getApiActiveSubjects = wrapAsync(async (req, res) => {
-  const subjects = await academicService.getActiveSubjects();
+  const { branch, department, field } = req.query;
+  const subjects = await academicService.getActiveSubjects({ branch, department, field, user: req.user });
   res.json({ success: true, subjects });
 });
 

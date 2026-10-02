@@ -13,6 +13,8 @@ router.get('/about', homeController.getAbout);
 router.get('/features', homeController.getFeatures);
 
 // Public Academic API for Dynamic Dropdowns
+router.get('/api/fields', adminController.getApiActiveFields);
+router.get('/api/branches', adminController.getApiActiveBranches);
 router.get('/api/subjects', adminController.getApiActiveSubjects);
 router.get('/api/subjects/:subjectId/topics', adminController.getApiActiveTopics);
 

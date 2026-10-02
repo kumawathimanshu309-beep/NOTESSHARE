@@ -79,10 +79,46 @@ exports.getAllSubjects = async (query = {}) => {
 };
 
 /**
- * Get active subjects for public dropdowns
+ * Get active fields (Engineering as primary)
  */
-exports.getActiveSubjects = async () => {
-  return await Subject.find({ isActive: true }).sort({ name: 1 }).lean();
+exports.getActiveFields = async () => {
+  return ['Engineering'];
+};
+
+/**
+ * Get active branches (departments) from academic subjects
+ */
+exports.getActiveBranches = async (field = 'Engineering', user = null) => {
+  if (user && user.role === 'teacher' && !user.isAdmin) {
+    const teacherSubjects = await Subject.find({ isActive: true }).lean();
+    const assigned = teacherSubjects.filter((s) => exports.isTeacherAssignedToSubject(user, s));
+    const teacherDepts = [...new Set(assigned.map((s) => s.department).filter(Boolean))];
+    return teacherDepts.sort((a, b) => a.localeCompare(b));
+  }
+
+  const departments = await Subject.distinct('department', { isActive: true });
+  return departments
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+};
+
+/**
+ * Get active subjects for public dropdowns with optional branch, department, and teacher filtering
+ */
+exports.getActiveSubjects = async (options = {}) => {
+  const filter = { isActive: true };
+  const branch = options.branch || options.department;
+  if (branch && branch.trim() && branch.trim() !== 'all') {
+    filter.department = new RegExp(`^${branch.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+  }
+
+  let subjects = await Subject.find(filter).sort({ name: 1 }).lean();
+
+  if (options.user && options.user.role === 'teacher' && !options.user.isAdmin) {
+    subjects = subjects.filter((s) => exports.isTeacherAssignedToSubject(options.user, s));
+  }
+
+  return subjects;
 };
 
 /**

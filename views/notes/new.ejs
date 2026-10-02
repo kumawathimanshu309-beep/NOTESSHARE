@@ -16,60 +16,80 @@
           type="text" 
           id="title" 
           name="title" 
-          value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>" 
-          placeholder="e.g. Data Structures & Algorithms Complete Notes" 
-          required 
+          value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>"
+          placeholder="e.g. Database Management Systems Complete Unit 1-5 Notes"
+          required
           style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 14px; outline: none;"
           onfocus="this.style.borderColor='var(--violet)'"
           onblur="this.style.borderColor='var(--border)'"
         >
       </div>
 
-      <!-- Grid for Subject, Topic, Semester, Resource Type -->
-      <div class="form-grid-2col" style="margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+      <!-- Grid for Field, Branch, Semester, Subject, Resource Type -->
+      <div class="form-grid-2col" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
         
+        <!-- Field -->
         <div>
-          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject *</label>
-          <select id="subject" name="subject" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="">Select Subject</option>
-            <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
-              <% activeSubjects.forEach(s => { %>
-                <option value="<%= s.name %>" data-id="<%= s._id %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %>><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+          <label for="field" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Field *</label>
+          <select id="field" name="field" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <% if (typeof fields !== 'undefined' && fields && fields.length > 0) { %>
+              <% fields.forEach(f => { %>
+                <option value="<%= f %>" <%= (typeof defaultField !== 'undefined' && defaultField === f) ? 'selected' : '' %>><%= f %></option>
               <% }) %>
             <% } else { %>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Mathematics">Mathematics</option>
-              <option value="Science">Science</option>
-              <option value="Engineering">Engineering</option>
-              <option value="General">General</option>
+              <option value="Engineering" selected>Engineering</option>
             <% } %>
           </select>
         </div>
 
+        <!-- Branch -->
         <div>
-          <label for="topic" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Topic / Module (Optional)</label>
-          <select id="topic" name="topic" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="">Select Topic (Optional)</option>
+          <label for="branch" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Branch *</label>
+          <select id="branch" name="branch" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="">Select Branch</option>
+            <% if (typeof branches !== 'undefined' && branches && branches.length > 0) { %>
+              <% branches.forEach(b => { %>
+                <option value="<%= b %>" <%= (typeof defaultBranch !== 'undefined' && defaultBranch === b) ? 'selected' : '' %>><%= b %></option>
+              <% }) %>
+            <% } %>
           </select>
         </div>
 
+        <!-- Semester -->
         <div>
-          <label for="semester" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Semester</label>
-          <select id="semester" name="semester" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <label for="semester" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Semester *</label>
+          <select id="semester" name="semester" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
             <% for(let s = 1; s <= 8; s++) { %>
-              <option value="<%= s %>">Semester <%= s %></option>
+              <option value="<%= s %>" <%= (typeof defaultSemester !== 'undefined' && defaultSemester == s) ? 'selected' : '' %>>Semester <%= s %></option>
             <% } %>
           </select>
         </div>
 
+        <!-- Subject -->
         <div>
-          <label for="resourceType" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Resource Type</label>
-          <select id="resourceType" name="resourceType" style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="pdf">PDF Document</option>
-            <option value="ppt">PPT / Presentation</option>
-            <option value="image">Image Note</option>
-            <option value="document">Other Document</option>
-            <option value="video">Video Reference</option>
+          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject *</label>
+          <select id="subject" name="subject" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="">Select Branch First</option>
+            <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
+              <% activeSubjects.forEach(s => { %>
+                <option value="<%= s.name %>" data-id="<%= s._id %>" data-branch="<%= s.department %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %>><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+              <% }) %>
+            <% } %>
+          </select>
+          <input type="hidden" id="subjectId" name="subjectId" value="">
+        </div>
+
+        <!-- Resource Type (Spans 2 columns on desktop so layout adjusts cleanly with no empty gap) -->
+        <div style="grid-column: 1 / -1;">
+          <label for="resourceType" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Resource Type *</label>
+          <select id="resourceType" name="resourceType" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+            <option value="pdf" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pdf') ? 'selected' : '' %>>📄 Study Notes (PDF)</option>
+            <option value="pyq" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pyq') ? 'selected' : '' %>>📝 Previous Year Paper (PYQ)</option>
+            <option value="important_questions" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'important_questions') ? 'selected' : '' %>>🔥 Important Questions</option>
+            <option value="ppt" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'ppt') ? 'selected' : '' %>>📊 PPT / Presentation</option>
+            <option value="image" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'image') ? 'selected' : '' %>>🖼️ Image Note</option>
+            <option value="document" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'document') ? 'selected' : '' %>>📁 Other Document</option>
+            <option value="video" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'video') ? 'selected' : '' %>>🎥 Video Reference</option>
           </select>
         </div>
 
@@ -157,44 +177,90 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const fieldSelect = document.getElementById('field');
+    const branchSelect = document.getElementById('branch');
     const subjectSelect = document.getElementById('subject');
-    const topicSelect = document.getElementById('topic');
+    const subjectIdInput = document.getElementById('subjectId');
 
-    async function loadTopics(subjectId, selectedTopicName) {
-      if (!topicSelect) return;
-      topicSelect.innerHTML = '<option value="">Select Topic (Optional)</option>';
-      if (subjectId) {
-        try {
-          const res = await fetch('/api/subjects/' + subjectId + '/topics');
-          const data = await res.json();
-          if (data.success && Array.isArray(data.topics) && data.topics.length > 0) {
-            data.topics.forEach(t => {
-              const opt = document.createElement('option');
-              opt.value = t.name;
-              opt.textContent = t.name;
-              if (selectedTopicName && t.name.toLowerCase() === selectedTopicName.toLowerCase()) {
-                opt.selected = true;
-              }
-              topicSelect.appendChild(opt);
-            });
+    const initialSubject = '<%= typeof defaultSubject !== "undefined" ? defaultSubject : "" %>';
+
+    // 1. Load subjects by branch
+    async function loadSubjects(branchName, targetSubjectName) {
+      if (!subjectSelect) return;
+      if (!branchName) {
+        subjectSelect.innerHTML = '<option value="">Select Branch First</option>';
+        if (subjectIdInput) subjectIdInput.value = '';
+        return;
+      }
+
+      subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
+      if (subjectIdInput) subjectIdInput.value = '';
+
+      try {
+        const res = await fetch('/api/subjects?branch=' + encodeURIComponent(branchName));
+        const data = await res.json();
+        if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
+          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+          let matchedOpt = null;
+          data.subjects.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.name;
+            opt.textContent = s.name + (s.code ? ' (' + s.code + ')' : '');
+            opt.setAttribute('data-id', s._id);
+            opt.setAttribute('data-branch', s.department || '');
+            if (targetSubjectName && s.name.toLowerCase() === targetSubjectName.toLowerCase()) {
+              opt.selected = true;
+              matchedOpt = opt;
+            }
+            subjectSelect.appendChild(opt);
+          });
+
+          if (matchedOpt && subjectIdInput) {
+            subjectIdInput.value = matchedOpt.getAttribute('data-id');
           }
-        } catch (err) {
-          console.error('Error fetching topics:', err);
+        } else {
+          subjectSelect.innerHTML = '<option value="">No subjects available for this branch.</option>';
         }
+      } catch (err) {
+        console.error('Error fetching subjects:', err);
+        subjectSelect.innerHTML = '<option value="">Unable to load academic data. Please try again.</option>';
       }
     }
 
-    if (subjectSelect && topicSelect) {
-      const initOpt = subjectSelect.options[subjectSelect.selectedIndex];
-      if (initOpt && initOpt.getAttribute('data-id')) {
-        loadTopics(initOpt.getAttribute('data-id'), '<%= typeof defaultTopic !== "undefined" ? defaultTopic : "" %>');
-      }
+    // Event: Field changes -> reset branch and subject
+    if (fieldSelect) {
+      fieldSelect.addEventListener('change', function() {
+        if (branchSelect) branchSelect.value = '';
+        if (subjectSelect) subjectSelect.innerHTML = '<option value="">Select Branch First</option>';
+        if (subjectIdInput) subjectIdInput.value = '';
+      });
+    }
 
+    // Event: Branch changes -> load subjects
+    if (branchSelect) {
+      branchSelect.addEventListener('change', function() {
+        loadSubjects(this.value, '');
+      });
+    }
+
+    // Event: Subject changes -> set subjectId
+    if (subjectSelect) {
       subjectSelect.addEventListener('change', function() {
         const selectedOpt = this.options[this.selectedIndex];
         const subjectId = selectedOpt ? selectedOpt.getAttribute('data-id') : null;
-        loadTopics(subjectId, '');
+        if (subjectIdInput) subjectIdInput.value = subjectId || '';
       });
+    }
+
+    // Initialization on page load
+    if (branchSelect && branchSelect.value) {
+      loadSubjects(branchSelect.value, initialSubject);
+    } else if (subjectSelect) {
+      const selectedOpt = subjectSelect.options[subjectSelect.selectedIndex];
+      if (selectedOpt && selectedOpt.value) {
+        const subjectId = selectedOpt.getAttribute('data-id');
+        if (subjectIdInput) subjectIdInput.value = subjectId || '';
+      }
     }
   });
 </script>

@@ -9,34 +9,29 @@
 
   <!-- Resource Type Quick Filter Tabs -->
   <div class="notes-category-tabs">
-    <a href="/notes" class="category-tab <%= typeof query === 'undefined' || !query.resourceType ? 'active' : '' %>" aria-label="Show all resources">
+    <a href="/notes" class="category-tab <%= typeof query === 'undefined' || !query.resourceType || query.resourceType === 'all' ? 'active' : '' %>" aria-label="Show all resources">
       <span class="tab-icon" aria-hidden="true">📚</span>
       <span class="tab-text">All Resources</span>
     </a>
-    <a href="/notes?resourceType=pdf" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'active' : '' %>" aria-label="Filter by study notes">
+    <a href="/notes?resourceType=pdf<%= typeof query !== 'undefined' && query.branch ? '&branch=' + encodeURIComponent(query.branch) : '' %><%= typeof query !== 'undefined' && query.subject ? '&subject=' + encodeURIComponent(query.subject) : '' %>" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'active' : '' %>" aria-label="Filter by study notes">
       <span class="tab-icon" aria-hidden="true">📄</span>
       <span class="tab-text">Study Notes</span>
     </a>
-    <a href="/notes?resourceType=pyq" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'active' : '' %>" aria-label="Filter by previous year papers">
+    <a href="/notes?resourceType=pyq<%= typeof query !== 'undefined' && query.branch ? '&branch=' + encodeURIComponent(query.branch) : '' %><%= typeof query !== 'undefined' && query.subject ? '&subject=' + encodeURIComponent(query.subject) : '' %>" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'active' : '' %>" aria-label="Filter by previous year papers">
       <span class="tab-icon" aria-hidden="true">📝</span>
       <span class="tab-text tab-text-desktop">Previous Year Papers (PYQ)</span>
       <span class="tab-text tab-text-mobile">PYQs</span>
     </a>
-    <a href="/notes?resourceType=important_questions" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'active' : '' %>" aria-label="Filter by important questions">
+    <a href="/notes?resourceType=important_questions<%= typeof query !== 'undefined' && query.branch ? '&branch=' + encodeURIComponent(query.branch) : '' %><%= typeof query !== 'undefined' && query.subject ? '&subject=' + encodeURIComponent(query.subject) : '' %>" class="category-tab <%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'active' : '' %>" aria-label="Filter by important questions">
       <span class="tab-icon" aria-hidden="true">🔥</span>
       <span class="tab-text">Important Questions</span>
     </a>
   </div>
 
-  <!-- Search & Filter Controls Bar -->
+  <!-- Search & Complete Academic Filter Controls Bar -->
   <div class="content-card notes-filter-card">
     <form action="/notes" method="GET" class="notes-filter-form">
       
-      <!-- Hidden Resource Type if active -->
-      <% if (typeof query !== 'undefined' && query.resourceType) { %>
-        <input type="hidden" name="resourceType" value="<%= query.resourceType %>">
-      <% } %>
-
       <!-- Search Input -->
       <div class="filter-field filter-field-search">
         <input 
@@ -49,21 +44,35 @@
         >
       </div>
 
-      <!-- Subject Filter -->
+      <!-- Field Filter -->
       <div class="filter-field">
-        <select name="subject" aria-label="Filter notes by subject" class="filter-select">
-          <option value="all">All Subjects</option>
-          <option value="Computer Science" <%= typeof query !== 'undefined' && query.subject === 'Computer Science' ? 'selected' : '' %>>Computer Science</option>
-          <option value="Mathematics" <%= typeof query !== 'undefined' && query.subject === 'Mathematics' ? 'selected' : '' %>>Mathematics</option>
-          <option value="Science" <%= typeof query !== 'undefined' && query.subject === 'Science' ? 'selected' : '' %>>Science</option>
-          <option value="Engineering" <%= typeof query !== 'undefined' && query.subject === 'Engineering' ? 'selected' : '' %>>Engineering</option>
-          <option value="General" <%= typeof query !== 'undefined' && query.subject === 'General' ? 'selected' : '' %>>General</option>
+        <select name="field" id="filterField" aria-label="Filter notes by field" class="filter-select">
+          <option value="all" <%= typeof query === 'undefined' || !query.field || query.field === 'all' ? 'selected' : '' %>>All Fields</option>
+          <% if (typeof fields !== 'undefined' && fields && fields.length > 0) { %>
+            <% fields.forEach(f => { %>
+              <option value="<%= f %>" <%= (typeof query !== 'undefined' && query.field === f) ? 'selected' : '' %>><%= f %></option>
+            <% }) %>
+          <% } else { %>
+            <option value="Engineering" <%= (typeof query !== 'undefined' && query.field === 'Engineering') ? 'selected' : '' %>>Engineering</option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Branch Filter -->
+      <div class="filter-field">
+        <select name="branch" id="filterBranch" aria-label="Filter notes by branch" class="filter-select">
+          <option value="all" <%= typeof query === 'undefined' || !query.branch || query.branch === 'all' ? 'selected' : '' %>>All Branches</option>
+          <% if (typeof branches !== 'undefined' && branches && branches.length > 0) { %>
+            <% branches.forEach(b => { %>
+              <option value="<%= b %>" <%= (typeof query !== 'undefined' && query.branch === b) ? 'selected' : '' %>><%= b %></option>
+            <% }) %>
+          <% } %>
         </select>
       </div>
 
       <!-- Semester Filter -->
       <div class="filter-field">
-        <select name="semester" aria-label="Filter notes by semester" class="filter-select">
+        <select name="semester" id="filterSemester" aria-label="Filter notes by semester" class="filter-select">
           <option value="">All Semesters</option>
           <% for(let s = 1; s <= 8; s++) { %>
             <option value="<%= s %>" <%= typeof query !== 'undefined' && query.semester == s ? 'selected' : '' %>>Semester <%= s %></option>
@@ -71,17 +80,33 @@
         </select>
       </div>
 
-      <!-- Resource Type Filter -->
+      <!-- Subject Filter -->
       <div class="filter-field">
-        <select name="resourceType" aria-label="Filter notes by resource type" class="filter-select">
-          <option value="">All Resource Types</option>
-          <option value="pdf" <%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'selected' : '' %>>Study Notes (PDF)</option>
-          <option value="pyq" <%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'selected' : '' %>>PYQ Question Papers</option>
-          <option value="important_questions" <%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'selected' : '' %>>Important Questions</option>
+        <select name="subject" id="filterSubject" aria-label="Filter notes by subject" class="filter-select">
+          <option value="all">All Subjects</option>
+          <% if (typeof subjects !== 'undefined' && subjects && subjects.length > 0) { %>
+            <% subjects.forEach(s => { %>
+              <option value="<%= s.name %>" data-id="<%= s._id %>" data-branch="<%= s.department %>" <%= (typeof query !== 'undefined' && (query.subject === s.name || query.subject === String(s._id))) ? 'selected' : '' %>><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+            <% }) %>
+          <% } %>
         </select>
       </div>
 
-      <!-- Sort By -->
+      <!-- Resource Type Filter -->
+      <div class="filter-field">
+        <select name="resourceType" id="filterResourceType" aria-label="Filter notes by resource type" class="filter-select">
+          <option value="all" <%= typeof query === 'undefined' || !query.resourceType || query.resourceType === 'all' ? 'selected' : '' %>>All Resource Types</option>
+          <option value="pdf" <%= typeof query !== 'undefined' && query.resourceType === 'pdf' ? 'selected' : '' %>>📄 Study Notes (PDF)</option>
+          <option value="pyq" <%= typeof query !== 'undefined' && query.resourceType === 'pyq' ? 'selected' : '' %>>📝 Previous Year Papers (PYQ)</option>
+          <option value="important_questions" <%= typeof query !== 'undefined' && query.resourceType === 'important_questions' ? 'selected' : '' %>>🔥 Important Questions</option>
+          <option value="ppt" <%= typeof query !== 'undefined' && query.resourceType === 'ppt' ? 'selected' : '' %>>📊 PPT / Presentation</option>
+          <option value="image" <%= typeof query !== 'undefined' && query.resourceType === 'image' ? 'selected' : '' %>>🖼️ Image Note</option>
+          <option value="document" <%= typeof query !== 'undefined' && query.resourceType === 'document' ? 'selected' : '' %>>📁 Other Document</option>
+          <option value="video" <%= typeof query !== 'undefined' && query.resourceType === 'video' ? 'selected' : '' %>>🎥 Video Reference</option>
+        </select>
+      </div>
+
+      <!-- Sort By Filter -->
       <div class="filter-field">
         <select name="sort" aria-label="Sort notes list" class="filter-select">
           <option value="newest" <%= typeof query !== 'undefined' && query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
@@ -91,11 +116,16 @@
         </select>
       </div>
 
-      <!-- Submit Button -->
-      <div class="filter-field filter-field-btn">
-        <button type="submit" class="primary-button filter-submit-btn" aria-label="Filter results">
+      <!-- Submit & Clear Buttons -->
+      <div class="filter-field filter-field-btn" style="display: flex; gap: 8px; align-items: center;">
+        <button type="submit" class="primary-button filter-submit-btn" style="flex: 1; height: 42px; justify-content: center; font-size: 13px;" aria-label="Filter results">
           Filter
         </button>
+        <% if (typeof query !== 'undefined' && (query.search || (query.branch && query.branch !== 'all') || (query.subject && query.subject !== 'all') || query.semester || (query.resourceType && query.resourceType !== 'all') || (query.sort && query.sort !== 'newest'))) { %>
+          <a href="/notes" class="secondary-button" style="height: 42px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; text-decoration: none; border-radius: 9px;" aria-label="Clear filters">
+            Clear
+          </a>
+        <% } %>
       </div>
 
     </form>
@@ -133,10 +163,15 @@
             </a>
           </h2>
 
+          <% if (note.branch) { %>
+            <div style="font-size: 12px; color: var(--lavender); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span style="background: rgba(168,85,247,0.12); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(168,85,247,0.25);">🏫 <%= note.branch %></span>
+            </div>
+          <% } %>
+
           <p class="note-card-desc">
             <%= note.description ? (note.description.length > 110 ? note.description.substring(0, 110) + '...' : note.description) : 'No description provided.' %>
           </p>
-
 
           <div class="note-card-footer">
             <%- include('../partials/author_badge', { author: note.author }) %>
@@ -152,7 +187,7 @@
       <div class="content-card notes-empty-card">
         <div class="empty-icon" aria-hidden="true">🔍</div>
         <h3 class="empty-title">No Academic Resources Found</h3>
-        <p class="empty-desc">Try adjusting your search keywords or active subject/semester/resource-type filters.</p>
+        <p class="empty-desc">Try adjusting your search keywords or active subject/branch/semester/resource-type filters.</p>
         <a href="/notes" class="secondary-button empty-reset-btn">Reset Filters</a>
       </div>
     <% } %>
@@ -161,16 +196,76 @@
   <!-- Pagination Controls -->
   <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
     <div class="notes-pagination-bar">
+      <%
+        const buildPageUrl = (targetPage) => {
+          const params = new URLSearchParams();
+          params.set('page', targetPage);
+          if (query.search) params.set('search', query.search);
+          if (query.field && query.field !== 'all') params.set('field', query.field);
+          if (query.branch && query.branch !== 'all') params.set('branch', query.branch);
+          if (query.semester) params.set('semester', query.semester);
+          if (query.subject && query.subject !== 'all') params.set('subject', query.subject);
+          if (query.resourceType && query.resourceType !== 'all') params.set('resourceType', query.resourceType);
+          if (query.sort && query.sort !== 'newest') params.set('sort', query.sort);
+          return '/notes?' + params.toString();
+        };
+      %>
       <% if (page > 1) { %>
-        <a href="/notes?page=<%= page - 1 %>&search=<%= query.search || '' %>&subject=<%= query.subject || '' %>&semester=<%= query.semester || '' %>&resourceType=<%= query.resourceType || '' %>&sort=<%= query.sort || '' %>" class="secondary-button pagination-btn">← Previous</a>
+        <a href="<%= buildPageUrl(page - 1) %>" class="secondary-button pagination-btn">← Previous</a>
       <% } %>
 
       <span class="pagination-info">Page <%= page %> of <%= totalPages %></span>
 
       <% if (page < totalPages) { %>
-        <a href="/notes?page=<%= page + 1 %>&search=<%= query.search || '' %>&subject=<%= query.subject || '' %>&semester=<%= query.semester || '' %>&resourceType=<%= query.resourceType || '' %>&sort=<%= query.sort || '' %>" class="secondary-button pagination-btn">Next →</a>
+        <a href="<%= buildPageUrl(page + 1) %>" class="secondary-button pagination-btn">Next →</a>
       <% } %>
     </div>
   <% } %>
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterBranch = document.getElementById('filterBranch');
+    const filterSubject = document.getElementById('filterSubject');
+
+    // 1. Dynamic subjects by branch in explore filter
+    async function loadFilterSubjects(branchName, targetSubject) {
+      if (!filterSubject) return;
+      filterSubject.innerHTML = '<option value="all">Loading subjects...</option>';
+
+      try {
+        const url = (branchName && branchName !== 'all')
+          ? '/api/subjects?branch=' + encodeURIComponent(branchName)
+          : '/api/subjects';
+        const res = await fetch(url);
+        const data = await res.json();
+
+        filterSubject.innerHTML = '<option value="all">All Subjects</option>';
+        if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
+          data.subjects.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.name;
+            opt.textContent = s.name + (s.code ? ' (' + s.code + ')' : '');
+            opt.setAttribute('data-id', s._id);
+            opt.setAttribute('data-branch', s.department || '');
+            if (targetSubject && (s.name.toLowerCase() === targetSubject.toLowerCase() || String(s._id) === targetSubject)) {
+              opt.selected = true;
+            }
+            filterSubject.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching filter subjects:', err);
+        filterSubject.innerHTML = '<option value="all">All Subjects</option>';
+      }
+    }
+
+    // Event: Branch filter changes
+    if (filterBranch) {
+      filterBranch.addEventListener('change', function() {
+        loadFilterSubjects(this.value, '');
+      });
+    }
+  });
+</script>

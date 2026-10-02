@@ -11,7 +11,18 @@ const AppError = require('../utils/AppError');
 // @desc    Render Notes Listing / Explore Page with Search & Filters
 // @route   GET /notes
 exports.getNotes = wrapAsync(async (req, res) => {
-  const result = await noteService.getPublicNotes(req.query);
+  const [result, fields, branches] = await Promise.all([
+    noteService.getPublicNotes(req.query),
+    academicService.getActiveFields(),
+    academicService.getActiveBranches(),
+  ]);
+
+  let subjects = [];
+  if (req.query.branch && req.query.branch !== 'all') {
+    subjects = await academicService.getActiveSubjects({ branch: req.query.branch });
+  } else {
+    subjects = await academicService.getActiveSubjects();
+  }
 
   res.render('notes/index', {
     title: 'Explore Study Notes — StudyShare',
@@ -21,29 +32,43 @@ exports.getNotes = wrapAsync(async (req, res) => {
     page: result.page,
     totalPages: result.totalPages,
     query: req.query,
+    fields,
+    branches,
+    subjects,
   });
 });
 
 // @desc    Render Create Note Form
 // @route   GET /notes/new
 exports.getNewNote = wrapAsync(async (req, res) => {
-  let activeSubjects = await academicService.getActiveSubjects();
+  const fields = await academicService.getActiveFields();
+  const branches = await academicService.getActiveBranches('Engineering', req.user);
+  let activeSubjects = await academicService.getActiveSubjects({ user: req.user });
 
-  // If user is a verified teacher, restrict subjects ONLY to assigned subjects
-  if (req.user && req.user.role === 'teacher') {
-    activeSubjects = activeSubjects.filter((s) => academicService.isTeacherAssignedToSubject(req.user, s));
-  }
-
+  const defaultField = req.query.field || 'Engineering';
+  const defaultBranch = req.query.branch || '';
   const defaultSubject = req.query.subject || '';
-  const defaultTopic = req.query.topic || '';
+  const defaultSemester = req.query.semester || 1;
+  const defaultResourceType = req.query.resourceType || 'pdf';
 
   res.render('notes/new', {
     title: 'Upload Study Note — StudyShare',
     path: '/notes/new',
-    formData: { subject: defaultSubject, topic: defaultTopic },
+    formData: {
+      field: defaultField,
+      branch: defaultBranch,
+      subject: defaultSubject,
+      semester: defaultSemester,
+      resourceType: defaultResourceType,
+    },
+    fields,
+    branches,
     activeSubjects,
+    defaultField,
+    defaultBranch,
     defaultSubject,
-    defaultTopic,
+    defaultSemester,
+    defaultResourceType,
   });
 });
 

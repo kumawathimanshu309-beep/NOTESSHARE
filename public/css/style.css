@@ -4337,7 +4337,7 @@ body {
 
 .notes-filter-form {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr 100px;
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   align-items: center;
 }
