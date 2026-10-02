@@ -26,53 +26,53 @@
       </div>
 
       <!-- Grid for Field, Branch, Semester, Subject, Resource Type -->
-      <div class="form-grid-2col" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+      <div class="form-grid-2col" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; position: relative; overflow: visible;">
         
         <!-- Field -->
-        <div>
+        <div style="min-width: 0; position: relative; overflow: visible;">
           <label for="field" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Field *</label>
-          <select id="field" name="field" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <select id="field" name="field" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
             <% if (typeof fields !== 'undefined' && fields && fields.length > 0) { %>
               <% fields.forEach(f => { %>
-                <option value="<%= f %>" <%= (typeof defaultField !== 'undefined' && defaultField === f) ? 'selected' : '' %>><%= f %></option>
+                <option value="<%= f %>" <%= (typeof defaultField !== 'undefined' && defaultField === f) ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;"><%= f %></option>
               <% }) %>
             <% } else { %>
-              <option value="Engineering" selected>Engineering</option>
+              <option value="Engineering" selected style="background-color: #0D1124; color: #FFFFFF;">Engineering</option>
             <% } %>
           </select>
         </div>
 
         <!-- Branch -->
-        <div>
+        <div style="min-width: 0; position: relative; overflow: visible;">
           <label for="branch" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Branch *</label>
-          <select id="branch" name="branch" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="">Select Branch</option>
+          <select id="branch" name="branch" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
+            <option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>
             <% if (typeof branches !== 'undefined' && branches && branches.length > 0) { %>
               <% branches.forEach(b => { %>
-                <option value="<%= b %>" <%= (typeof defaultBranch !== 'undefined' && defaultBranch === b) ? 'selected' : '' %>><%= b %></option>
+                <option value="<%= b %>" <%= (typeof defaultBranch !== 'undefined' && defaultBranch === b) ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;"><%= b %></option>
               <% }) %>
             <% } %>
           </select>
         </div>
 
         <!-- Semester -->
-        <div>
+        <div style="min-width: 0; position: relative; overflow: visible;">
           <label for="semester" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Semester *</label>
-          <select id="semester" name="semester" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
+          <select id="semester" name="semester" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
             <% for(let s = 1; s <= 8; s++) { %>
-              <option value="<%= s %>" <%= (typeof defaultSemester !== 'undefined' && defaultSemester == s) ? 'selected' : '' %>>Semester <%= s %></option>
+              <option value="<%= s %>" <%= (typeof defaultSemester !== 'undefined' && defaultSemester == s) ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">Semester <%= s %></option>
             <% } %>
           </select>
         </div>
 
         <!-- Subject -->
-        <div>
+        <div style="min-width: 0; position: relative; overflow: visible;">
           <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject *</label>
-          <select id="subject" name="subject" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="">Select Branch First</option>
+          <select id="subject" name="subject" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
+            <option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>
             <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
               <% activeSubjects.forEach(s => { %>
-                <option value="<%= s.name %>" data-id="<%= s._id %>" data-branch="<%= s.department %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %>><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
+                <option value="<%= s.name %>" data-id="<%= s._id %>" data-branch="<%= s.department %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;"><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
               <% }) %>
             <% } %>
           </select>
@@ -80,16 +80,16 @@
         </div>
 
         <!-- Resource Type (Spans 2 columns on desktop so layout adjusts cleanly with no empty gap) -->
-        <div style="grid-column: 1 / -1;">
+        <div style="grid-column: 1 / -1; min-width: 0; position: relative; overflow: visible;">
           <label for="resourceType" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Resource Type *</label>
-          <select id="resourceType" name="resourceType" required style="width: 100%; padding: 12px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: white; font-size: 13px; outline: none;">
-            <option value="pdf" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pdf') ? 'selected' : '' %>>📄 Study Notes (PDF)</option>
-            <option value="pyq" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pyq') ? 'selected' : '' %>>📝 Previous Year Paper (PYQ)</option>
-            <option value="important_questions" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'important_questions') ? 'selected' : '' %>>🔥 Important Questions</option>
-            <option value="ppt" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'ppt') ? 'selected' : '' %>>📊 PPT / Presentation</option>
-            <option value="image" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'image') ? 'selected' : '' %>>🖼️ Image Note</option>
-            <option value="document" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'document') ? 'selected' : '' %>>📁 Other Document</option>
-            <option value="video" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'video') ? 'selected' : '' %>>🎥 Video Reference</option>
+          <select id="resourceType" name="resourceType" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
+            <option value="pdf" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pdf') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">📄 Study Notes (PDF)</option>
+            <option value="pyq" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'pyq') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">📝 Previous Year Paper (PYQ)</option>
+            <option value="important_questions" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'important_questions') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">🔥 Important Questions</option>
+            <option value="ppt" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'ppt') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">📊 PPT / Presentation</option>
+            <option value="image" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'image') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">🖼️ Image Note</option>
+            <option value="document" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'document') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">📁 Other Document</option>
+            <option value="video" <%= (typeof defaultResourceType !== 'undefined' && defaultResourceType === 'video') ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;">🎥 Video Reference</option>
           </select>
         </div>
 
@@ -184,23 +184,54 @@
 
     const initialSubject = '<%= typeof defaultSubject !== "undefined" ? defaultSubject : "" %>';
 
-    // 1. Load subjects by branch
+    // 1. Load branches by field
+    async function loadBranches(fieldName, targetBranch) {
+      if (!branchSelect) return;
+      branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Loading branches...</option>';
+
+      try {
+        const url = (fieldName && fieldName !== 'all')
+          ? '/api/branches?field=' + encodeURIComponent(fieldName)
+          : '/api/branches';
+        const res = await fetch(url);
+        const data = await res.json();
+        branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>';
+        if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
+          data.branches.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            opt.style.backgroundColor = '#0D1124';
+            opt.style.color = '#FFFFFF';
+            if (targetBranch && b.toLowerCase() === targetBranch.toLowerCase()) {
+              opt.selected = true;
+            }
+            branchSelect.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching branches:', err);
+        branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>';
+      }
+    }
+
+    // 2. Load subjects by branch
     async function loadSubjects(branchName, targetSubjectName) {
       if (!subjectSelect) return;
       if (!branchName) {
-        subjectSelect.innerHTML = '<option value="">Select Branch First</option>';
+        subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>';
         if (subjectIdInput) subjectIdInput.value = '';
         return;
       }
 
-      subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
+      subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Loading subjects...</option>';
       if (subjectIdInput) subjectIdInput.value = '';
 
       try {
         const res = await fetch('/api/subjects?branch=' + encodeURIComponent(branchName));
         const data = await res.json();
         if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
-          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+          subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Subject</option>';
           let matchedOpt = null;
           data.subjects.forEach(s => {
             const opt = document.createElement('option');
@@ -208,6 +239,8 @@
             opt.textContent = s.name + (s.code ? ' (' + s.code + ')' : '');
             opt.setAttribute('data-id', s._id);
             opt.setAttribute('data-branch', s.department || '');
+            opt.style.backgroundColor = '#0D1124';
+            opt.style.color = '#FFFFFF';
             if (targetSubjectName && s.name.toLowerCase() === targetSubjectName.toLowerCase()) {
               opt.selected = true;
               matchedOpt = opt;
@@ -219,19 +252,19 @@
             subjectIdInput.value = matchedOpt.getAttribute('data-id');
           }
         } else {
-          subjectSelect.innerHTML = '<option value="">No subjects available for this branch.</option>';
+          subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">No subjects available for this branch.</option>';
         }
       } catch (err) {
         console.error('Error fetching subjects:', err);
-        subjectSelect.innerHTML = '<option value="">Unable to load academic data. Please try again.</option>';
+        subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Unable to load academic data. Please try again.</option>';
       }
     }
 
-    // Event: Field changes -> reset branch and subject
+    // Event: Field changes -> update branches and reset subjects
     if (fieldSelect) {
-      fieldSelect.addEventListener('change', function() {
-        if (branchSelect) branchSelect.value = '';
-        if (subjectSelect) subjectSelect.innerHTML = '<option value="">Select Branch First</option>';
+      fieldSelect.addEventListener('change', async function() {
+        await loadBranches(this.value, '');
+        if (subjectSelect) subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>';
         if (subjectIdInput) subjectIdInput.value = '';
       });
     }

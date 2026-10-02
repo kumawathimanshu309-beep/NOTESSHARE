@@ -2,6 +2,7 @@
    DESIGN SYSTEM & VARIABLES
 ========================================================= */
 :root {
+  color-scheme: dark;
   --bg: #080B18;
   --bg-2: #0D1124;
 
@@ -34,6 +35,7 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -42,6 +44,7 @@ body {
   color: var(--white);
   overflow-x: hidden;
   min-height: 100vh;
+  color-scheme: dark;
 }
 
 a {
@@ -1442,6 +1445,8 @@ button {
   background: rgba(17, 22, 42, 0.6);
   backdrop-filter: blur(10px);
   margin-bottom: 30px;
+  position: relative;
+  overflow: visible;
 }
 
 .content-card h2 {
@@ -1647,13 +1652,14 @@ footer {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin-bottom: 18px;
+  position: relative;
+  overflow: visible;
 }
 
-.notes-filter-form {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 100px;
-  gap: 12px;
-  align-items: center;
+.form-grid-2col > div {
+  min-width: 0;
+  position: relative;
+  overflow: visible;
 }
 
 .doubts-filter-form {
@@ -4333,6 +4339,8 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: visible;
 }
 
 .notes-filter-form {
@@ -4340,10 +4348,16 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   align-items: center;
+  position: relative;
+  overflow: visible;
+  width: 100%;
 }
 
 .filter-field {
   width: 100%;
+  min-width: 0;
+  position: relative;
+  overflow: visible;
 }
 
 .filter-input,
@@ -4360,6 +4374,31 @@ body {
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color-scheme: dark;
+}
+
+.filter-select {
+  cursor: pointer;
+  padding-right: 32px;
+}
+
+select,
+.filter-select {
+  color-scheme: dark;
+  background-color: #0D1124;
+  color: #FFFFFF;
+}
+
+select option,
+.filter-select option,
+select optgroup,
+.filter-select optgroup {
+  color-scheme: dark;
+  background-color: #0D1124 !important;
+  color: #FFFFFF !important;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
 }
 
 .filter-input::placeholder {
@@ -4791,6 +4830,8 @@ body {
     background: rgba(13, 17, 36, 0.85);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: visible;
   }
 
   .notes-filter-form {
@@ -4798,10 +4839,15 @@ body {
     grid-template-columns: 1fr;
     gap: 10px;
     width: 100%;
+    position: relative;
+    overflow: visible;
   }
 
   .filter-field {
     width: 100%;
+    min-width: 0;
+    position: relative;
+    overflow: visible;
   }
 
   .filter-input,
@@ -4813,6 +4859,8 @@ body {
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: #0D1124;
+    color: #FFFFFF;
+    color-scheme: dark;
   }
 
   .filter-submit-btn {

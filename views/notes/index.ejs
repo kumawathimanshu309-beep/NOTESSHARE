@@ -226,13 +226,46 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const filterField = document.getElementById('filterField');
     const filterBranch = document.getElementById('filterBranch');
     const filterSubject = document.getElementById('filterSubject');
 
-    // 1. Dynamic subjects by branch in explore filter
+    // 1. Dynamic branches by field in explore filter
+    async function loadFilterBranches(fieldName, targetBranch) {
+      if (!filterBranch) return;
+      filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">Loading branches...</option>';
+
+      try {
+        const url = (fieldName && fieldName !== 'all')
+          ? '/api/branches?field=' + encodeURIComponent(fieldName)
+          : '/api/branches';
+        const res = await fetch(url);
+        const data = await res.json();
+
+        filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Branches</option>';
+        if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
+          data.branches.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            opt.style.backgroundColor = '#0D1124';
+            opt.style.color = '#FFFFFF';
+            if (targetBranch && b.toLowerCase() === targetBranch.toLowerCase()) {
+              opt.selected = true;
+            }
+            filterBranch.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching filter branches:', err);
+        filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Branches</option>';
+      }
+    }
+
+    // 2. Dynamic subjects by branch in explore filter
     async function loadFilterSubjects(branchName, targetSubject) {
       if (!filterSubject) return;
-      filterSubject.innerHTML = '<option value="all">Loading subjects...</option>';
+      filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">Loading subjects...</option>';
 
       try {
         const url = (branchName && branchName !== 'all')
@@ -241,7 +274,7 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        filterSubject.innerHTML = '<option value="all">All Subjects</option>';
+        filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Subjects</option>';
         if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
           data.subjects.forEach(s => {
             const opt = document.createElement('option');
@@ -249,6 +282,8 @@
             opt.textContent = s.name + (s.code ? ' (' + s.code + ')' : '');
             opt.setAttribute('data-id', s._id);
             opt.setAttribute('data-branch', s.department || '');
+            opt.style.backgroundColor = '#0D1124';
+            opt.style.color = '#FFFFFF';
             if (targetSubject && (s.name.toLowerCase() === targetSubject.toLowerCase() || String(s._id) === targetSubject)) {
               opt.selected = true;
             }
@@ -257,11 +292,19 @@
         }
       } catch (err) {
         console.error('Error fetching filter subjects:', err);
-        filterSubject.innerHTML = '<option value="all">All Subjects</option>';
+        filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Subjects</option>';
       }
     }
 
-    // Event: Branch filter changes
+    // Event: Field filter changes -> update branches and reset subjects
+    if (filterField) {
+      filterField.addEventListener('change', async function() {
+        await loadFilterBranches(this.value, '');
+        await loadFilterSubjects('all', '');
+      });
+    }
+
+    // Event: Branch filter changes -> update subjects
     if (filterBranch) {
       filterBranch.addEventListener('change', function() {
         loadFilterSubjects(this.value, '');
