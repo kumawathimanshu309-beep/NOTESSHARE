@@ -748,6 +748,228 @@ function initNavProfileDropdown() {
   });
 }
 
+/* ── Admin User Role Management (AJAX / No Refresh) ──────── */
+function initAdminUserRoleManagement() {
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('[data-user-role-form]');
+    if (!form) return;
+
+    e.preventDefault();
+    const btn = form.querySelector('[data-role-submit-btn]') || form.querySelector('button[type="submit"]');
+    if (btn && btn.dataset.loading === 'true') return;
+
+    const select = form.querySelector('[data-role-select]') || form.querySelector('select[name="role"]');
+    if (!select) return;
+
+    const newRole = select.value;
+    const userId = form.dataset.userId;
+    if (!userId) return;
+
+    const origText = btn ? btn.textContent : 'Update';
+    if (btn) {
+      btn.dataset.loading = 'true';
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+    }
+
+    const csrf = form.querySelector('input[name="_csrf"]')?.value || getCsrfToken();
+    const url = form.getAttribute('action') || `/admin/users/${userId}/role?_method=PATCH`;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ role: newRole, _csrf: csrf, _method: 'PATCH' }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.success) {
+        // Update role badge in table row
+        const badgeCell = document.querySelector(`[data-role-badge-cell="${userId}"]`);
+        if (badgeCell) {
+          if (newRole === 'admin') {
+            badgeCell.innerHTML = '<span class="role-badge role-badge-admin" style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">🛡️ ADMIN</span>';
+          } else if (newRole === 'teacher') {
+            badgeCell.innerHTML = '<span class="role-badge role-badge-teacher" style="padding: 4px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-weight: 700; font-size: 11px;">🎓 TEACHER</span>';
+          } else {
+            badgeCell.innerHTML = '<span class="role-badge role-badge-student" style="padding: 4px 10px; border-radius: 12px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60A5FA; font-weight: 700; font-size: 11px;">📚 STUDENT</span>';
+          }
+        }
+        showToast(data.message || 'User role updated successfully.');
+      } else {
+        const errorMsg = (data && data.message) ? data.message : 'Failed to update user role. Please try again.';
+        showToast(errorMsg, true);
+      }
+    } catch {
+      showToast('Network error while updating user role. Please check connection.', true);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = origText;
+        delete btn.dataset.loading;
+      }
+    }
+  });
+}
+
+/* ── Admin Note Moderation (AJAX / No Refresh) ───────────── */
+function initAdminNoteModeration() {
+  // 1. Toggle Publish/Unpublish
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('[data-moderation-toggle-form]');
+    if (!form) return;
+
+    e.preventDefault();
+    const btn = form.querySelector('[data-toggle-publish-btn]') || form.querySelector('button[type="submit"]');
+    if (btn && btn.dataset.loading === 'true') return;
+
+    const noteId = form.dataset.noteId;
+    if (!noteId) return;
+
+    const origText = btn ? btn.textContent.trim() : 'Toggle';
+    if (btn) {
+      btn.dataset.loading = 'true';
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+    }
+
+    const csrf = form.querySelector('input[name="_csrf"]')?.value || getCsrfToken();
+    const url = form.getAttribute('action') || `/admin/notes/${noteId}/toggle-publish?_method=PATCH`;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ _csrf: csrf, _method: 'PATCH' }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.success) {
+        // Toggle status badge
+        const statusCell = document.querySelector(`[data-note-status-cell="${noteId}"]`);
+        if (statusCell) {
+          if (data.isPublished) {
+            statusCell.innerHTML = '<span class="status-badge status-published" style="padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-weight: 700; font-size: 11px;">PUBLISHED</span>';
+          } else {
+            statusCell.innerHTML = '<span class="status-badge status-unpublished" style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">UNPUBLISHED</span>';
+          }
+        }
+
+        // Toggle button text
+        if (btn) {
+          btn.textContent = data.isPublished ? 'Unpublish' : 'Publish';
+        }
+
+        showToast(data.message || (data.isPublished ? 'Note published successfully.' : 'Note unpublished successfully.'));
+      } else {
+        if (btn) btn.textContent = origText;
+        const errorMsg = (data && data.message) ? data.message : 'Failed to update note status.';
+        showToast(errorMsg, true);
+      }
+    } catch {
+      if (btn) btn.textContent = origText;
+      showToast('Network error while updating note status.', true);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        delete btn.dataset.loading;
+      }
+    }
+  });
+
+  // 2. Delete Note
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('[data-moderation-delete-form]');
+    if (!form) return;
+
+    e.preventDefault();
+    const noteId = form.dataset.noteId;
+    const noteTitle = form.dataset.noteTitle || 'this note';
+
+    // Existing confirmation dialog
+    if (!confirm(`Delete "${noteTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    const btn = form.querySelector('[data-delete-note-btn]') || form.querySelector('button[type="submit"]');
+    if (btn && btn.dataset.loading === 'true') return;
+
+    const origText = btn ? btn.textContent.trim() : 'Delete';
+    if (btn) {
+      btn.dataset.loading = 'true';
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+    }
+
+    const csrf = form.querySelector('input[name="_csrf"]')?.value || getCsrfToken();
+    const url = form.getAttribute('action') || `/admin/notes/${noteId}?_method=DELETE`;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ _csrf: csrf, _method: 'DELETE' }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.success) {
+        // Animate and remove row from DOM
+        const row = document.querySelector(`[data-note-row="${noteId}"]`) || form.closest('tr');
+        if (row) {
+          row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(20px)';
+          setTimeout(() => {
+            row.remove();
+            // If table has no remaining rows, show empty placeholder
+            const tbody = document.querySelector('.responsive-table tbody');
+            if (tbody && tbody.querySelectorAll('tr').length === 0) {
+              tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--muted);">No active notes found matching your criteria.</td></tr>';
+            }
+          }, 300);
+        }
+        showToast(data.message || 'Note deleted successfully.');
+      } else {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = origText;
+          delete btn.dataset.loading;
+        }
+        const errorMsg = (data && data.message) ? data.message : 'Failed to delete note.';
+        showToast(errorMsg, true);
+      }
+    } catch {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = origText;
+        delete btn.dataset.loading;
+      }
+      showToast('Network error while deleting note.', true);
+    }
+  });
+}
+
 /* ── DOMContentLoaded bootstrap ──────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
@@ -764,4 +986,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initShareModal();
   initAvatarUpload();
   initStatsCounter();
+  initAdminUserRoleManagement();
+  initAdminNoteModeration();
 });

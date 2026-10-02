@@ -55,7 +55,7 @@
         </thead>
         <tbody>
           <% users.forEach(u => { %>
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <tr id="user-row-<%= u._id %>" data-user-row="<%= u._id %>" style="border-bottom: 1px solid rgba(255,255,255,0.04);">
               <td style="padding: 14px 12px;">
                 <strong style="color: white; display: block;"><%= u.name %></strong>
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
@@ -69,23 +69,24 @@
               <td style="padding: 14px 12px; color: var(--text);">
                 <%= u.email %>
               </td>
-              <td style="padding: 14px 12px;">
+              <td style="padding: 14px 12px;" data-role-badge-cell="<%= u._id %>">
                 <% if (u.role === 'admin') { %>
-                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">🛡️ ADMIN</span>
+                  <span class="role-badge role-badge-admin" style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">🛡️ ADMIN</span>
                 <% } else if (u.role === 'teacher') { %>
-                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-weight: 700; font-size: 11px;">🎓 TEACHER</span>
+                  <span class="role-badge role-badge-teacher" style="padding: 4px 10px; border-radius: 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.4); color: #C4B5FD; font-weight: 700; font-size: 11px;">🎓 TEACHER</span>
                 <% } else { %>
-                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60A5FA; font-weight: 700; font-size: 11px;">📚 STUDENT</span>
+                  <span class="role-badge role-badge-student" style="padding: 4px 10px; border-radius: 12px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #60A5FA; font-weight: 700; font-size: 11px;">📚 STUDENT</span>
                 <% } %>
               </td>
               <td style="padding: 14px 12px;">
-                <form action="/admin/users/<%= u._id %>/role?_method=PATCH" method="POST" style="display: flex; gap: 6px; align-items: center; margin: 0;">
-                  <select name="role" style="padding: 6px 10px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 12px; outline: none;">
+                <form action="/admin/users/<%= u._id %>/role?_method=PATCH" method="POST" data-user-role-form data-user-id="<%= u._id %>" data-username="<%= u.username %>" style="display: flex; gap: 6px; align-items: center; margin: 0;">
+                  <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                  <select name="role" data-role-select style="padding: 6px 10px; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; font-size: 12px; outline: none;">
                     <option value="student" <%= u.role === 'student' ? 'selected' : '' %>>Student</option>
                     <option value="teacher" <%= u.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
                     <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
                   </select>
-                  <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 11px;">Update</button>
+                  <button type="submit" class="secondary-button" data-role-submit-btn style="padding: 6px 12px; font-size: 11px;">Update</button>
                 </form>
               </td>
             </tr>

@@ -3,6 +3,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const { isLoggedIn, isAdmin } = require('../middleware/auth');
 const { adminLimiter } = require('../middleware/rateLimiter');
+const { verifyCsrfToken } = require('../middleware/csrf');
 
 // All Admin Panel routes require active login + Admin role + rate limiting
 router.use(isLoggedIn, isAdmin, adminLimiter);
@@ -12,8 +13,8 @@ router.get('/', adminController.getAdminDashboard);
 
 // 2. User & Role Management
 router.get('/users', adminController.getUsers);
-router.patch('/users/:id/role', adminController.patchUserRole);
-router.post('/users/:id/role', adminController.patchUserRole);
+router.patch('/users/:id/role', verifyCsrfToken, adminController.patchUserRole);
+router.post('/users/:id/role', verifyCsrfToken, adminController.patchUserRole);
 router.post('/users/:id/demote', adminController.postDemoteTeacher);
 
 // 2b. Teacher Governance Requests
@@ -24,11 +25,13 @@ router.post('/teacher-requests/:id/reject', adminController.postRejectTeacherReq
 // 3. Resource / Note Moderation
 router.get('/notes', adminController.getNotes);
 router.get('/pending-notes', adminController.getPendingNotes);
-router.post('/notes/:id/approve', adminController.postApproveNote);
-router.post('/notes/:id/reject', adminController.postRejectNote);
-router.patch('/notes/:id/toggle-publish', adminController.patchToggleNotePublish);
-router.post('/notes/:id/toggle-publish', adminController.patchToggleNotePublish);
-router.delete('/notes/:id', adminController.deleteNote);
+router.post('/notes/:id/approve', verifyCsrfToken, adminController.postApproveNote);
+router.post('/notes/:id/reject', verifyCsrfToken, adminController.postRejectNote);
+router.patch('/notes/:id/toggle-publish', verifyCsrfToken, adminController.patchToggleNotePublish);
+router.post('/notes/:id/toggle-publish', verifyCsrfToken, adminController.patchToggleNotePublish);
+router.delete('/notes/:id', verifyCsrfToken, adminController.deleteNote);
+router.post('/notes/:id', verifyCsrfToken, adminController.deleteNote);
+router.post('/notes/:id/delete', verifyCsrfToken, adminController.deleteNote);
 
 // 4. Doubt Moderation
 router.get('/doubts', adminController.getDoubts);

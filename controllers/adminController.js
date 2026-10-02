@@ -191,14 +191,31 @@ exports.patchUserRole = wrapAsync(async (req, res) => {
     },
   });
 
-  req.flash('success', `Role for @${targetUser.username} updated to ${newRole.toUpperCase()}.`);
+  const successMsg = `Role for @${targetUser.username} updated to ${newRole.toUpperCase()}.`;
+
+  const isAjax =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (isAjax) {
+    return res.json({
+      success: true,
+      message: successMsg,
+      userId: targetUser._id,
+      username: targetUser.username,
+      role: newRole,
+    });
+  }
+
+  req.flash('success', successMsg);
   res.redirect(303, '/admin/users');
 });
 
 // @desc    Get Resources / Notes List for Admin Moderation
 // @route   GET /admin/notes
 exports.getNotes = wrapAsync(async (req, res) => {
-  const { search, page = 1, limit = 20 } = req.query;
+  const { search, role, status, page = 1, limit = 20 } = req.query;
   const filter = { isDeleted: false };
 
   if (search && search.trim()) {
@@ -206,7 +223,20 @@ exports.getNotes = wrapAsync(async (req, res) => {
     filter.$or = [
       { title: { $regex: sanitizedSearch, $options: 'i' } },
       { subject: { $regex: sanitizedSearch, $options: 'i' } },
+      { topic: { $regex: sanitizedSearch, $options: 'i' } },
     ];
+  }
+
+  if (status === 'published') {
+    filter.isPublished = true;
+  } else if (status === 'unpublished') {
+    filter.isPublished = false;
+  }
+
+  if (role && ['student', 'teacher', 'admin'].includes(role.toLowerCase())) {
+    const matchingUsers = await User.find({ role: role.toLowerCase() }).select('_id').lean();
+    const userIds = matchingUsers.map((u) => u._id);
+    filter.author = { $in: userIds };
   }
 
   const parsedPage = Math.max(1, parseInt(page, 10) || 1);
@@ -215,7 +245,7 @@ exports.getNotes = wrapAsync(async (req, res) => {
 
   const [notes, totalCount] = await Promise.all([
     Note.find(filter)
-      .populate('author', 'name username email role')
+      .populate('author', 'name username email role avatar')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parsedLimit)
@@ -226,7 +256,7 @@ exports.getNotes = wrapAsync(async (req, res) => {
   const totalPages = Math.ceil(totalCount / parsedLimit) || 1;
 
   res.render('admin/notes', {
-    title: 'Note Moderation — Admin Panel',
+    title: 'Resource & Note Moderation — Admin Panel',
     path: '/admin/notes',
     notes,
     totalCount,
@@ -256,7 +286,23 @@ exports.patchToggleNotePublish = wrapAsync(async (req, res) => {
     details: { title: note.title, isPublished: note.isPublished },
   });
 
-  req.flash('success', `Note "${note.title}" ${note.isPublished ? 'published' : 'unpublished'}.`);
+  const successMsg = `Note "${note.title}" ${note.isPublished ? 'published' : 'unpublished'}.`;
+
+  const isAjax =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (isAjax) {
+    return res.json({
+      success: true,
+      message: successMsg,
+      noteId: note._id,
+      isPublished: note.isPublished,
+    });
+  }
+
+  req.flash('success', successMsg);
   res.redirect(303, '/admin/notes');
 });
 
@@ -282,7 +328,22 @@ exports.deleteNote = wrapAsync(async (req, res) => {
     details: { title: note.title },
   });
 
-  req.flash('success', `Note "${note.title}" deleted.`);
+  const successMsg = `Note "${note.title}" deleted.`;
+
+  const isAjax =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (isAjax) {
+    return res.json({
+      success: true,
+      message: successMsg,
+      noteId: note._id,
+    });
+  }
+
+  req.flash('success', successMsg);
   res.redirect(303, '/admin/notes');
 });
 
@@ -659,7 +720,24 @@ exports.postApproveNote = wrapAsync(async (req, res) => {
     eventKey: `note_approved:${note._id}:${Date.now()}`,
   });
 
-  req.flash('success', `Note "${note.title}" has been approved and published.`);
+  const successMsg = `Note "${note.title}" has been approved and published.`;
+
+  const isAjax =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (isAjax) {
+    return res.json({
+      success: true,
+      message: successMsg,
+      noteId: note._id,
+      approvalStatus: note.approvalStatus,
+      isPublished: note.isPublished,
+    });
+  }
+
+  req.flash('success', successMsg);
   res.redirect(303, '/admin/pending-notes');
 });
 
@@ -707,7 +785,24 @@ exports.postRejectNote = wrapAsync(async (req, res) => {
     eventKey: `note_rejected:${note._id}:${Date.now()}`,
   });
 
-  req.flash('success', `Note "${note.title}" rejected.`);
+  const successMsg = `Note "${note.title}" rejected.`;
+
+  const isAjax =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (isAjax) {
+    return res.json({
+      success: true,
+      message: successMsg,
+      noteId: note._id,
+      approvalStatus: note.approvalStatus,
+      isPublished: note.isPublished,
+    });
+  }
+
+  req.flash('success', successMsg);
   res.redirect(303, '/admin/pending-notes');
 });
 

@@ -4,11 +4,23 @@ const notFoundHandler = (req, res, next) => {
   next(new AppError(`The requested URL ${req.originalUrl} was not found on StudyShare.`, 404));
 };
 
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, req, res, _next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
   const isDev = process.env.NODE_ENV !== 'production';
+
+  // Handle AJAX / API / JSON requests
+  if (
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json')
+  ) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message || 'Something went wrong on our server.',
+    });
+  }
 
   // Handle 404 specially if preferred or render error page
   if (err.statusCode === 404) {

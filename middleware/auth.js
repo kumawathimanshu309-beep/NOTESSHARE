@@ -7,6 +7,17 @@ exports.isLoggedIn = (req, res, next) => {
     return next();
   }
 
+  if (
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json')
+  ) {
+    return res.status(401).json({
+      success: false,
+      message: 'Please log in to continue.',
+    });
+  }
+
   // Safe returnTo URL check (prevent Open Redirect attacks)
   if (
     req.originalUrl &&
@@ -26,6 +37,18 @@ exports.isTeacher = (req, res, next) => {
   if (req.isAuthenticated() && req.user && (req.user.role === 'teacher' || req.user.role === 'admin')) {
     return next();
   }
+
+  if (
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json')
+  ) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to access teacher resources.',
+    });
+  }
+
   req.flash('error', 'You do not have permission to access teacher resources.');
   return res.status(403).redirect('/dashboard');
 };
@@ -35,6 +58,18 @@ exports.isAdmin = (req, res, next) => {
   if (req.isAuthenticated() && req.user && req.user.role === 'admin') {
     return next();
   }
+
+  if (
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json')
+  ) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Administrator privileges required.',
+    });
+  }
+
   req.flash('error', 'Access denied. Administrator privileges required.');
   return res.status(403).redirect('/dashboard');
 };

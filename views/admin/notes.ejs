@@ -1,4 +1,5 @@
-<div class="page-container" style="max-width: 1100px;">
+<div class="page-container" style="max-width: 1200px;">
+
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
     <div>
       <a href="/admin" style="font-size: 13px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
@@ -8,52 +9,102 @@
         📚 Resource & Note Moderation
       </h1>
       <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">
-        Publish, unpublish, or delete user-submitted study resources.
+        Review, publish, unpublish, or delete study resources uploaded by Students, Teachers, and Administrators.
       </p>
+    </div>
+    <div>
+      <a href="/admin/pending-notes" class="primary-button" style="padding: 8px 16px; font-size: 12px; text-decoration: none;">
+        ⏳ Pending Student Submissions
+      </a>
     </div>
   </div>
 
+  <!-- Search & Filter Bar -->
+  <div class="content-card" style="padding: 20px; border-radius: 16px; margin-bottom: 25px;">
+    <form action="/admin/notes" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <input type="text" name="search" value="<%= query.search || '' %>" placeholder="Search by title, subject or topic..." style="flex: 1; min-width: 220px; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+
+      <select name="role" style="padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        <option value="">All Author Roles</option>
+        <option value="student" <%= query.role === 'student' ? 'selected' : '' %>>Students</option>
+        <option value="teacher" <%= query.role === 'teacher' ? 'selected' : '' %>>Teachers</option>
+        <option value="admin" <%= query.role === 'admin' ? 'selected' : '' %>>Admins</option>
+      </select>
+
+      <select name="status" style="padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
+        <option value="">All Statuses</option>
+        <option value="published" <%= query.status === 'published' ? 'selected' : '' %>>Published</option>
+        <option value="unpublished" <%= query.status === 'unpublished' ? 'selected' : '' %>>Unpublished</option>
+      </select>
+
+      <button type="submit" class="primary-button" style="padding: 10px 18px; font-size: 13px;">
+        Filter Notes
+      </button>
+      <% if (query.search || query.role || query.status) { %>
+        <a href="/admin/notes" class="secondary-button" style="padding: 10px 14px; font-size: 13px;">Clear</a>
+      <% } %>
+    </form>
+  </div>
+
+  <!-- Notes Moderation Table -->
   <div class="content-card table-responsive" style="padding: 24px; border-radius: 20px;">
     <% if (typeof notes !== 'undefined' && notes.length > 0) { %>
       <table class="responsive-table">
         <thead>
           <tr style="border-bottom: 1px solid var(--border); color: var(--muted);">
-            <th style="padding: 12px;">TITLE & SUBJECT</th>
+            <th style="padding: 12px;">TITLE & TOPIC</th>
+            <th style="padding: 12px;">SUBJECT</th>
             <th style="padding: 12px;">AUTHOR</th>
             <th style="padding: 12px;">STATUS</th>
+            <th style="padding: 12px;">CREATED</th>
             <th style="padding: 12px;">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
           <% notes.forEach(n => { %>
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <tr id="note-row-<%= n._id %>" data-note-row="<%= n._id %>" style="border-bottom: 1px solid rgba(255,255,255,0.04);">
               <td style="padding: 14px 12px;">
                 <a href="/notes/<%= n._id %>" style="color: white; font-weight: 700; text-decoration: none;" target="_blank">
                   <%= n.title %>
                 </a>
-                <span style="font-size: 11px; color: var(--lavender); display: block; margin-top: 2px;">
-                  <%= n.subject %> • SEM <%= n.semester %> • <%= n.resourceType ? n.resourceType.toUpperCase() : 'PDF' %>
+                <% if (n.topic) { %>
+                  <span style="font-size: 12px; color: var(--lavender); display: block; margin-top: 3px;">
+                    📌 <%= n.topic %>
+                  </span>
+                <% } %>
+              </td>
+              <td style="padding: 14px 12px;">
+                <span style="color: var(--text); font-size: 13px; font-weight: 600; display: block;">
+                  <%= n.subject || 'General' %>
+                </span>
+                <span style="font-size: 11px; color: var(--muted); display: block; margin-top: 2px;">
+                  SEM <%= n.semester || 1 %> • <%= n.resourceType ? n.resourceType.toUpperCase() : 'PDF' %>
                 </span>
               </td>
               <td style="padding: 14px 12px;">
                 <%- include('../partials/author_badge', { author: n.author }) %>
               </td>
-              <td style="padding: 14px 12px;">
+              <td style="padding: 14px 12px;" data-note-status-cell="<%= n._id %>">
                 <% if (n.isPublished) { %>
-                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-weight: 700; font-size: 11px;">PUBLISHED</span>
+                  <span class="status-badge status-published" style="padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ADE80; font-weight: 700; font-size: 11px;">PUBLISHED</span>
                 <% } else { %>
-                  <span style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">UNPUBLISHED</span>
+                  <span class="status-badge status-unpublished" style="padding: 4px 10px; border-radius: 12px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #F87171; font-weight: 700; font-size: 11px;">UNPUBLISHED</span>
                 <% } %>
               </td>
+              <td style="padding: 14px 12px; color: var(--muted); font-size: 12px; white-space: nowrap;">
+                <%= n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'N/A' %>
+              </td>
               <td style="padding: 14px 12px;">
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                  <form action="/admin/notes/<%= n._id %>/toggle-publish?_method=PATCH" method="POST" style="margin: 0;">
-                    <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 11px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                  <form action="/admin/notes/<%= n._id %>/toggle-publish?_method=PATCH" method="POST" data-moderation-toggle-form data-note-id="<%= n._id %>" style="margin: 0;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <button type="submit" class="secondary-button" data-toggle-publish-btn style="padding: 6px 12px; font-size: 11px;">
                       <%= n.isPublished ? 'Unpublish' : 'Publish' %>
                     </button>
                   </form>
-                  <form action="/admin/notes/<%= n._id %>?_method=DELETE" method="POST" style="margin: 0;" onsubmit="return confirm('Delete this note?');">
-                    <button type="submit" class="secondary-button" style="padding: 6px 12px; font-size: 11px; color: #F87171;">Delete</button>
+                  <form action="/admin/notes/<%= n._id %>?_method=DELETE" method="POST" data-moderation-delete-form data-note-id="<%= n._id %>" data-note-title="<%= n.title %>" style="margin: 0;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                    <button type="submit" class="secondary-button" data-delete-note-btn style="padding: 6px 12px; font-size: 11px; color: #F87171;">Delete</button>
                   </form>
                 </div>
               </td>
@@ -61,8 +112,22 @@
           <% }) %>
         </tbody>
       </table>
+
+      <!-- Pagination -->
+      <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 25px; align-items: center;">
+          <% if (page > 1) { %>
+            <a href="/admin/notes?page=<%= page - 1 %>&role=<%= query.role || '' %>&status=<%= query.status || '' %>&search=<%= encodeURIComponent(query.search || '') %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">← Previous</a>
+          <% } %>
+          <span style="font-size: 13px; color: var(--muted);">Page <%= page %> of <%= totalPages %> (<%= totalCount %> total)</span>
+          <% if (page < totalPages) { %>
+            <a href="/admin/notes?page=<%= page + 1 %>&role=<%= query.role || '' %>&status=<%= query.status || '' %>&search=<%= encodeURIComponent(query.search || '') %>" class="secondary-button" style="padding: 6px 12px; font-size: 12px;">Next →</a>
+          <% } %>
+        </div>
+      <% } %>
+
     <% } else { %>
-      <p style="color: var(--muted); font-size: 14px; text-align: center; margin: 20px 0;">No active notes found.</p>
+      <p style="color: var(--muted); font-size: 14px; text-align: center; margin: 20px 0;">No active notes found matching your criteria.</p>
     <% } %>
   </div>
 </div>
