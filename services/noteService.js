@@ -348,7 +348,26 @@ class NoteService {
     }
 
     if (options.resourceType && options.resourceType.trim() && options.resourceType !== 'all') {
-      query.resourceType = options.resourceType.trim().toLowerCase();
+      const type = options.resourceType.trim().toLowerCase();
+      if (type === 'pyq') {
+        query.$and = query.$and || [];
+        query.$and.push({
+          $or: [
+            { resourceType: 'pyq' },
+            { title: /\b(pyq|previous year|question paper)\b/i },
+          ],
+        });
+      } else if (type === 'important_questions') {
+        query.$and = query.$and || [];
+        query.$and.push({
+          $or: [
+            { resourceType: 'important_questions' },
+            { title: /\b(important questions|must-solve|exam questions)\b/i },
+          ],
+        });
+      } else {
+        query.resourceType = type;
+      }
     }
 
     let sort = { createdAt: -1 };

@@ -26,6 +26,7 @@
 
       <select name="role" style="padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; font-size: 13px; outline: none;">
         <option value="">All Author Roles</option>
+        <option value="me" <%= query.role === 'me' ? 'selected' : '' %>>My Uploaded Notes</option>
         <option value="student" <%= query.role === 'student' ? 'selected' : '' %>>Students</option>
         <option value="teacher" <%= query.role === 'teacher' ? 'selected' : '' %>>Teachers</option>
         <option value="admin" <%= query.role === 'admin' ? 'selected' : '' %>>Admins</option>

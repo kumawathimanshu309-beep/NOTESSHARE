@@ -49,6 +49,7 @@ exports.globalSearch = async (queryParams = {}) => {
           { branch: searchRegex },
           { category: searchRegex },
           { tags: searchRegex },
+          { resourceType: searchRegex },
         ],
       },
     ],

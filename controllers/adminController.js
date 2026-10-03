@@ -233,7 +233,15 @@ exports.getNotes = wrapAsync(async (req, res) => {
     filter.isPublished = false;
   }
 
-  if (role && ['student', 'teacher', 'admin'].includes(role.toLowerCase())) {
+  if (req.query.author) {
+    if (req.query.author === 'me' && req.user) {
+      filter.author = req.user._id;
+    } else if (mongoose.Types.ObjectId.isValid(req.query.author)) {
+      filter.author = req.query.author;
+    }
+  } else if (role && role.toLowerCase() === 'me' && req.user) {
+    filter.author = req.user._id;
+  } else if (role && ['student', 'teacher', 'admin'].includes(role.toLowerCase())) {
     const matchingUsers = await User.find({ role: role.toLowerCase() }).select('_id').lean();
     const userIds = matchingUsers.map((u) => u._id);
     filter.author = { $in: userIds };
