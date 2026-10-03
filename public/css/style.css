@@ -2802,6 +2802,53 @@ body {
   background: #FFFFFF;
 }
 
+/* Graceful Fallback Container when PDF Preview is blocked or unavailable */
+.doc-preview-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 20px;
+  background: rgba(14, 18, 36, 0.95);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 580px;
+  min-height: 280px;
+  box-sizing: border-box;
+  gap: 12px;
+}
+
+.doc-preview-fallback .fallback-icon {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.doc-preview-fallback .fallback-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.doc-preview-fallback .fallback-desc {
+  font-size: 13px;
+  color: var(--muted, #94A3B8);
+  margin: 0 0 6px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.doc-preview-fallback .fallback-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .doc-preview-image {
   max-width: 100%;
   max-height: 480px;

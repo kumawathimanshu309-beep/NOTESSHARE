@@ -44,7 +44,16 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
-        frameSrc: ["'self'"],
+        frameSrc: [
+          "'self'",
+          "https://*.public.blob.vercel-storage.com",
+          "https://*.blob.vercel-storage.com",
+        ],
+        connectSrc: [
+          "'self'",
+          "https://*.public.blob.vercel-storage.com",
+          "https://*.blob.vercel-storage.com",
+        ],
       },
     },
   })

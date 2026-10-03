@@ -168,13 +168,40 @@
           <div class="doc-preview-viewport">
             <% if (note.mimeType && note.mimeType.includes('pdf')) { %>
               <iframe
-                src="<%= note.fileUrl %>?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>#view=FitH&page=1"
+                src="<%= note.fileUrl %><%= note.fileUrl.includes('?') ? '&' : '?' %>v=<%= note.fileVersion || Date.parse(note.updatedAt) %>#view=FitH&page=1"
                 class="doc-preview-frame"
+                id="docPreviewFrame"
                 title="Document preview: <%= note.title %>"
                 loading="lazy">
               </iframe>
+              <div class="doc-preview-fallback" id="docPreviewFallback" style="display: none;" role="region" aria-label="Document preview fallback">
+                <span class="fallback-icon" aria-hidden="true">📄</span>
+                <strong class="fallback-title">Preview Unavailable</strong>
+                <p class="fallback-desc">The embedded preview could not be displayed directly in your current browser.</p>
+                <div class="fallback-actions">
+                  <a href="/notes/<%= note._id %>/view?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>"
+                     target="_blank" rel="noopener noreferrer"
+                     class="action-btn action-btn-secondary"
+                     title="Open PDF in new tab">
+                    <span aria-hidden="true">↗</span> Open in New Tab
+                  </a>
+                  <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+                    <a href="/notes/<%= note._id %>/download"
+                       class="action-btn action-btn-primary"
+                       title="Download document">
+                      <span aria-hidden="true">⬇</span> Download Document
+                    </a>
+                  <% } else { %>
+                    <a href="/auth/login?returnTo=<%= encodeURIComponent('/notes/' + note._id) %>"
+                       class="action-btn action-btn-primary"
+                       title="Log in to download document">
+                      <span aria-hidden="true">🔒</span> Log In to Download
+                    </a>
+                  <% } %>
+                </div>
+              </div>
             <% } else if (note.mimeType && note.mimeType.includes('image')) { %>
-              <img src="<%= note.fileUrl %>?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>"
+              <img src="<%= note.fileUrl %><%= note.fileUrl.includes('?') ? '&' : '?' %>v=<%= note.fileVersion || Date.parse(note.updatedAt) %>"
                    alt="<%= note.title %>"
                    class="doc-preview-image">
             <% } else { %>
@@ -193,7 +220,7 @@
             <button type="button"
                     class="action-btn action-btn-modal"
                     data-action="view-full-doc"
-                    data-src="<%= note.fileUrl %>?v=<%= note.fileVersion || Date.parse(note.updatedAt) %>"
+                    data-src="<%= note.fileUrl %><%= note.fileUrl.includes('?') ? '&' : '?' %>v=<%= note.fileVersion || Date.parse(note.updatedAt) %>"
                     aria-haspopup="dialog"
                     aria-label="View full document in modal">
               <span aria-hidden="true">⛶</span> View Full Document

@@ -153,7 +153,10 @@ exports.downloadNote = wrapAsync(async (req, res) => {
 
   // Remote Vercel Blob File
   if (note.fileUrl.startsWith('http://') || note.fileUrl.startsWith('https://')) {
-    return res.redirect(note.fileUrl);
+    const downloadUrl = note.fileUrl.includes('?')
+      ? `${note.fileUrl}&download=1`
+      : `${note.fileUrl}?download=1`;
+    return res.redirect(downloadUrl);
   }
 
   // Local Filesystem File

@@ -307,6 +307,20 @@ function initDocModal() {
   });
 }
 
+/* ── Document Preview Fallback ───────────────────────────── */
+function initDocPreviewFallback() {
+  const frame = document.getElementById('docPreviewFrame');
+  const fallback = document.getElementById('docPreviewFallback');
+  if (!frame || !fallback) return;
+
+  function showFallback() {
+    frame.style.display = 'none';
+    fallback.style.display = 'flex';
+  }
+
+  frame.addEventListener('error', showFallback);
+}
+
 /* ── Rating AJAX & Interactive Stars ─────────────────────── */
 function initRatingForms() {
   // Interactive star hover & click behaviors
@@ -980,6 +994,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCommentForms();
   initCommentDelete();
   initDocModal();
+  initDocPreviewFallback();
   initRatingForms();
   initNotificationActions();
   initManagementDropdown();
