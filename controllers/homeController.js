@@ -25,17 +25,17 @@ exports.getHome = wrapAsync(async (req, res) => {
     totalSubjectsCount,
     totalDownloadsResult,
   ] = await Promise.all([
-    Note.countDocuments({ subject: 'Computer Science', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
-    Note.countDocuments({ subject: 'Mathematics', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
-    Note.countDocuments({ subject: 'Science', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
-    Note.countDocuments({ subject: 'Engineering', isPublished: true, isDeleted: false, approvalStatus: 'approved' }),
+    Note.countDocuments({ subject: 'Computer Science', isPublished: true, isDeleted: false, $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }] }),
+    Note.countDocuments({ subject: 'Mathematics', isPublished: true, isDeleted: false, $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }] }),
+    Note.countDocuments({ subject: 'Science', isPublished: true, isDeleted: false, $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }] }),
+    Note.countDocuments({ subject: 'Engineering', isPublished: true, isDeleted: false, $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }] }),
     HomeCard.find({ isPublished: true, isEnabled: true, isDeleted: false })
       .sort({ order: 1, createdAt: -1 })
       .lean(),
     FeatureCard.find({ isActive: true, isDeleted: false })
       .sort({ order: 1, createdAt: 1 })
       .lean(),
-    Note.find({ isPublished: true, visibility: 'public', isDeleted: false, approvalStatus: 'approved' })
+    Note.find({ isPublished: true, visibility: 'public', isDeleted: false, $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }] })
       .populate('author', 'name username avatar role')
       .sort({ downloads: -1, views: -1, createdAt: -1 })
       .limit(3)

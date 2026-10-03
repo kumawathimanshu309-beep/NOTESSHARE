@@ -37,13 +37,20 @@ exports.globalSearch = async (queryParams = {}) => {
     isDeleted: false,
     isPublished: true,
     visibility: 'public',
-    approvalStatus: 'approved',
-    $or: [
-      { title: searchRegex },
-      { description: searchRegex },
-      { subject: searchRegex },
-      { category: searchRegex },
-      { tags: searchRegex },
+    $and: [
+      {
+        $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }, { approvalStatus: null }],
+      },
+      {
+        $or: [
+          { title: searchRegex },
+          { description: searchRegex },
+          { subject: searchRegex },
+          { branch: searchRegex },
+          { category: searchRegex },
+          { tags: searchRegex },
+        ],
+      },
     ],
   };
 

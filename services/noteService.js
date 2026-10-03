@@ -218,7 +218,7 @@ class NoteService {
       isDeleted: false,
       isPublished: true,
       visibility: 'public',
-      approvalStatus: 'approved',
+      $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }, { approvalStatus: null }],
     };
 
     if (options.search && options.search.trim()) {
@@ -237,7 +237,7 @@ class NoteService {
       const fieldRegex = new RegExp(`^${options.field.trim()}$`, 'i');
       query.$and = query.$and || [];
       query.$and.push({
-        $or: [{ field: fieldRegex }, { field: { $exists: false } }, { field: '' }],
+        $or: [{ field: fieldRegex }, { field: { $exists: false } }, { field: '' }, { field: 'undefined' }],
       });
     }
 
@@ -247,15 +247,34 @@ class NoteService {
       const branchSubjects = await Subject.find({ department: branchRegex }).select('_id name').lean();
       const subjectIds = branchSubjects.map((s) => s._id);
       const subjectNames = branchSubjects.map((s) => s.name);
+      const titleRegexes = subjectNames.map((n) => new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'));
+
+      const isGeneral = /General/i.test(branchName);
+      const isCS = /Computer Science/i.test(branchName);
+      const isIT = /Information Technology/i.test(branchName);
+      const isECE = /Electronics/i.test(branchName);
+      const isMech = /Mechanical/i.test(branchName);
+      const isCivil = /Civil/i.test(branchName);
 
       query.$and = query.$and || [];
       query.$and.push({
         $or: [
           { branch: branchRegex },
+          ...(isCS ? [{ branch: /^Computer Science$/i }, { subject: /^Computer Science$/i }] : []),
+          ...(isIT ? [{ branch: /^Information Technology$/i }, { subject: /^Information Technology$/i }] : []),
+          ...(isECE ? [{ branch: /Electronics/i }, { subject: /Electronics/i }] : []),
+          ...(isMech ? [{ branch: /Mechanical/i }, { subject: /Mechanical/i }] : []),
+          ...(isCivil ? [{ branch: /Civil/i }, { subject: /Civil/i }] : []),
+          ...(isGeneral ? [
+            { branch: /^General$/i },
+            // In Indian B.Tech curricula, Semesters 1 & 2 are Common/General Engineering
+            { semester: { $in: [1, 2] }, $or: [{ field: 'Engineering' }, { field: { $exists: false } }, { field: '' }, { field: 'undefined' }] }
+          ] : []),
           ...(subjectIds.length > 0 ? [{ subjectId: { $in: subjectIds } }] : []),
           ...(subjectNames.length > 0
             ? [{ subject: { $in: subjectNames.map((n) => new RegExp(`^${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) } }]
             : []),
+          ...(titleRegexes.length > 0 ? [{ title: { $in: titleRegexes } }] : []),
         ],
       });
     }
@@ -263,16 +282,55 @@ class NoteService {
     if (options.subject && options.subject.trim() && options.subject !== 'all') {
       const subj = options.subject.trim();
       const subjRegex = new RegExp(`^${subj.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+      const subjectDoc = await Subject.findOne({
+        $or: [
+          { name: subjRegex },
+          ...(mongoose.Types.ObjectId.isValid(subj) ? [{ _id: subj }] : []),
+        ],
+      }).lean();
+
       query.$and = query.$and || [];
-      if (mongoose.Types.ObjectId.isValid(subj)) {
-        query.$and.push({
-          $or: [{ subjectId: subj }, { subject: subjRegex }],
-        });
-      } else {
-        query.$and.push({
-          $or: [{ subject: subjRegex }],
-        });
+      const orClauses = [
+        { subject: subjRegex },
+      ];
+
+      // Exact title match with Roman numeral boundary protection
+      const isRomanI = /\bI$/.test(subj);
+      const isRomanII = /\bII$/.test(subj);
+      let titlePattern = `\\b${subj.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`;
+      if (isRomanI) {
+        titlePattern += '(?!\\s*I)';
+      } else if (isRomanII) {
+        titlePattern += '(?!\\s*I)';
       }
+      orClauses.push({ title: new RegExp(titlePattern, 'i') });
+
+      if (subjectDoc) {
+        orClauses.push({ subjectId: subjectDoc._id });
+        const docName = subjectDoc.name;
+        const docRomanI = /\bI$/.test(docName);
+        const docRomanII = /\bII$/.test(docName);
+        let docTitlePattern = `\\b${docName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`;
+        if (docRomanI) docTitlePattern += '(?!\\s*I)';
+        else if (docRomanII) docTitlePattern += '(?!\\s*I)';
+        orClauses.push({ title: new RegExp(docTitlePattern, 'i') });
+
+        if (/Basic Electrical/i.test(docName)) orClauses.push({ title: /\bBEE\b/i });
+        if (/Basic Electronics/i.test(docName)) orClauses.push({ title: /\bECE\b/i }, { title: /\bBasic Electronics\b/i });
+        if (/Engineering Graphics/i.test(docName)) orClauses.push({ title: /\bCAD\b/i }, { title: /\bEngineering Drawing\b/i });
+        if (/Environmental Studies/i.test(docName)) orClauses.push({ title: /\bEnvironmental Science\b/i });
+        if (/Data Structures/i.test(docName)) orClauses.push({ title: /\bDSA\b/i });
+        if (/Operating Systems/i.test(docName)) orClauses.push({ title: /\bOS\b/i });
+        if (/Database Management/i.test(docName)) orClauses.push({ title: /\bDBMS\b/i });
+        if (/Computer Networks/i.test(docName)) orClauses.push({ title: /\bCN\b/i });
+        if (/Theory of Computation/i.test(docName)) orClauses.push({ title: /\bTOC\b/i }, { title: /\bAutomata\b/i });
+        if (/Compiler Design/i.test(docName)) orClauses.push({ title: /\bCD\b/i });
+        if (/Software Engineering/i.test(docName)) orClauses.push({ title: /\bSE\b/i });
+      } else if (mongoose.Types.ObjectId.isValid(subj)) {
+        orClauses.push({ subjectId: subj });
+      }
+
+      query.$and.push({ $or: orClauses });
     }
 
 
@@ -337,7 +395,7 @@ class NoteService {
       throw new AppError('The requested study note was not found or has been removed.', 404);
     }
 
-    const isApproved = note.approvalStatus === 'approved';
+    const isApproved = note.approvalStatus === 'approved' || typeof note.approvalStatus === 'undefined' || note.approvalStatus === null;
     const isPublicAndPublished = note.isPublished && note.visibility === 'public' && isApproved;
     const isOwner = currentUser && note.author && (note.author._id ? note.author._id.equals(currentUser._id) : note.author.equals(currentUser._id));
     const isAdmin = currentUser && currentUser.role === 'admin';
