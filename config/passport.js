@@ -66,9 +66,21 @@ if (googleClientId && googleClientSecret) {
           // 1. Try finding user by googleId first
           let user = await User.findOne({ googleId });
           if (user) {
-            if (user.email === adminEmail && user.role !== 'admin') {
-              user.role = 'admin';
-              await user.save();
+            if (user.email === adminEmail) {
+              let saveNeeded = false;
+              if (user.role !== 'admin') {
+                user.role = 'admin';
+                saveNeeded = true;
+              }
+              if (!user.isTeacherCapability) {
+                user.isTeacherCapability = true;
+                saveNeeded = true;
+              }
+              if (user.verificationStatus !== 'verified') {
+                user.verificationStatus = 'verified';
+                saveNeeded = true;
+              }
+              if (saveNeeded) await user.save();
             }
             return done(null, user);
           }
@@ -81,8 +93,10 @@ if (googleClientId && googleClientSecret) {
             }
             // Link googleId to existing local account without overwriting authProvider or role unless primary admin
             user.googleId = googleId;
-            if (email === adminEmail && user.role !== 'admin') {
-              user.role = 'admin';
+            if (email === adminEmail) {
+              if (user.role !== 'admin') user.role = 'admin';
+              if (!user.isTeacherCapability) user.isTeacherCapability = true;
+              if (user.verificationStatus !== 'verified') user.verificationStatus = 'verified';
             }
             await user.save();
             return done(null, user);
@@ -110,6 +124,8 @@ if (googleClientId && googleClientSecret) {
           }
 
           const assignedRole = email === adminEmail ? 'admin' : 'student';
+          const isTeacherCap = email === adminEmail;
+          const verStatus = email === adminEmail ? 'verified' : 'pending';
 
           user = await User.create({
             name: profile.displayName || 'Google User',
@@ -118,6 +134,8 @@ if (googleClientId && googleClientSecret) {
             googleId,
             authProvider: 'google',
             role: assignedRole,
+            isTeacherCapability: isTeacherCap,
+            verificationStatus: verStatus,
             avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '/images/logo.png',
           });
 
@@ -139,9 +157,23 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     if (user) {
       const adminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
-      if (user.email === adminEmail && user.role !== 'admin') {
-        user.role = 'admin';
-        await user.save();
+      if (user.email === adminEmail) {
+        let needsSave = false;
+        if (user.role !== 'admin') {
+          user.role = 'admin';
+          needsSave = true;
+        }
+        if (!user.isTeacherCapability) {
+          user.isTeacherCapability = true;
+          needsSave = true;
+        }
+        if (user.verificationStatus !== 'verified') {
+          user.verificationStatus = 'verified';
+          needsSave = true;
+        }
+        if (needsSave) {
+          await user.save();
+        }
       }
     }
     done(null, user);

@@ -32,16 +32,26 @@ exports.isLoggedIn = (req, res, next) => {
   return res.redirect('/auth/login');
 };
 
-// Ensure user is a Teacher or Admin
+// Ensure user is a Teacher or Admin with Teacher capability
 exports.isTeacher = (req, res, next) => {
-  if (req.isAuthenticated() && req.user && (req.user.role === 'teacher' || req.user.role === 'admin')) {
-    return next();
+  if (req.isAuthenticated() && req.user) {
+    if (req.user.role === 'teacher') {
+      return next();
+    }
+    if (
+      req.user.role === 'admin' &&
+      (req.user.isTeacherCapability ||
+        req.user.canAccessTeacher ||
+        (typeof req.user.hasTeacherAccess === 'function' && req.user.hasTeacherAccess()))
+    ) {
+      return next();
+    }
   }
 
   if (
     req.xhr ||
-    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
-    req.headers.accept?.includes('application/json')
+    req.headers?.['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers?.accept?.includes('application/json')
   ) {
     return res.status(403).json({
       success: false,
@@ -61,8 +71,8 @@ exports.isAdmin = (req, res, next) => {
 
   if (
     req.xhr ||
-    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
-    req.headers.accept?.includes('application/json')
+    req.headers?.['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers?.accept?.includes('application/json')
   ) {
     return res.status(403).json({
       success: false,

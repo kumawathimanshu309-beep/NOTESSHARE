@@ -56,7 +56,7 @@
               <i class="fa-solid fa-gauge-high"></i>
               <span>Dashboard</span>
             </a>
-            <% if (currentUser.role === 'teacher') { %>
+            <% if (currentUser.role === 'teacher' || (currentUser.role === 'admin' && (currentUser.isTeacherCapability || currentUser.canAccessTeacher || (typeof currentUser.hasTeacherAccess === 'function' && currentUser.hasTeacherAccess())))) { %>
               <a href="/teacher/dashboard" class="nav-item nav-teacher-portal<%= typeof path !== 'undefined' && path === '/teacher/dashboard' ? ' active' : '' %>">
                 <i class="fa-solid fa-chalkboard-user"></i>
                 <span>Teacher Portal</span>
@@ -115,7 +115,7 @@
                   <i class="fa-solid fa-gauge-high"></i>
                   <span>Dashboard</span>
                 </a>
-                <% if (currentUser.role === 'teacher') { %>
+                <% if (currentUser.role === 'teacher' || (currentUser.role === 'admin' && (currentUser.isTeacherCapability || currentUser.canAccessTeacher || (typeof currentUser.hasTeacherAccess === 'function' && currentUser.hasTeacherAccess())))) { %>
                   <a href="/teacher/dashboard" class="nav-dropdown-item" role="menuitem">
                     <i class="fa-solid fa-chalkboard-user"></i>
                     <span>Teacher Portal</span>

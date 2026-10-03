@@ -10,9 +10,19 @@ const wrapAsync = require('../middleware/asyncWrapper');
  * Protected Teacher Control Panel
  */
 exports.getTeacherDashboard = wrapAsync(async (req, res) => {
-  // If user is admin, redirect to admin governance panel
-  if (req.user.role === 'admin' || req.user.isAdmin) {
-    return res.redirect('/admin');
+  // If user is admin without teacher capability, redirect to admin governance panel
+  const hasTeacherAccess =
+    req.user.role === 'teacher' ||
+    (req.user.role === 'admin' &&
+      (req.user.isTeacherCapability ||
+        req.user.canAccessTeacher ||
+        (typeof req.user.hasTeacherAccess === 'function' && req.user.hasTeacherAccess())));
+
+  if (!hasTeacherAccess) {
+    if (req.user.role === 'admin' || req.user.isAdmin) {
+      return res.redirect('/admin');
+    }
+    return res.redirect('/dashboard');
   }
 
   const dashboardData = await teacherService.getTeacherDashboardData(req.user._id);

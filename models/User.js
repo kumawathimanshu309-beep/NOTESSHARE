@@ -145,6 +145,10 @@ const userSchema = new mongoose.Schema(
       enum: ['pending', 'verified', 'rejected'],
       default: 'pending',
     },
+    isTeacherCapability: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -173,6 +177,28 @@ userSchema.virtual('isAdmin').get(function () {
 userSchema.virtual('isTeacher').get(function () {
   return this.role === 'teacher';
 });
+
+// Virtual property for teacher portal capability (normal teacher OR admin with teacher capability)
+userSchema.virtual('canAccessTeacher').get(function () {
+  if (this.role === 'teacher') return true;
+  if (this.role === 'admin') {
+    const adminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
+    if (this.email === adminEmail) return true;
+    if (this.isTeacherCapability === true) return true;
+    if (this.verificationStatus === 'verified') return true;
+  }
+  return false;
+});
+
+// Instance method to check teacher capability access
+userSchema.methods.hasTeacherAccess = function () {
+  if (this.role === 'teacher') return true;
+  if (this.role === 'admin') {
+    const adminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
+    return this.email === adminEmail || this.isTeacherCapability === true || this.verificationStatus === 'verified';
+  }
+  return false;
+};
 
 // Ensure sensitive fields are never exposed in JSON serialization
 userSchema.set('toJSON', {
