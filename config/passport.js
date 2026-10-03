@@ -61,9 +61,15 @@ if (googleClientId && googleClientSecret) {
             return done(null, false, { message: 'No email address provided by Google account.' });
           }
 
+          const adminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
+
           // 1. Try finding user by googleId first
           let user = await User.findOne({ googleId });
           if (user) {
+            if (user.email === adminEmail && user.role !== 'admin') {
+              user.role = 'admin';
+              await user.save();
+            }
             return done(null, user);
           }
 
@@ -73,8 +79,11 @@ if (googleClientId && googleClientSecret) {
             if (!isVerified) {
               return done(null, false, { message: 'Unverified Google email cannot be linked to existing account.' });
             }
-            // Link googleId to existing local account without overwriting authProvider or role
+            // Link googleId to existing local account without overwriting authProvider or role unless primary admin
             user.googleId = googleId;
+            if (email === adminEmail && user.role !== 'admin') {
+              user.role = 'admin';
+            }
             await user.save();
             return done(null, user);
           }
@@ -100,13 +109,15 @@ if (googleClientId && googleClientSecret) {
             counter++;
           }
 
+          const assignedRole = email === adminEmail ? 'admin' : 'student';
+
           user = await User.create({
             name: profile.displayName || 'Google User',
             username: finalUsername,
             email,
             googleId,
             authProvider: 'google',
-            role: 'student', // Force student role
+            role: assignedRole,
             avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '/images/logo.png',
           });
 
@@ -126,6 +137,13 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
+    if (user) {
+      const adminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
+      if (user.email === adminEmail && user.role !== 'admin') {
+        user.role = 'admin';
+        await user.save();
+      }
+    }
     done(null, user);
   } catch (err) {
     done(err, null);

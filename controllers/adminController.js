@@ -166,6 +166,12 @@ exports.patchUserRole = wrapAsync(async (req, res) => {
 
   const previousRole = targetUser.role;
 
+  // Rule: Primary Admin Protection
+  const primaryAdminEmail = (process.env.ADMIN_EMAIL || 'kumawathimanshu309@gmail.com').toLowerCase().trim();
+  if (targetUser.email === primaryAdminEmail && newRole !== 'admin') {
+    throw new AppError('Cannot change the role of the primary administrator account.', 400);
+  }
+
   // Rule: Last-Admin Protection
   // If target user is an admin and new role is not admin, ensure at least one other admin remains in the DB
   if (previousRole === 'admin' && newRole !== 'admin') {

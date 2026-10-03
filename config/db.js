@@ -22,6 +22,12 @@ const connectDB = async () => {
       console.error('Academic taxonomy initial seed warning:', err.message || err);
     });
 
+    // Ensure primary administrator account role and integrity
+    const governanceService = require('../services/governanceService');
+    governanceService.ensureAdminAccount().catch((err) => {
+      console.error('Admin account initial check warning:', err.message || err);
+    });
+
     return true;
   } catch (error) {
     console.error('❌ MongoDB Connection Failure:', error.message);

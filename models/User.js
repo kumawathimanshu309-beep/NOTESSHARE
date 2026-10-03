@@ -164,13 +164,25 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
+// Virtual property for admin role check
+userSchema.virtual('isAdmin').get(function () {
+  return this.role === 'admin';
+});
+
+// Virtual property for teacher role check
+userSchema.virtual('isTeacher').get(function () {
+  return this.role === 'teacher';
+});
+
 // Ensure sensitive fields are never exposed in JSON serialization
 userSchema.set('toJSON', {
+  virtuals: true,
   transform: (doc, ret) => {
     delete ret.password;
     return ret;
   },
 });
+userSchema.set('toObject', { virtuals: true });
 
 const User = mongoose.model('User', userSchema);
 
