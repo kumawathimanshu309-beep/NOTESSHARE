@@ -15,6 +15,13 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(mongoURI, { dbName: 'studyshare' });
     console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host}`);
+
+    // Ensure canonical academic taxonomy in background on connection
+    const academicService = require('../services/academicService');
+    academicService.ensureAcademicTaxonomy().catch((err) => {
+      console.error('Academic taxonomy initial seed warning:', err.message || err);
+    });
+
     return true;
   } catch (error) {
     console.error('❌ MongoDB Connection Failure:', error.message);

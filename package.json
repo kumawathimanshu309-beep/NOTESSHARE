@@ -9,7 +9,8 @@
     "dev": "nodemon server.js",
     "vite:dev": "vite",
     "vite:build": "vite build",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "seed:taxonomy": "node scripts/seedAcademicTaxonomy.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",

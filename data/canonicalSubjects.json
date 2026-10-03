@@ -1,0 +1,1780 @@
+[
+  {
+    "name": "Aerodynamics",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Airfoil theory, compressible flow, shock waves, and lift/drag forces.",
+    "isActive": true
+  },
+  {
+    "name": "Aerospace Materials",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Titanium alloys, carbon composites, superalloys, and high-temp materials.",
+    "isActive": true
+  },
+  {
+    "name": "Aircraft Design",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Sizing, weight estimation, wing geometry selection, and configuration.",
+    "isActive": true
+  },
+  {
+    "name": "Aircraft Propulsion",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Turbojet, turbofan, ramjet, rocket engines, and thrust calculation.",
+    "isActive": true
+  },
+  {
+    "name": "Aircraft Structures",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Thin-walled beams, wing torsion, fuselage structural design, and fatigue.",
+    "isActive": true
+  },
+  {
+    "name": "Analog Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Amplitude and angle modulation, radio receivers, and SSB/DSB.",
+    "isActive": true
+  },
+  {
+    "name": "Analog Electronics",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Op-amps, active filters, feedback amplifiers, and oscillators.",
+    "isActive": true
+  },
+  {
+    "name": "Animal Biotechnology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Cell culture, transgenic animals, and assisted reproduction.",
+    "isActive": true
+  },
+  {
+    "name": "Antenna Theory",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Dipole antennas, radiation patterns, arrays, and wave propagation.",
+    "isActive": true
+  },
+  {
+    "name": "Applied Thermodynamics",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Steam turbines, gas turbines, nozzles, compressors, and power plants.",
+    "isActive": true
+  },
+  {
+    "name": "Artificial Intelligence",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Search algorithms, knowledge representation, expert systems, and logic.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Chassis",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Frames, front axle, steering systems, brakes, and suspension.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Control Systems",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Cruise control, traction control, stability control, and active suspension.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Electronics",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "ECU, automotive sensors, CAN bus, ABS, and electronic power steering.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Engines",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Engine testing, manifolds, turbochargers, and fuel injection systems.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Manufacturing",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Body stamping, painting, assembly lines, and quality testing.",
+    "isActive": true
+  },
+  {
+    "name": "Automotive Transmission",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Clutches, gearboxes, automatic transmission, differential, and driveshaft.",
+    "isActive": true
+  },
+  {
+    "name": "Autonomous Systems",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "SLAM, path planning, ROS (Robot Operating System), and obstacle avoidance.",
+    "isActive": true
+  },
+  {
+    "name": "Avionics",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Flight management systems, radar, navigation systems, and autopilot.",
+    "isActive": true
+  },
+  {
+    "name": "Basic Electrical Engineering",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "AC/DC circuits, transformers, electrical machines, and measuring tools.",
+    "isActive": true
+  },
+  {
+    "name": "Basic Electronics Engineering",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Semiconductor diodes, transistors, BJT, FET, and operational amplifiers.",
+    "isActive": true
+  },
+  {
+    "name": "Big Data Analytics",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Hadoop, Spark, MapReduce, Hive, and distributed analytics.",
+    "isActive": true
+  },
+  {
+    "name": "Biochemistry",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Biomolecules, metabolic pathways, bioenergetics, and enzyme kinetics.",
+    "isActive": true
+  },
+  {
+    "name": "Bioinformatics",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Sequence alignment, BLAST, phylogenetic trees, and protein modeling.",
+    "isActive": true
+  },
+  {
+    "name": "Biomedical Instrumentation",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "ECG, EEG, EMG, patient monitors, imaging systems, and bio-sensors.",
+    "isActive": true
+  },
+  {
+    "name": "Bioprocess Engineering",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Bioreactor design, mass transfer in fermentation, and downstream processing.",
+    "isActive": true
+  },
+  {
+    "name": "Blockchain Technology",
+    "code": "",
+    "department": "Information Technology",
+    "description": "Distributed ledgers, smart contracts, Ethereum, consensus mechanisms.",
+    "isActive": true
+  },
+  {
+    "name": "Building Construction",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Masonry, flooring, roofing, doors/windows, and scaffolding.",
+    "isActive": true
+  },
+  {
+    "name": "Business Intelligence",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Reporting, dashboards, KPI tracking, data analytics for business.",
+    "isActive": true
+  },
+  {
+    "name": "C++ Programming",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Object-oriented programming, STL, inheritance, and polymorphism in C++.",
+    "isActive": true
+  },
+  {
+    "name": "CMOS Design",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "CMOS logic gates, delay estimation, power dissipation, and layout.",
+    "isActive": true
+  },
+  {
+    "name": "Cell Biology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Cell structure, organelles, membrane transport, and cell division.",
+    "isActive": true
+  },
+  {
+    "name": "Chemical Engineering Thermodynamics",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Phase equilibria, solution thermodynamics, VLE, and fugacity.",
+    "isActive": true
+  },
+  {
+    "name": "Chemical Process Calculations",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Material balances, energy balances, stoichiometry, and recycle streams.",
+    "isActive": true
+  },
+  {
+    "name": "Chemical Reaction Engineering",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Kinetics, batch/CSTR/PFR reactors, catalysis, and reactor design.",
+    "isActive": true
+  },
+  {
+    "name": "Circuit Theory",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "KVL, KCL, mesh/nodal analysis, Laplace transforms in circuits.",
+    "isActive": true
+  },
+  {
+    "name": "Cloud Computing",
+    "code": "",
+    "department": "Information Technology",
+    "description": "AWS, Azure, virtualization, IaaS, PaaS, SaaS, and serverless architecture.",
+    "isActive": true
+  },
+  {
+    "name": "Communication Skills",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Technical communication, grammar, presentation, and writing skills.",
+    "isActive": true
+  },
+  {
+    "name": "Communication Systems",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "AM, FM, PM modulation, transmitters, receivers, and noise analysis.",
+    "isActive": true
+  },
+  {
+    "name": "Compiler Design",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Lexical analysis, parsing, syntax-directed translation, code generation.",
+    "isActive": true
+  },
+  {
+    "name": "Composite Materials",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "FRP, metal matrix composites, ceramic matrix composites, and mechanics.",
+    "isActive": true
+  },
+  {
+    "name": "Computational Fluid Dynamics",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Discretization, FVM, Navier-Stokes solvers, ANSYS Fluent basics.",
+    "isActive": true
+  },
+  {
+    "name": "Computer Graphics",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "2D/3D transformations, rasterization, rendering, shading, and OpenGL.",
+    "isActive": true
+  },
+  {
+    "name": "Computer Networks",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "OSI model, TCP/IP, routing algorithms, IP addressing, and network security.",
+    "isActive": true
+  },
+  {
+    "name": "Computer Organization and Architecture",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "ALU, instruction sets, pipelining, cache memory, and I/O interface.",
+    "isActive": true
+  },
+  {
+    "name": "Computer Vision",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Image processing, feature detection, object recognition, and segmentation.",
+    "isActive": true
+  },
+  {
+    "name": "Concrete Technology",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Cement hydration, mix design, workability, and admixtures.",
+    "isActive": true
+  },
+  {
+    "name": "Construction Management",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "CPM, PERT networks, project planning, contracts, and safety management.",
+    "isActive": true
+  },
+  {
+    "name": "Construction Materials",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Bricks, cement, aggregates, timber, steel, and modern composites.",
+    "isActive": true
+  },
+  {
+    "name": "Control Systems",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Transfer functions, block diagrams, Bode plot, Root locus, and Nyquist plot.",
+    "isActive": true
+  },
+  {
+    "name": "Corrosion Engineering",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Electrochemical corrosion, pitting, cathodic protection, and coatings.",
+    "isActive": true
+  },
+  {
+    "name": "Cryptography and Network Security",
+    "code": "",
+    "department": "Information Technology",
+    "description": "AES, RSA, public key infrastructure, digital signatures, and SSL/TLS.",
+    "isActive": true
+  },
+  {
+    "name": "Cyber Security",
+    "code": "",
+    "department": "Information Technology",
+    "description": "Threat analysis, ethical hacking, malware analysis, and network defense.",
+    "isActive": true
+  },
+  {
+    "name": "Data Analysis",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Pandas, NumPy, data cleaning, aggregation, and statistical insight.",
+    "isActive": true
+  },
+  {
+    "name": "Data Engineering",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Data pipelines, Airflow, Kafka, data streaming, and warehouse modeling.",
+    "isActive": true
+  },
+  {
+    "name": "Data Mining",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Association rule mining, clustering, classification, and pattern recognition.",
+    "isActive": true
+  },
+  {
+    "name": "Data Structures",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Arrays, stacks, queues, linked lists, trees, graphs, and hashing.",
+    "isActive": true
+  },
+  {
+    "name": "Data Visualization",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Matplotlib, Seaborn, Tableau, Power BI, and interactive charts.",
+    "isActive": true
+  },
+  {
+    "name": "Data Warehousing",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "ETL pipelines, star/snowflake schemas, OLAP, and data lakes.",
+    "isActive": true
+  },
+  {
+    "name": "Database Management Systems",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Relational model, SQL, normalization, ER diagram, and transactions.",
+    "isActive": true
+  },
+  {
+    "name": "Deep Learning",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "CNNs, RNNs, Transformers, PyTorch, TensorFlow, and optimization.",
+    "isActive": true
+  },
+  {
+    "name": "Design and Analysis of Algorithms",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Greedy, divide & conquer, dynamic programming, and NP-completeness.",
+    "isActive": true
+  },
+  {
+    "name": "DevOps",
+    "code": "",
+    "department": "Information Technology",
+    "description": "CI/CD, Docker, Kubernetes, infrastructure as code, and monitoring.",
+    "isActive": true
+  },
+  {
+    "name": "Digital Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "PCM, DPCM, ASK, FSK, PSK modulation, and error control coding.",
+    "isActive": true
+  },
+  {
+    "name": "Digital Control",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "Discrete-time control systems, Z-transform, and digital PID controllers.",
+    "isActive": true
+  },
+  {
+    "name": "Digital Electronics",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Logic families, flip-flops, counters, registers, and memory chips.",
+    "isActive": true
+  },
+  {
+    "name": "Digital Logic Design",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Boolean algebra, logic gates, combinational and sequential circuits.",
+    "isActive": true
+  },
+  {
+    "name": "Digital Signal Processing",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "DFT, FFT, FIR/IIR filter design, and Z-transforms.",
+    "isActive": true
+  },
+  {
+    "name": "Distributed Systems",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Consensus, RPC, distributed file systems, fault tolerance, and scalability.",
+    "isActive": true
+  },
+  {
+    "name": "Earthquake Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Seismic design, dynamic response of structures, and base isolation.",
+    "isActive": true
+  },
+  {
+    "name": "Electric Vehicles",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "EV powertrains, lithium-ion batteries, BMS, motors, and charging.",
+    "isActive": true
+  },
+  {
+    "name": "Electrical Circuit Analysis",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Three-phase circuits, AC/DC network theorems, and magnetic circuits.",
+    "isActive": true
+  },
+  {
+    "name": "Electrical Drives",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Speed control of AC/DC motors using power electronic drives.",
+    "isActive": true
+  },
+  {
+    "name": "Electrical Instrumentation",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Current/voltage transformers, energy meters, and digital instruments.",
+    "isActive": true
+  },
+  {
+    "name": "Electrical Machines I",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "DC generators, DC motors, single-phase and three-phase transformers.",
+    "isActive": true
+  },
+  {
+    "name": "Electrical Machines II",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Synchronous generators, synchronous motors, and induction machines.",
+    "isActive": true
+  },
+  {
+    "name": "Electromagnetic Theory",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Maxwell equations, wave propagation, transmission lines, and waveguides.",
+    "isActive": true
+  },
+  {
+    "name": "Electronic Devices and Circuits",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Diodes, transistors, MOSFETs, biasing, and amplifier response.",
+    "isActive": true
+  },
+  {
+    "name": "Electronic Measurements",
+    "code": "",
+    "department": "Electronics Engineering",
+    "description": "CRO, digital multimeters, bridges, transducers, and signal generators.",
+    "isActive": true
+  },
+  {
+    "name": "Embedded Systems",
+    "code": "",
+    "department": "Electronics Engineering",
+    "description": "RTOS, embedded C, microcontroller peripherals, and hardware integration.",
+    "isActive": true
+  },
+  {
+    "name": "Energy Management",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Energy auditing, efficiency, tariff structures, and conservation.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Chemistry",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Water chemistry, fuels, polymers, electrochemistry, and corrosion.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Drawing",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Orthographic and isometric projections, sectioning, and dimensioning.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Economics",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Cost estimation, interest formulas, payback period, and decision making.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Graphics",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Projections, CAD fundamentals, and engineering drafting.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Materials",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Metals, ceramics, polymers, composites, and material selection.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Mathematics I",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Differential calculus, matrices, and multivariable calculus.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Mathematics II",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Integral calculus, vector calculus, and differential equations.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Mathematics III",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Complex variables, Fourier series, and Laplace transforms.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Mechanics",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Statics, dynamics, centroids, friction, and moment of inertia.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Physics",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Wave optics, quantum physics, electromagnetism, and lasers.",
+    "isActive": true
+  },
+  {
+    "name": "Engineering Thermodynamics",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Laws of thermodynamics, ideal gases, entropy, and thermodynamic cycles.",
+    "isActive": true
+  },
+  {
+    "name": "Environmental Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Water supply, wastewater treatment, air pollution, and solid waste management.",
+    "isActive": true
+  },
+  {
+    "name": "Environmental Studies",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Ecology, natural resources, environmental pollution, and sustainability.",
+    "isActive": true
+  },
+  {
+    "name": "Enzyme Technology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Enzyme immobilization, biosensors, and industrial applications.",
+    "isActive": true
+  },
+  {
+    "name": "Estimation and Costing",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Building estimation methods, tender preparation, and measurement.",
+    "isActive": true
+  },
+  {
+    "name": "Exploratory Data Analysis",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Feature distribution analysis, correlation matrices, outlier detection.",
+    "isActive": true
+  },
+  {
+    "name": "Extractive Metallurgy",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Pyrometallurgy, hydrometallurgy, and electrometallurgy processes.",
+    "isActive": true
+  },
+  {
+    "name": "Fermentation Technology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Upstream processing, media design, oxygen transfer, and scale-up.",
+    "isActive": true
+  },
+  {
+    "name": "Fiber Optic Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Optical fibers, transmitters, LEDs, laser diodes, and optical amplifiers.",
+    "isActive": true
+  },
+  {
+    "name": "Flight Mechanics",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Aircraft performance, stability, control surfaces, and trim analysis.",
+    "isActive": true
+  },
+  {
+    "name": "Fluid Mechanics",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Fluid statics, kinematics, Bernoulli equation, and boundary layer theory.",
+    "isActive": true
+  },
+  {
+    "name": "Foundation Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Shallow and deep foundations, pile foundations, and bearing capacity.",
+    "isActive": true
+  },
+  {
+    "name": "Genetic Engineering",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Recombinant DNA technology, cloning vectors, PCR, and CRISPR.",
+    "isActive": true
+  },
+  {
+    "name": "Genetics",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Mendelian inheritance, chromosome mapping, mutations, and population genetics.",
+    "isActive": true
+  },
+  {
+    "name": "Geotechnical Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Soil classification, compaction, permeability, and effective stress.",
+    "isActive": true
+  },
+  {
+    "name": "Heat Transfer",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Conduction, convection, radiation, and heat exchanger design.",
+    "isActive": true
+  },
+  {
+    "name": "Heat Treatment",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Annealing, normalizing, quenching, tempering, and surface hardening.",
+    "isActive": true
+  },
+  {
+    "name": "High Voltage Engineering",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Breakdown mechanisms, impulse voltage generators, and insulation testing.",
+    "isActive": true
+  },
+  {
+    "name": "Highway Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Geometric design of highways, flexible/rigid pavements, and highway materials.",
+    "isActive": true
+  },
+  {
+    "name": "Human Computer Interaction",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "UX design principles, usability testing, wireframing, and interactive interfaces.",
+    "isActive": true
+  },
+  {
+    "name": "Hybrid Vehicles",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Series/parallel hybrids, regenerative braking, and energy management.",
+    "isActive": true
+  },
+  {
+    "name": "Hydraulics",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Open channel flow, pipe flow, hydraulic machines, and pumps/turbines.",
+    "isActive": true
+  },
+  {
+    "name": "Hydrology",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Precipitation, runoff, hydrograph analysis, and flood forecasting.",
+    "isActive": true
+  },
+  {
+    "name": "Immunology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Immune response, antibodies, antigens, vaccines, and ELISA.",
+    "isActive": true
+  },
+  {
+    "name": "Industrial Automation",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "DCS, SCADA, PLC programming, industrial networks, and HMI.",
+    "isActive": true
+  },
+  {
+    "name": "Industrial Biotechnology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Production of antibiotics, vitamins, biofuel, and organic acids.",
+    "isActive": true
+  },
+  {
+    "name": "Industrial Chemistry",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Industrial organic/inorganic chemical production processes.",
+    "isActive": true
+  },
+  {
+    "name": "Industrial Instrumentation",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "Flowmeters, pressure transmitters, level gauges, and analytical instruments.",
+    "isActive": true
+  },
+  {
+    "name": "Information Retrieval",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Search engines, indexing, TF-IDF, vector space models, and web crawling.",
+    "isActive": true
+  },
+  {
+    "name": "Information Security",
+    "code": "",
+    "department": "Information Technology",
+    "description": "Security principles, authentication, access control, and risk management.",
+    "isActive": true
+  },
+  {
+    "name": "Internal Combustion Engines",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "SI and CI engines, combustion, fuel injection, cooling, and emissions.",
+    "isActive": true
+  },
+  {
+    "name": "Internet of Things",
+    "code": "",
+    "department": "Information Technology",
+    "description": "Sensors, MQTT, Raspberry Pi, ESP32, edge computing, and IoT protocols.",
+    "isActive": true
+  },
+  {
+    "name": "Inventory Management",
+    "code": "",
+    "department": "Industrial Engineering",
+    "description": "EOQ model, ABC analysis, safety stock, and JIT systems.",
+    "isActive": true
+  },
+  {
+    "name": "Irrigation Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Water requirements of crops, canals, dams, spillways, and reservoirs.",
+    "isActive": true
+  },
+  {
+    "name": "Java Programming",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Core Java, OOPs concepts, multi-threading, exceptions, and collections.",
+    "isActive": true
+  },
+  {
+    "name": "Linear Algebra",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Vector spaces, matrices, eigenvalues, eigenvectors, and SVD.",
+    "isActive": true
+  },
+  {
+    "name": "Machine Design",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Design of joints, shafts, gears, bearings, springs, and fasteners.",
+    "isActive": true
+  },
+  {
+    "name": "Machine Learning",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Supervised, unsupervised learning, regression, classification, and evaluation.",
+    "isActive": true
+  },
+  {
+    "name": "Machine Tools",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Tool geometry, cutting forces, Taylor tool life, and machine specs.",
+    "isActive": true
+  },
+  {
+    "name": "Manufacturing Practice",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Hands-on training in casting, machining, welding, and sheet metal.",
+    "isActive": true
+  },
+  {
+    "name": "Manufacturing Processes",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Casting, forming, joining, welding, and machining fundamentals.",
+    "isActive": true
+  },
+  {
+    "name": "Manufacturing Technology",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Lathe, milling, shaping, grinding, and advanced machining processes.",
+    "isActive": true
+  },
+  {
+    "name": "Mass Transfer",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Distillation, absorption, extraction, drying, and crystallization.",
+    "isActive": true
+  },
+  {
+    "name": "Material Characterization",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "XRD, SEM, TEM, AFM, thermal analysis, and spectroscopy.",
+    "isActive": true
+  },
+  {
+    "name": "Material Science",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Crystal structures, phase diagrams, heat treatment, and alloy steel.",
+    "isActive": true
+  },
+  {
+    "name": "Measurement Systems",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "Static and dynamic characteristics of instruments, error analysis.",
+    "isActive": true
+  },
+  {
+    "name": "Mechanical Metallurgy",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Dislocation theory, plastic deformation, hardness, creep, and fatigue.",
+    "isActive": true
+  },
+  {
+    "name": "Mechanical Vibrations",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Single and multi-degree of freedom systems, damping, and resonance.",
+    "isActive": true
+  },
+  {
+    "name": "Mechatronics",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "Integration of mechanics, electronics, control systems, and computing.",
+    "isActive": true
+  },
+  {
+    "name": "Metallurgy",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Physical and chemical extraction, refining, and casting of metals.",
+    "isActive": true
+  },
+  {
+    "name": "Metrology",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Linear and angular measurements, comparators, and surface roughness.",
+    "isActive": true
+  },
+  {
+    "name": "Microbiology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Bacteria, viruses, fungi, culture techniques, and staining.",
+    "isActive": true
+  },
+  {
+    "name": "Microcontrollers",
+    "code": "",
+    "department": "Electronics Engineering",
+    "description": "8051, PIC, ARM microcontrollers, timers, interrupts, and I/O ports.",
+    "isActive": true
+  },
+  {
+    "name": "Microprocessors",
+    "code": "",
+    "department": "Electronics Engineering",
+    "description": "8085/8086 microprocessors, assembly programming, and interfacing.",
+    "isActive": true
+  },
+  {
+    "name": "Microwave Engineering",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Klystron, magnetron, microwave components, and scattering parameters.",
+    "isActive": true
+  },
+  {
+    "name": "Mine Safety",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Mine fires, explosions, inundation, safety legislation, and rescue.",
+    "isActive": true
+  },
+  {
+    "name": "Mine Surveying",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Underground correlation, tri-station surveying, and mine mapping.",
+    "isActive": true
+  },
+  {
+    "name": "Mine Ventilation",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Airflow in mines, ventilation fans, mine gases, and dust control.",
+    "isActive": true
+  },
+  {
+    "name": "Mineral Processing",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Crushing, grinding, flotation, magnetic separation, and leaching.",
+    "isActive": true
+  },
+  {
+    "name": "Mining Environmental Engineering",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Acid mine drainage, land reclamation, subsidence, and dust control.",
+    "isActive": true
+  },
+  {
+    "name": "Mining Geology",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Ore deposits, structural geology, exploration, and ore reserve estimation.",
+    "isActive": true
+  },
+  {
+    "name": "Mining Machinery",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Haul trucks, excavators, continuous miners, and winders.",
+    "isActive": true
+  },
+  {
+    "name": "Mobile Application Development",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Android, iOS, Flutter, and mobile cross-platform application building.",
+    "isActive": true
+  },
+  {
+    "name": "Mobile Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "GSM, CDMA, mobility management, handover, and wireless architecture.",
+    "isActive": true
+  },
+  {
+    "name": "Molecular Biology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "DNA replication, transcription, translation, and gene regulation.",
+    "isActive": true
+  },
+  {
+    "name": "Nanomaterials",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Synthesis, properties, and characterization of nanostructured materials.",
+    "isActive": true
+  },
+  {
+    "name": "Natural Language Processing",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Tokenization, embeddings, LLMs, sentiment analysis, and machine translation.",
+    "isActive": true
+  },
+  {
+    "name": "Network Theory",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Network theorems, transient analysis, two-port networks, and resonance.",
+    "isActive": true
+  },
+  {
+    "name": "Neural Networks",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Perceptrons, backpropagation, activation functions, and deep architectures.",
+    "isActive": true
+  },
+  {
+    "name": "Numerical Methods",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Root finding, numerical integration, interpolation, and linear algebra solvers.",
+    "isActive": true
+  },
+  {
+    "name": "Object Oriented Programming",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Classes, objects, encapsulation, abstraction, inheritance, and design patterns.",
+    "isActive": true
+  },
+  {
+    "name": "Operating Systems",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Processes, threads, CPU scheduling, deadlocks, memory management, and file systems.",
+    "isActive": true
+  },
+  {
+    "name": "Operations Management",
+    "code": "",
+    "department": "Industrial Engineering",
+    "description": "Capacity planning, facility layout, forecasting, and scheduling.",
+    "isActive": true
+  },
+  {
+    "name": "Operations Research",
+    "code": "",
+    "department": "Industrial Engineering",
+    "description": "Linear programming, queuing theory, network models, and inventory control.",
+    "isActive": true
+  },
+  {
+    "name": "Optimization Techniques",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Linear programming, simplex method, convex optimization, and heuristics.",
+    "isActive": true
+  },
+  {
+    "name": "Orbital Mechanics",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Kepler laws, orbit transfer, Hohmann transfers, and satellite trajectories.",
+    "isActive": true
+  },
+  {
+    "name": "PCB Design",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Schematic capture, routing, KiCad/Altium, component footprints, and soldering.",
+    "isActive": true
+  },
+  {
+    "name": "PLC and SCADA",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "Ladder logic, timers, counters, SCADA screen design, and fieldbus.",
+    "isActive": true
+  },
+  {
+    "name": "Parallel and Distributed Computing",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "MPI, OpenMP, multi-core architecture, CUDA, and cluster computing.",
+    "isActive": true
+  },
+  {
+    "name": "Petroleum Engineering",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Refinery operations, cracking, reforming, and petroleum products.",
+    "isActive": true
+  },
+  {
+    "name": "Physical Metallurgy",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "Iron-carbon diagram, phase transformations, and grain structure.",
+    "isActive": true
+  },
+  {
+    "name": "Plant Biotechnology",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Tissue culture, transgenic plants, and micropropagation.",
+    "isActive": true
+  },
+  {
+    "name": "Polymer Technology",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Polymerization kinetics, plastics, elastomers, and processing techniques.",
+    "isActive": true
+  },
+  {
+    "name": "Power Electronics",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Thyristors, converters, inverters, choppers, and AC voltage controllers.",
+    "isActive": true
+  },
+  {
+    "name": "Power System Protection",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Numerical relays, busbar protection, generator protection, and surges.",
+    "isActive": true
+  },
+  {
+    "name": "Power Systems I",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Generation, transmission line parameters, line performance, and insulators.",
+    "isActive": true
+  },
+  {
+    "name": "Power Systems II",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Fault analysis, load flow studies, power system stability, and control.",
+    "isActive": true
+  },
+  {
+    "name": "Probability and Statistics",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "Probability distributions, hypothesis testing, ANOVA, and estimation.",
+    "isActive": true
+  },
+  {
+    "name": "Process Control",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "PID controllers, transfer functions, feedback control loops, and dynamic response.",
+    "isActive": true
+  },
+  {
+    "name": "Process Equipment Design",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Design of pressure vessels, heat exchangers, and distillation columns.",
+    "isActive": true
+  },
+  {
+    "name": "Process Instrumentation",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Temperature, pressure, flow, and level sensors in chemical plants.",
+    "isActive": true
+  },
+  {
+    "name": "Process Safety",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "HAZOP analysis, relief systems, explosion protection, and safety regulations.",
+    "isActive": true
+  },
+  {
+    "name": "Production Planning and Control",
+    "code": "",
+    "department": "Production Engineering",
+    "description": "MRP, kanban, loading, dispatching, and routing.",
+    "isActive": true
+  },
+  {
+    "name": "Production Technology",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Press working, Jigs and Fixtures, non-conventional machining, and EDM.",
+    "isActive": true
+  },
+  {
+    "name": "Professional Communication",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Corporate communication, report writing, listening, and workplace etiquette.",
+    "isActive": true
+  },
+  {
+    "name": "Professional Ethics & Human Values",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Engineering ethics, responsibility, safety, rights, and moral values.",
+    "isActive": true
+  },
+  {
+    "name": "Programming Fundamentals",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Algorithms, flowcharts, logic building, and problem-solving.",
+    "isActive": true
+  },
+  {
+    "name": "Programming in C",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "C language syntax, arrays, pointers, structures, and file I/O.",
+    "isActive": true
+  },
+  {
+    "name": "Python Programming",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Python data structures, modules, file handling, and scripting.",
+    "isActive": true
+  },
+  {
+    "name": "Quality Control",
+    "code": "",
+    "department": "Production Engineering",
+    "description": "Statistical process control, control charts, and acceptance sampling.",
+    "isActive": true
+  },
+  {
+    "name": "Quantity Surveying",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Rate analysis, bill of quantities, specification writing, and valuation.",
+    "isActive": true
+  },
+  {
+    "name": "Refrigeration and Air Conditioning",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Vapor compression cycle, psychrometry, refrigerants, and duct design.",
+    "isActive": true
+  },
+  {
+    "name": "Reinforced Cement Concrete",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "LSM and WSD design of beams, slabs, columns, and footings.",
+    "isActive": true
+  },
+  {
+    "name": "Reinforcement Learning",
+    "code": "",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Q-learning, MDP, policy gradients, deep Q-networks, and reward design.",
+    "isActive": true
+  },
+  {
+    "name": "Remote Sensing and GIS",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Satellite images, GIS spatial analysis, coordinate systems, and mapping.",
+    "isActive": true
+  },
+  {
+    "name": "Renewable Energy",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Solar, wind, biomass, hydro, and grid integration of clean energy.",
+    "isActive": true
+  },
+  {
+    "name": "Robot Dynamics",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "Euler-Lagrange formulation, Newton-Euler formulation, joint torques.",
+    "isActive": true
+  },
+  {
+    "name": "Robot Kinematics",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "Forward and inverse kinematics, Denavit-Hartenberg parameters, Jacobians.",
+    "isActive": true
+  },
+  {
+    "name": "Rock Mechanics",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Rock properties, stress distribution around openings, and ground support.",
+    "isActive": true
+  },
+  {
+    "name": "SQL",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Structured Query Language, joins, subqueries, indexing, and procedures.",
+    "isActive": true
+  },
+  {
+    "name": "Satellite Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Orbital mechanics, satellite transponders, Earth stations, and GPS.",
+    "isActive": true
+  },
+  {
+    "name": "Semiconductor Devices",
+    "code": "",
+    "department": "Electronics Engineering",
+    "description": "PN junctions, Schottky diodes, MOSFETs, and band energy diagrams.",
+    "isActive": true
+  },
+  {
+    "name": "Sensors and Actuators",
+    "code": "",
+    "department": "Robotics & Automation",
+    "description": "Stepper motors, servo motors, hydraulic/pneumatic actuators, encoders.",
+    "isActive": true
+  },
+  {
+    "name": "Sensors and Transducers",
+    "code": "",
+    "department": "Instrumentation & Control Engineering",
+    "description": "Strain gauges, RTDs, thermocouples, LVDT, and piezoelectric sensors.",
+    "isActive": true
+  },
+  {
+    "name": "Signals and Systems",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Continuous and discrete signals, convolution, Fourier and Laplace transforms.",
+    "isActive": true
+  },
+  {
+    "name": "Smart Grid",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Smart meters, AMI, microgrids, demand response, and power quality.",
+    "isActive": true
+  },
+  {
+    "name": "Software Engineering",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "SDLC, Agile methodology, requirements engineering, UML, and testing.",
+    "isActive": true
+  },
+  {
+    "name": "Software Project Management",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Project estimation, risk management, Scrum, metrics, and team management.",
+    "isActive": true
+  },
+  {
+    "name": "Software Testing",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Black-box, white-box testing, unit testing, automation tools, and QA.",
+    "isActive": true
+  },
+  {
+    "name": "Soil Mechanics",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Shear strength, consolidation, slope stability, and seepage analysis.",
+    "isActive": true
+  },
+  {
+    "name": "Solar Energy",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Photovoltaic systems, MPPT tracking, solar thermal, and inverter design.",
+    "isActive": true
+  },
+  {
+    "name": "Spacecraft Systems",
+    "code": "",
+    "department": "Aerospace Engineering",
+    "description": "Thermal control, attitude determination, solar panels, and telemetry.",
+    "isActive": true
+  },
+  {
+    "name": "Statistical Computing",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "R programming, statistical modeling, Monte Carlo methods, and bootstrapping.",
+    "isActive": true
+  },
+  {
+    "name": "Steel Structures",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Design of welded/bolted connections, tension/compression members, and trusses.",
+    "isActive": true
+  },
+  {
+    "name": "Strength of Materials",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Stress, strain, bending moment, shear force, torsion, and deflection.",
+    "isActive": true
+  },
+  {
+    "name": "Structural Analysis",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Determinate and indeterminate structures, slope deflection, and moment distribution.",
+    "isActive": true
+  },
+  {
+    "name": "Structural Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Concrete and steel design, structural safety, and load combinations.",
+    "isActive": true
+  },
+  {
+    "name": "Supply Chain Management",
+    "code": "",
+    "department": "Production Engineering",
+    "description": "Logistics, procurement, vendor management, and supply chain networks.",
+    "isActive": true
+  },
+  {
+    "name": "Surface Mining",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Opencast mining, slope stability, blasting design, and heavy machinery.",
+    "isActive": true
+  },
+  {
+    "name": "Surveying",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Chain, compass, leveling, total station, andodolite, and GPS surveying.",
+    "isActive": true
+  },
+  {
+    "name": "Switchgear and Protection",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Circuit breakers, protective relays, transformer protection, and fuses.",
+    "isActive": true
+  },
+  {
+    "name": "Theory of Computation",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Automata theory, regular expressions, context-free grammars, and Turing machines.",
+    "isActive": true
+  },
+  {
+    "name": "Theory of Machines",
+    "code": "",
+    "department": "Mechanical Engineering",
+    "description": "Kinematics of mechanisms, gears, cams, governors, and balancing.",
+    "isActive": true
+  },
+  {
+    "name": "Time Series Analysis",
+    "code": "",
+    "department": "Data Science / Data Engineering",
+    "description": "ARIMA, Prophet, trend decomposition, forecasting, and seasonality.",
+    "isActive": true
+  },
+  {
+    "name": "Tissue Engineering",
+    "code": "",
+    "department": "Biotechnology",
+    "description": "Scaffolds, stem cells, biomaterials, and regenerative medicine.",
+    "isActive": true
+  },
+  {
+    "name": "Total Quality Management",
+    "code": "",
+    "department": "Production Engineering",
+    "description": "Six Sigma, Kaizen, 5S, ISO standards, and continuous improvement.",
+    "isActive": true
+  },
+  {
+    "name": "Traffic Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Traffic flow, signal design, intersections, accidents, and parking.",
+    "isActive": true
+  },
+  {
+    "name": "Transport Phenomena",
+    "code": "",
+    "department": "Chemical Engineering",
+    "description": "Momentum, heat, and mass transport equations and analogies.",
+    "isActive": true
+  },
+  {
+    "name": "Transportation Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Pavement design, traffic characteristics, railways, and airports.",
+    "isActive": true
+  },
+  {
+    "name": "Underground Mining",
+    "code": "",
+    "department": "Mining Engineering",
+    "description": "Stoping methods, room and pillar, longwall mining, and shaft sinking.",
+    "isActive": true
+  },
+  {
+    "name": "Utilization of Electrical Energy",
+    "code": "",
+    "department": "Electrical Engineering",
+    "description": "Electric traction, illumination, electric heating, and welding.",
+    "isActive": true
+  },
+  {
+    "name": "VLSI Design",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "CMOS fabrication, ASIC design flow, Verilog/VHDL, and layout design.",
+    "isActive": true
+  },
+  {
+    "name": "Vehicle Design",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Body aerodynamics, crashworthiness, ergonomics, and structural design.",
+    "isActive": true
+  },
+  {
+    "name": "Vehicle Dynamics",
+    "code": "",
+    "department": "Automobile Engineering",
+    "description": "Tire mechanics, steering geometry, suspension response, and braking.",
+    "isActive": true
+  },
+  {
+    "name": "Wastewater Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Sewer design, primary/secondary treatment, activated sludge, and disposal.",
+    "isActive": true
+  },
+  {
+    "name": "Water Supply Engineering",
+    "code": "",
+    "department": "Civil Engineering",
+    "description": "Water quality standards, filtration, disinfection, and distribution networks.",
+    "isActive": true
+  },
+  {
+    "name": "Web Development",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "Full-stack web application development, frontend and backend integration.",
+    "isActive": true
+  },
+  {
+    "name": "Web Technologies",
+    "code": "",
+    "department": "Computer Science & Engineering",
+    "description": "HTML5, CSS3, JavaScript, HTTP protocol, REST APIs, and modern frameworks.",
+    "isActive": true
+  },
+  {
+    "name": "Welding Technology",
+    "code": "",
+    "department": "Metallurgical / Materials Engineering",
+    "description": "TIG, MIG, arc welding metallurgy, HAZ, and non-destructive testing.",
+    "isActive": true
+  },
+  {
+    "name": "Wireless Communication",
+    "code": "",
+    "department": "Electronics & Communication Engineering",
+    "description": "Cellular concepts, fading channels, 4G/5G technology, and MIMO.",
+    "isActive": true
+  },
+  {
+    "name": "Work Study",
+    "code": "",
+    "department": "Industrial Engineering",
+    "description": "Method study, time study, motion economy, and ergonomics.",
+    "isActive": true
+  },
+  {
+    "name": "Workshop Practice",
+    "code": "",
+    "department": "General / Common Engineering",
+    "description": "Fitting, carpentry, welding, smithy, and machine shop practice.",
+    "isActive": true
+  },
+  {
+    "name": "Cloud Architecture & Virtualization",
+    "code": "CS401",
+    "department": "Computer Science & Engineering",
+    "description": "Cloud computing infrastructure, virtualization, hypervisors, and distributed cloud design.",
+    "isActive": true
+  },
+  {
+    "name": "Distributed Databases & NoSQL",
+    "code": "CS402",
+    "department": "Computer Science & Engineering",
+    "description": "NoSQL paradigms, CAP theorem, MongoDB, Cassandra, and distributed transaction management.",
+    "isActive": true
+  },
+  {
+    "name": "Quantum Computing Fundamentals",
+    "code": "CS403",
+    "department": "Computer Science & Engineering",
+    "description": "Qubits, quantum superposition, entanglement, and quantum algorithmic complexity.",
+    "isActive": true
+  },
+  {
+    "name": "Network Security & Cyber Forensics",
+    "code": "CS404",
+    "department": "Computer Science & Engineering",
+    "description": "Intrusion detection, digital forensics, packet analysis, and perimeter security.",
+    "isActive": true
+  },
+  {
+    "name": "Information Storage & Data Management",
+    "code": "IT401",
+    "department": "Information Technology",
+    "description": "Storage area networks (SAN), network-attached storage (NAS), and data backup hierarchies.",
+    "isActive": true
+  },
+  {
+    "name": "Enterprise Application Development",
+    "code": "IT402",
+    "department": "Information Technology",
+    "description": "Microservices architecture, enterprise middleware, API gateways, and scalable backend design.",
+    "isActive": true
+  },
+  {
+    "name": "Ethics in Artificial Intelligence",
+    "code": "AI401",
+    "department": "Artificial Intelligence & Machine Learning",
+    "description": "Algorithmic bias, explainability, safety guidelines, and societal impacts of autonomous systems.",
+    "isActive": true
+  },
+  {
+    "name": "Data Stream Processing & Real-Time Analytics",
+    "code": "DS401",
+    "department": "Data Science / Data Engineering",
+    "description": "Kafka, Apache Flink, event streaming, windowing aggregations, and real-time processing.",
+    "isActive": true
+  },
+  {
+    "name": "Autonomous Systems & Drone Technology",
+    "code": "RA401",
+    "department": "Robotics & Automation",
+    "description": "UAV dynamics, path planning, obstacle avoidance, and autonomous control algorithms.",
+    "isActive": true
+  },
+  {
+    "name": "Bioinformatics & Computational Biology",
+    "code": "BT401",
+    "department": "Biotechnology",
+    "description": "Sequence alignment, genomics, molecular modeling, and computational protein structure analysis.",
+    "isActive": true
+  },
+  {
+    "name": "Computer Science Foundations",
+    "code": "CS100",
+    "department": "Computer Science",
+    "description": "Foundational concepts in computing, binary systems, discrete structures, and algorithmic logic.",
+    "isActive": true
+  }
+]

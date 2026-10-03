@@ -17,10 +17,73 @@ function createSlug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
+let isTaxonomyInitialized = false;
+let taxonomyInitPromise = null;
+
+/**
+ * Ensure canonical academic taxonomy exists in MongoDB.
+ * Safe, idempotent upsert using $setOnInsert.
+ */
+async function ensureAcademicTaxonomy() {
+  if (isTaxonomyInitialized) return;
+  if (taxonomyInitPromise) return taxonomyInitPromise;
+
+  taxonomyInitPromise = (async () => {
+    try {
+      const count = await Subject.countDocuments();
+      if (count >= 200) {
+        isTaxonomyInitialized = true;
+        return;
+      }
+
+      const canonicalData = require('../data/canonicalSubjects.json');
+      if (!Array.isArray(canonicalData) || canonicalData.length === 0) {
+        return;
+      }
+
+      const operations = canonicalData.map((sub) => {
+        const trimmedName = sub.name.trim();
+        const slug = createSlug(trimmedName);
+        return {
+          updateOne: {
+            filter: { slug },
+            update: {
+              $setOnInsert: {
+                name: trimmedName,
+                slug,
+                code: sub.code || '',
+                department: sub.department || 'General / Common Engineering',
+                description: sub.description || '',
+                isActive: sub.isActive !== false,
+              },
+            },
+            upsert: true,
+          },
+        };
+      });
+
+      if (operations.length > 0) {
+        await Subject.bulkWrite(operations, { ordered: false });
+      }
+
+      isTaxonomyInitialized = true;
+    } catch (err) {
+      console.error('[AcademicTaxonomy] Failed to ensure canonical taxonomy:', err.message || err);
+    } finally {
+      taxonomyInitPromise = null;
+    }
+  })();
+
+  return taxonomyInitPromise;
+}
+
+exports.ensureAcademicTaxonomy = ensureAcademicTaxonomy;
+
 /**
  * Get paginated subjects for admin panel
  */
 exports.getAllSubjects = async (query = {}) => {
+  await ensureAcademicTaxonomy();
   const { search, department, status, page = 1, limit = 20 } = query;
   const filter = {};
 
@@ -89,6 +152,7 @@ exports.getActiveFields = async () => {
  * Get active branches (departments) from academic subjects
  */
 exports.getActiveBranches = async (field = 'Engineering', user = null) => {
+  await ensureAcademicTaxonomy();
   if (user && user.role === 'teacher' && !user.isAdmin) {
     const teacherSubjects = await Subject.find({ isActive: true }).lean();
     const assigned = teacherSubjects.filter((s) => exports.isTeacherAssignedToSubject(user, s));
@@ -106,6 +170,7 @@ exports.getActiveBranches = async (field = 'Engineering', user = null) => {
  * Get active subjects for public dropdowns with optional branch, department, and teacher filtering
  */
 exports.getActiveSubjects = async (options = {}) => {
+  await ensureAcademicTaxonomy();
   const filter = { isActive: true };
   const branch = options.branch || options.department;
   if (branch && branch.trim() && branch.trim() !== 'all') {

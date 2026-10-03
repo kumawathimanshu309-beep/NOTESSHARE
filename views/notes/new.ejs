@@ -194,6 +194,9 @@
           ? '/api/branches?field=' + encodeURIComponent(fieldName)
           : '/api/branches';
         const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error('Academic branches request failed: ' + res.status);
+        }
         const data = await res.json();
         branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>';
         if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
@@ -229,6 +232,9 @@
 
       try {
         const res = await fetch('/api/subjects?branch=' + encodeURIComponent(branchName));
+        if (!res.ok) {
+          throw new Error('Academic subjects request failed: ' + res.status);
+        }
         const data = await res.json();
         if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
           subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Subject</option>';
@@ -286,7 +292,15 @@
     }
 
     // Initialization on page load
-    if (branchSelect && branchSelect.value) {
+    const initialBranch = '<%= typeof defaultBranch !== "undefined" ? defaultBranch : "" %>';
+
+    if (branchSelect && branchSelect.options.length <= 1) {
+      loadBranches(fieldSelect ? fieldSelect.value : 'Engineering', initialBranch).then(() => {
+        if (branchSelect.value) {
+          loadSubjects(branchSelect.value, initialSubject);
+        }
+      });
+    } else if (branchSelect && branchSelect.value) {
       loadSubjects(branchSelect.value, initialSubject);
     } else if (subjectSelect) {
       const selectedOpt = subjectSelect.options[subjectSelect.selectedIndex];

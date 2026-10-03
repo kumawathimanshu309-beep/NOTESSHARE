@@ -240,6 +240,9 @@
           ? '/api/branches?field=' + encodeURIComponent(fieldName)
           : '/api/branches';
         const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error('Academic branches request failed: ' + res.status);
+        }
         const data = await res.json();
 
         filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Branches</option>';
@@ -272,6 +275,9 @@
           ? '/api/subjects?branch=' + encodeURIComponent(branchName)
           : '/api/subjects';
         const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error('Academic subjects request failed: ' + res.status);
+        }
         const data = await res.json();
 
         filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Subjects</option>';
@@ -309,6 +315,20 @@
       filterBranch.addEventListener('change', function() {
         loadFilterSubjects(this.value, '');
       });
+    }
+
+    // Client-side initialization if SSR rendered an empty branch or subject list
+    const currentQueryBranch = '<%= (typeof query !== "undefined" && query.branch) ? query.branch : "" %>';
+    const currentQuerySubject = '<%= (typeof query !== "undefined" && query.subject) ? query.subject : "" %>';
+
+    if (filterBranch && filterBranch.options.length <= 1) {
+      loadFilterBranches(filterField ? filterField.value : 'Engineering', currentQueryBranch).then(() => {
+        if (filterSubject && filterSubject.options.length <= 1) {
+          loadFilterSubjects(currentQueryBranch || 'all', currentQuerySubject);
+        }
+      });
+    } else if (filterSubject && filterSubject.options.length <= 1) {
+      loadFilterSubjects(filterBranch ? filterBranch.value : 'all', currentQuerySubject);
     }
   });
 </script>
