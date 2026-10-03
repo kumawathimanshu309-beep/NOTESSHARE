@@ -56,6 +56,7 @@
 
                   <!-- Approve Button -->
                   <form action="/admin/notes/<%= n._id %>/approve" method="POST" style="margin: 0;">
+                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                     <button type="submit" class="primary-button" style="padding: 6px 14px; font-size: 11px; background: #10B981; border-color: #10B981; color: white;">
                       ✓ Approve
                     </button>
@@ -68,6 +69,7 @@
                     </summary>
                     <div style="position: absolute; right: 0; top: 110%; background: #0D1124; border: 1px solid var(--border); padding: 14px; border-radius: 12px; width: 260px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
                       <form action="/admin/notes/<%= n._id %>/reject" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                         <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px;">Rejection Reason:</label>
                         <select name="rejectionReason" style="width: 100%; padding: 6px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); font-size: 12px; margin-bottom: 10px;">
                           <option value="Irrelevant content">Irrelevant content</option>
