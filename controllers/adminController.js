@@ -171,7 +171,7 @@ exports.patchUserRole = wrapAsync(async (req, res) => {
   if (previousRole === 'admin' && newRole !== 'admin') {
     const totalAdmins = await User.countDocuments({ role: 'admin' });
     if (totalAdmins <= 1) {
-      throw new AppError('Cannot remove or demote the last remaining administrator on the platform.', 400);
+      throw new AppError('Cannot remove the last administrator. Assign another administrator before changing this role.', 400);
     }
   }
 
