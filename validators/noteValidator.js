@@ -27,16 +27,54 @@ const noteSchema = Joi.object({
 
 exports.validateNote = (req, res, next) => {
   // Convert tags if comma-separated string
-  if (typeof req.body.tags === 'string') {
+  if (req.body && typeof req.body.tags === 'string') {
     req.body.tags = req.body.tags.split(',').map((t) => t.trim()).filter((t) => t.length > 0);
+  }
+
+  const isAjax = Boolean(
+    req.xhr ||
+    req.headers?.['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers?.accept?.includes('application/json')
+  );
+
+  // Explicit branch & subject check on new note creation
+  if (req.method === 'POST') {
+    if (!req.body?.branch || !req.body.branch.trim()) {
+      const msg = 'Please select a valid academic branch.';
+      if (isAjax) {
+        return res.status(400).json({ success: false, message: msg });
+      }
+      if (typeof req.flash === 'function') req.flash('error', msg);
+      return res.status(400).redirect(303, '/notes/new');
+    }
+
+    if (
+      !req.body?.subject ||
+      !req.body.subject.trim() ||
+      req.body.subject.toLowerCase() === 'select subject' ||
+      req.body.subject.toLowerCase() === 'select branch first'
+    ) {
+      const msg = 'Please select a valid subject.';
+      if (isAjax) {
+        return res.status(400).json({ success: false, message: msg });
+      }
+      if (typeof req.flash === 'function') req.flash('error', msg);
+      return res.status(400).redirect(303, '/notes/new');
+    }
   }
 
   const { error } = noteSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMessages = error.details.map((d) => d.message);
-    req.flash('error', errorMessages);
-    const redirectUrl = req.params.id ? `/notes/${req.params.id}/edit` : '/notes/new';
-    return res.status(400).redirect(redirectUrl);
+    const combinedMsg = errorMessages.join('. ');
+
+    if (isAjax) {
+      return res.status(400).json({ success: false, message: combinedMsg, errors: errorMessages });
+    }
+
+    if (typeof req.flash === 'function') req.flash('error', errorMessages);
+    const redirectUrl = req.params?.id ? `/notes/${req.params.id}/edit` : '/notes/new';
+    return res.status(400).redirect(303, redirectUrl);
   }
 
   next();

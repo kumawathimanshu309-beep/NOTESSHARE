@@ -1042,8 +1042,8 @@ exports.getApiActiveBranches = wrapAsync(async (req, res) => {
 // @desc    Get Active Subjects JSON for Dropdowns
 // @route   GET /api/subjects
 exports.getApiActiveSubjects = wrapAsync(async (req, res) => {
-  const { branch, department, field } = req.query;
-  const subjects = await academicService.getActiveSubjects({ branch, department, field, user: req.user });
+  const { branch, department, field, semester } = req.query;
+  const subjects = await academicService.getActiveSubjects({ branch, department, field, semester, user: req.user });
   res.json({ success: true, subjects });
 });
 

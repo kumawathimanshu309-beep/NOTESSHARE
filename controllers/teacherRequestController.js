@@ -42,13 +42,37 @@ exports.postCreateTeacherRequest = wrapAsync(async (req, res) => {
     return res.redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
   }
 
+  const trimmedReason = typeof reason === 'string' ? reason.trim() : '';
+  const trimmedQualifications = typeof qualifications === 'string' ? qualifications.trim() : '';
+  const trimmedExperience = typeof experience === 'string' ? experience.trim() : '';
+
+  if (!trimmedReason) {
+    req.flash('error', 'Please provide a valid application reason.');
+    return res.status(400).redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
+  }
+
+  if (trimmedReason.length > 500) {
+    req.flash('error', 'Reason cannot exceed 500 characters.');
+    return res.status(400).redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
+  }
+
+  if (trimmedQualifications.length > 200) {
+    req.flash('error', 'Qualifications cannot exceed 200 characters.');
+    return res.status(400).redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
+  }
+
+  if (trimmedExperience.length > 200) {
+    req.flash('error', 'Experience cannot exceed 200 characters.');
+    return res.status(400).redirect(303, req.user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard');
+  }
+
   await governanceService.createTeacherRequest({
     candidateUserId: targetCandidateId,
     requestedById: req.user._id,
-    reason: reason || '',
-    qualifications: qualifications || '',
+    reason: trimmedReason,
+    qualifications: trimmedQualifications,
     subjects: normalizedSubjects,
-    experience: experience || '',
+    experience: trimmedExperience,
   });
 
   const isSelf = targetCandidateId.toString() === req.user._id.toString();

@@ -10,6 +10,19 @@ const globalErrorHandler = (err, req, res, _next) => {
 
   const isDev = process.env.NODE_ENV !== 'production';
 
+  // Format Mongoose Validation Error into a clean message
+  if (err.name === 'ValidationError') {
+    err.statusCode = 400;
+    const messages = Object.values(err.errors || {}).map((e) => e.message).filter(Boolean);
+    err.message = messages.length > 0 ? messages.join('. ') : 'Validation error occurred. Please check your inputs.';
+  }
+
+  // Format CastError (invalid ObjectId, etc.)
+  if (err.name === 'CastError') {
+    err.statusCode = 400;
+    err.message = `Invalid identifier format: ${err.value}`;
+  }
+
   // Handle AJAX / API / JSON requests
   if (
     req.xhr ||
@@ -19,7 +32,19 @@ const globalErrorHandler = (err, req, res, _next) => {
     return res.status(err.statusCode).json({
       success: false,
       message: err.message || 'Something went wrong on our server.',
+      errors: err.errors ? Object.keys(err.errors).map(k => err.errors[k].message) : undefined
     });
+  }
+
+  // For 400 validation error in standard form submit, flash and redirect back
+  if (err.statusCode === 400) {
+    if (typeof req.flash === 'function') {
+      req.flash('error', err.message);
+    }
+    const referer = req.get('Referer') || req.headers.referer;
+    if (referer) {
+      return res.redirect(303, referer);
+    }
   }
 
   // Handle 404 specially if preferred or render error page

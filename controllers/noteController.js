@@ -43,13 +43,16 @@ exports.getNotes = wrapAsync(async (req, res) => {
 exports.getNewNote = wrapAsync(async (req, res) => {
   const fields = await academicService.getActiveFields();
   const branches = await academicService.getActiveBranches('Engineering', req.user);
-  let activeSubjects = await academicService.getActiveSubjects({ user: req.user });
-
   const defaultField = req.query.field || 'Engineering';
   const defaultBranch = req.query.branch || '';
   const defaultSubject = req.query.subject || '';
   const defaultSemester = req.query.semester || 1;
   const defaultResourceType = req.query.resourceType || 'pdf';
+
+  let activeSubjects = [];
+  if (defaultBranch && defaultBranch.trim()) {
+    activeSubjects = await academicService.getActiveSubjects({ branch: defaultBranch.trim(), user: req.user });
+  }
 
   res.render('notes/new', {
     title: 'Upload Study Note — StudyShare',

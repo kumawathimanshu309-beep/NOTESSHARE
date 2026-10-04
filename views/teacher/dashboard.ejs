@@ -240,35 +240,41 @@
           </p>
         </div>
 
-        <form action="/teacher-requests" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+        <form action="/teacher-requests" method="POST" id="teacherRecommendForm" style="display: flex; flex-direction: column; gap: 12px;">
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
           <div>
-            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate User ID</label>
-            <input type="text" name="candidateUserId" placeholder="Enter candidate MongoDB ObjectId" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+            <label for="candidateUserId" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate User ID *</label>
+            <input type="text" id="candidateUserId" name="candidateUserId" placeholder="Enter candidate MongoDB ObjectId (24 hex characters)" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
             <div>
-              <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate Qualifications</label>
-              <input type="text" name="qualifications" placeholder="e.g. M.Sc Physics, B.Tech CSE" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+              <label for="teacherQualifications" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Candidate Qualifications *</label>
+              <input type="text" id="teacherQualifications" name="qualifications" maxlength="200" placeholder="e.g. M.Sc Physics, B.Tech CSE" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
             </div>
             <div>
-              <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Experience</label>
-              <input type="text" name="experience" placeholder="e.g. 2 Years Teaching Assistant" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+              <label for="teacherExperience" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Experience *</label>
+              <input type="text" id="teacherExperience" name="experience" maxlength="200" placeholder="e.g. 2 Years Teaching Assistant" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
             </div>
           </div>
 
           <div>
-            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Subjects Handled (comma-separated)</label>
-            <input type="text" name="subjects" placeholder="Computer Science, Mathematics" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+            <label for="teacherSubjects" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Subjects Handled (comma-separated) *</label>
+            <input type="text" id="teacherSubjects" name="subjects" placeholder="Computer Science, Mathematics" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
           </div>
 
           <div>
-            <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Recommendation Reason</label>
-            <textarea name="reason" rows="2" placeholder="Explain why you are recommending this candidate..." required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; font-family: inherit;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label for="teacherReason" style="font-size: 11px; color: var(--muted); font-weight: 600;">Recommendation Reason *</label>
+              <span id="teacherReasonCounter" style="font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;">0 / 500</span>
+            </div>
+            <textarea id="teacherReason" name="reason" rows="3" maxlength="500" placeholder="Explain why you are recommending this candidate (maximum 500 characters)..." required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; font-family: inherit; resize: vertical;"></textarea>
+            <div id="teacherFormError" style="display: none; font-size: 11px; color: #ef4444; margin-top: 4px;"></div>
           </div>
 
           <div style="text-align: right; margin-top: 4px;">
-            <button type="submit" class="primary-button" style="padding: 8px 20px; font-size: 12px; cursor: pointer;">
+            <button type="submit" class="primary-button" id="teacherSubmitBtn" style="padding: 8px 20px; font-size: 12px; cursor: pointer;">
               Submit Recommendation →
             </button>
           </div>
@@ -279,3 +285,66 @@
 
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const teacherForm = document.getElementById('teacherRecommendForm');
+    const reasonTextarea = document.getElementById('teacherReason');
+    const counterEl = document.getElementById('teacherReasonCounter');
+    const formError = document.getElementById('teacherFormError');
+
+    if (reasonTextarea && counterEl) {
+      function updateCounter() {
+        const length = reasonTextarea.value.length;
+        counterEl.textContent = length + ' / 500';
+
+        if (length >= 500) {
+          counterEl.style.color = '#ef4444';
+          counterEl.style.fontWeight = '700';
+          if (formError) {
+            formError.textContent = 'Maximum length reached (500 characters).';
+            formError.style.display = 'block';
+          }
+        } else if (length >= 450) {
+          counterEl.style.color = '#f59e0b';
+          counterEl.style.fontWeight = '600';
+          if (formError) formError.style.display = 'none';
+        } else {
+          counterEl.style.color = 'var(--muted)';
+          counterEl.style.fontWeight = 'normal';
+          if (formError) formError.style.display = 'none';
+        }
+      }
+
+      reasonTextarea.addEventListener('input', updateCounter);
+      reasonTextarea.addEventListener('keyup', updateCounter);
+      updateCounter();
+    }
+
+    if (teacherForm) {
+      teacherForm.addEventListener('submit', function(e) {
+        if (reasonTextarea) {
+          const val = reasonTextarea.value.trim();
+          if (val.length < 5) {
+            e.preventDefault();
+            if (formError) {
+              formError.textContent = 'Please provide a reason of at least 5 characters.';
+              formError.style.display = 'block';
+            }
+            reasonTextarea.focus();
+            return;
+          }
+          if (val.length > 500) {
+            e.preventDefault();
+            if (formError) {
+              formError.textContent = 'Reason cannot exceed 500 characters.';
+              formError.style.display = 'block';
+            }
+            reasonTextarea.focus();
+            return;
+          }
+        }
+      });
+    }
+  });
+</script>

@@ -230,20 +230,34 @@
     const filterBranch = document.getElementById('filterBranch');
     const filterSubject = document.getElementById('filterSubject');
 
-    // 1. Dynamic branches by field in explore filter
+    let branchAbortController = null;
+    let subjectAbortController = null;
+    let branchSeq = 0;
+    let subjectSeq = 0;
+
+    // 1. Dynamic branches by field in explore filter with AbortController and sequence protection
     async function loadFilterBranches(fieldName, targetBranch) {
       if (!filterBranch) return;
+
+      if (branchAbortController) branchAbortController.abort();
+      branchAbortController = new AbortController();
+      const currentSeq = ++branchSeq;
+
+      filterBranch.disabled = true;
       filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">Loading branches...</option>';
 
       try {
         const url = (fieldName && fieldName !== 'all')
           ? '/api/branches?field=' + encodeURIComponent(fieldName)
           : '/api/branches';
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: branchAbortController.signal });
         if (!res.ok) {
           throw new Error('Academic branches request failed: ' + res.status);
         }
         const data = await res.json();
+
+        // Discard stale responses
+        if (currentSeq !== branchSeq) return;
 
         filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Branches</option>';
         if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
@@ -259,26 +273,39 @@
             filterBranch.appendChild(opt);
           });
         }
+        filterBranch.disabled = false;
       } catch (err) {
+        if (err.name === 'AbortError') return;
+        if (currentSeq !== branchSeq) return;
         console.error('Error fetching filter branches:', err);
         filterBranch.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Branches</option>';
+        filterBranch.disabled = false;
       }
     }
 
-    // 2. Dynamic subjects by branch in explore filter
+    // 2. Dynamic subjects by branch in explore filter with AbortController and sequence protection
     async function loadFilterSubjects(branchName, targetSubject) {
       if (!filterSubject) return;
+
+      if (subjectAbortController) subjectAbortController.abort();
+      subjectAbortController = new AbortController();
+      const currentSeq = ++subjectSeq;
+
+      filterSubject.disabled = true;
       filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">Loading subjects...</option>';
 
       try {
         const url = (branchName && branchName !== 'all')
           ? '/api/subjects?branch=' + encodeURIComponent(branchName)
           : '/api/subjects';
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: subjectAbortController.signal });
         if (!res.ok) {
           throw new Error('Academic subjects request failed: ' + res.status);
         }
         const data = await res.json();
+
+        // Discard stale responses
+        if (currentSeq !== subjectSeq) return;
 
         filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Subjects</option>';
         if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
@@ -296,17 +323,21 @@
             filterSubject.appendChild(opt);
           });
         }
+        filterSubject.disabled = false;
       } catch (err) {
+        if (err.name === 'AbortError') return;
+        if (currentSeq !== subjectSeq) return;
         console.error('Error fetching filter subjects:', err);
         filterSubject.innerHTML = '<option value="all" style="background-color: #0D1124; color: #FFFFFF;">All Subjects</option>';
+        filterSubject.disabled = false;
       }
     }
 
     // Event: Field filter changes -> update branches and reset subjects
     if (filterField) {
-      filterField.addEventListener('change', async function() {
-        await loadFilterBranches(this.value, '');
-        await loadFilterSubjects('all', '');
+      filterField.addEventListener('change', function() {
+        loadFilterBranches(this.value, '');
+        loadFilterSubjects('all', '');
       });
     }
 

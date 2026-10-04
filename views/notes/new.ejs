@@ -7,7 +7,8 @@
   </div>
 
   <div class="content-card" style="padding: 40px; border-radius: 20px;">
-    <form action="/notes" method="POST" enctype="multipart/form-data">
+    <form action="/notes" method="POST" id="newNoteForm" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
       
       <!-- Title -->
       <div style="margin-bottom: 22px;">
@@ -67,16 +68,19 @@
 
         <!-- Subject -->
         <div style="min-width: 0; position: relative; overflow: visible;">
-          <label for="subject" style="display: block; font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase;">Subject *</label>
-          <select id="subject" name="subject" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
-            <option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>
-            <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
-              <% activeSubjects.forEach(s => { %>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label for="subject" style="font-size: 11px; font-weight: 600; color: var(--text); text-transform: uppercase;">Subject *</label>
+            <span id="subjectStatusText" style="display: none; font-size: 11px; color: var(--lavender);">Loading...</span>
+          </div>
+          <select id="subject" name="subject" class="filter-select" required style="width: 100%; height: 44px; padding: 0 32px 0 14px; border-radius: 9px; border: 1px solid var(--border); background: #0D1124; color: #FFFFFF; font-size: 13px; outline: none; cursor: pointer; color-scheme: dark; box-sizing: border-box;" <%= (!defaultBranch) ? 'disabled' : '' %>>
+            <option value="" style="background-color: #0D1124; color: #FFFFFF;"><%= defaultBranch ? 'Select Subject' : 'Select Branch First' %></option>
+            <% if (defaultBranch && typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
+              <% activeSubjects.filter(s => !s.department || s.department.toLowerCase() === defaultBranch.toLowerCase()).forEach(s => { %>
                 <option value="<%= s.name %>" data-id="<%= s._id %>" data-branch="<%= s.department %>" <%= (typeof defaultSubject !== 'undefined' && defaultSubject === s.name) ? 'selected' : '' %> style="background-color: #0D1124; color: #FFFFFF;"><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></option>
               <% }) %>
             <% } %>
           </select>
-          <input type="hidden" id="subjectId" name="subjectId" value="">
+          <input type="hidden" id="subjectId" name="subjectId" value="<%= typeof defaultSubject !== 'undefined' && typeof activeSubjects !== 'undefined' ? (activeSubjects.find(s => s.name === defaultSubject)?._id || '') : '' %>">
         </div>
 
         <!-- Resource Type (Spans 2 columns on desktop so layout adjusts cleanly with no empty gap) -->
@@ -177,28 +181,59 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const noteForm = document.getElementById('newNoteForm');
     const fieldSelect = document.getElementById('field');
     const branchSelect = document.getElementById('branch');
+    const semesterSelect = document.getElementById('semester');
     const subjectSelect = document.getElementById('subject');
     const subjectIdInput = document.getElementById('subjectId');
+    const subjectStatusText = document.getElementById('subjectStatusText');
+
+    let branchAbortController = null;
+    let subjectAbortController = null;
+    let branchSeq = 0;
+    let subjectSeq = 0;
 
     const initialSubject = '<%= typeof defaultSubject !== "undefined" ? defaultSubject : "" %>';
+    const initialBranch = '<%= typeof defaultBranch !== "undefined" ? defaultBranch : "" %>';
 
-    // 1. Load branches by field
+    // 1. Load branches by field with AbortController and sequence protection
     async function loadBranches(fieldName, targetBranch) {
       if (!branchSelect) return;
+
+      if (branchAbortController) {
+        branchAbortController.abort();
+      }
+      branchAbortController = new AbortController();
+      const currentSeq = ++branchSeq;
+
+      branchSelect.disabled = true;
       branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Loading branches...</option>';
+
+      // While branches are loading, reset and disable subject select
+      if (subjectSelect) {
+        if (subjectAbortController) subjectAbortController.abort();
+        subjectSelect.disabled = true;
+        subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>';
+        if (subjectIdInput) subjectIdInput.value = '';
+      }
 
       try {
         const url = (fieldName && fieldName !== 'all')
           ? '/api/branches?field=' + encodeURIComponent(fieldName)
           : '/api/branches';
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: branchAbortController.signal });
         if (!res.ok) {
           throw new Error('Academic branches request failed: ' + res.status);
         }
         const data = await res.json();
+
+        // Discard stale responses
+        if (currentSeq !== branchSeq) return;
+
         branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>';
+        let selectedBranchVal = '';
+
         if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
           data.branches.forEach(b => {
             const opt = document.createElement('option');
@@ -208,37 +243,73 @@
             opt.style.color = '#FFFFFF';
             if (targetBranch && b.toLowerCase() === targetBranch.toLowerCase()) {
               opt.selected = true;
+              selectedBranchVal = b;
             }
             branchSelect.appendChild(opt);
           });
         }
+        branchSelect.disabled = false;
+
+        if (selectedBranchVal) {
+          loadSubjects(selectedBranchVal, initialSubject);
+        }
       } catch (err) {
+        if (err.name === 'AbortError') return;
+        if (currentSeq !== branchSeq) return;
         console.error('Error fetching branches:', err);
-        branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch</option>';
+        branchSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Unable to load branches. Click to retry</option>';
+        branchSelect.disabled = false;
       }
     }
 
-    // 2. Load subjects by branch
+    // 2. Load subjects by branch with AbortController, sequence protection, and semester awareness
     async function loadSubjects(branchName, targetSubjectName) {
       if (!subjectSelect) return;
-      if (!branchName) {
+
+      if (!branchName || branchName.toLowerCase().startsWith('select') || branchName.toLowerCase().startsWith('unable')) {
+        if (subjectAbortController) subjectAbortController.abort();
         subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>';
+        subjectSelect.disabled = true;
         if (subjectIdInput) subjectIdInput.value = '';
+        if (subjectStatusText) subjectStatusText.style.display = 'none';
         return;
       }
 
+      if (subjectAbortController) {
+        subjectAbortController.abort();
+      }
+      subjectAbortController = new AbortController();
+      const currentSeq = ++subjectSeq;
+
+      subjectSelect.disabled = true;
       subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Loading subjects...</option>';
-      if (subjectIdInput) subjectIdInput.value = '';
+      if (subjectStatusText) {
+        subjectStatusText.textContent = 'Loading subjects...';
+        subjectStatusText.style.display = 'inline';
+      }
 
       try {
-        const res = await fetch('/api/subjects?branch=' + encodeURIComponent(branchName));
+        const semesterVal = semesterSelect ? semesterSelect.value : '';
+        let url = '/api/subjects?branch=' + encodeURIComponent(branchName);
+        if (semesterVal) {
+          url += '&semester=' + encodeURIComponent(semesterVal);
+        }
+
+        const res = await fetch(url, { signal: subjectAbortController.signal });
         if (!res.ok) {
           throw new Error('Academic subjects request failed: ' + res.status);
         }
         const data = await res.json();
+
+        // Discard stale responses
+        if (currentSeq !== subjectSeq) return;
+
+        if (subjectStatusText) subjectStatusText.style.display = 'none';
+
         if (data.success && Array.isArray(data.subjects) && data.subjects.length > 0) {
           subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Subject</option>';
           let matchedOpt = null;
+
           data.subjects.forEach(s => {
             const opt = document.createElement('option');
             opt.value = s.name;
@@ -247,66 +318,125 @@
             opt.setAttribute('data-branch', s.department || '');
             opt.style.backgroundColor = '#0D1124';
             opt.style.color = '#FFFFFF';
-            if (targetSubjectName && s.name.toLowerCase() === targetSubjectName.toLowerCase()) {
+
+            if (
+              targetSubjectName &&
+              (s.name.toLowerCase() === targetSubjectName.toLowerCase() || String(s._id) === targetSubjectName)
+            ) {
               opt.selected = true;
               matchedOpt = opt;
             }
             subjectSelect.appendChild(opt);
           });
 
+          subjectSelect.disabled = false;
+
           if (matchedOpt && subjectIdInput) {
-            subjectIdInput.value = matchedOpt.getAttribute('data-id');
+            subjectIdInput.value = matchedOpt.getAttribute('data-id') || '';
+          } else if (subjectIdInput) {
+            subjectIdInput.value = '';
           }
         } else {
-          subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">No subjects available for this branch.</option>';
+          subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">No subjects available for this branch</option>';
+          subjectSelect.disabled = true;
+          if (subjectIdInput) subjectIdInput.value = '';
         }
       } catch (err) {
+        if (err.name === 'AbortError') return;
+        if (currentSeq !== subjectSeq) return;
         console.error('Error fetching subjects:', err);
-        subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Unable to load academic data. Please try again.</option>';
+        if (subjectStatusText) subjectStatusText.style.display = 'none';
+        subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Unable to load subjects. Click to retry</option>';
+        subjectSelect.disabled = false;
       }
     }
 
     // Event: Field changes -> update branches and reset subjects
     if (fieldSelect) {
-      fieldSelect.addEventListener('change', async function() {
-        await loadBranches(this.value, '');
-        if (subjectSelect) subjectSelect.innerHTML = '<option value="" style="background-color: #0D1124; color: #FFFFFF;">Select Branch First</option>';
-        if (subjectIdInput) subjectIdInput.value = '';
+      fieldSelect.addEventListener('change', function() {
+        loadBranches(this.value, '');
       });
     }
 
-    // Event: Branch changes -> load subjects
+    // Event: Branch changes -> load subjects or retry
     if (branchSelect) {
       branchSelect.addEventListener('change', function() {
-        loadSubjects(this.value, '');
+        if (this.value === '' && this.options[this.selectedIndex]?.textContent.includes('retry')) {
+          loadBranches(fieldSelect ? fieldSelect.value : 'Engineering', '');
+        } else {
+          loadSubjects(this.value, '');
+        }
       });
     }
 
-    // Event: Subject changes -> set subjectId
+    // Event: Semester changes -> refresh subjects for currently selected branch
+    if (semesterSelect) {
+      semesterSelect.addEventListener('change', function() {
+        if (branchSelect && branchSelect.value) {
+          loadSubjects(branchSelect.value, subjectSelect ? subjectSelect.value : '');
+        }
+      });
+    }
+
+    // Event: Subject changes -> update subjectId or retry
     if (subjectSelect) {
       subjectSelect.addEventListener('change', function() {
+        if (this.value === '' && this.options[this.selectedIndex]?.textContent.includes('retry')) {
+          if (branchSelect && branchSelect.value) {
+            loadSubjects(branchSelect.value, '');
+          }
+          return;
+        }
         const selectedOpt = this.options[this.selectedIndex];
         const subjectId = selectedOpt ? selectedOpt.getAttribute('data-id') : null;
         if (subjectIdInput) subjectIdInput.value = subjectId || '';
       });
     }
 
-    // Initialization on page load
-    const initialBranch = '<%= typeof defaultBranch !== "undefined" ? defaultBranch : "" %>';
+    // Form submission validation: Ensure required taxonomy and non-empty selections
+    if (noteForm) {
+      noteForm.addEventListener('submit', function(e) {
+        if (branchSelect && (!branchSelect.value || branchSelect.value.trim() === '')) {
+          e.preventDefault();
+          alert('Please select a valid academic branch before publishing.');
+          branchSelect.focus();
+          return;
+        }
 
-    if (branchSelect && branchSelect.options.length <= 1) {
-      loadBranches(fieldSelect ? fieldSelect.value : 'Engineering', initialBranch).then(() => {
-        if (branchSelect.value) {
-          loadSubjects(branchSelect.value, initialSubject);
+        if (
+          subjectSelect &&
+          (!subjectSelect.value ||
+            subjectSelect.value.trim() === '' ||
+            subjectSelect.value.toLowerCase().startsWith('select') ||
+            subjectSelect.value.toLowerCase().startsWith('unable') ||
+            subjectSelect.value.toLowerCase().startsWith('no subjects'))
+        ) {
+          e.preventDefault();
+          alert('Please select a valid academic subject before publishing.');
+          subjectSelect.focus();
+          return;
+        }
+
+        // File validation if provided
+        const fileInput = document.getElementById('file');
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+          const fileSizeMB = fileInput.files[0].size / (1024 * 1024);
+          if (fileSizeMB > 15) {
+            e.preventDefault();
+            alert('The attached file exceeds the 15 MB limit. Please select a smaller file.');
+            fileInput.focus();
+            return;
+          }
         }
       });
+    }
+
+    // Initialization on page load
+    if (branchSelect && branchSelect.options.length <= 1) {
+      loadBranches(fieldSelect ? fieldSelect.value : 'Engineering', initialBranch);
     } else if (branchSelect && branchSelect.value) {
-      loadSubjects(branchSelect.value, initialSubject);
-    } else if (subjectSelect) {
-      const selectedOpt = subjectSelect.options[subjectSelect.selectedIndex];
-      if (selectedOpt && selectedOpt.value) {
-        const subjectId = selectedOpt.getAttribute('data-id');
-        if (subjectIdInput) subjectIdInput.value = subjectId || '';
+      if (subjectSelect && subjectSelect.options.length <= 1) {
+        loadSubjects(branchSelect.value, initialSubject);
       }
     }
   });
