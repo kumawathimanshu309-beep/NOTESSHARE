@@ -249,7 +249,7 @@ exports.getFeatures = wrapAsync(async (req, res) => {
 // @desc    Dynamic XML Sitemap for SEO Crawlers
 // @route   GET /sitemap.xml
 exports.getSitemap = wrapAsync(async (req, res) => {
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const baseUrl = 'https://studysharehub.in';
   const staticUrls = ['/', '/about', '/features', '/notes', '/doubts', '/faculty', '/search'];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
