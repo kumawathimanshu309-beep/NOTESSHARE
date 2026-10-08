@@ -255,14 +255,52 @@ exports.getFeatures = wrapAsync(async (req, res) => {
 // @desc    Dynamic XML Sitemap for SEO Crawlers
 // @route   GET /sitemap.xml
 exports.getSitemap = wrapAsync(async (req, res) => {
- const baseUrl = 'https://www.studysharehub.in';
-  const staticUrls = ['/', '/about', '/features', '/notes', '/doubts', '/faculty', '/search'];
+  const baseUrl = 'https://www.studysharehub.in';
+
+  // Static public pages
+  const staticUrls = [
+    '/',
+    '/about',
+    '/features',
+    '/notes',
+    '/doubts',
+    '/faculty',
+    '/search',
+  ];
+
+  // Only publicly visible, published and approved notes
+  const notes = await Note.find({
+    isPublished: true,
+    visibility: 'public',
+    isDeleted: false,
+    approvalStatus: 'approved',
+  })
+    .select('_id updatedAt')
+    .sort({ updatedAt: -1 })
+    .lean();
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
+  // Static pages
   staticUrls.forEach((urlPath) => {
-    xml += `  <url>\n    <loc>${baseUrl}${urlPath}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${urlPath === '/' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+    xml += `  <url>\n`;
+    xml += `    <loc>${baseUrl}${urlPath}</loc>\n`;
+    xml += `    <changefreq>daily</changefreq>\n`;
+    xml += `    <priority>${urlPath === '/' ? '1.0' : '0.8'}</priority>\n`;
+    xml += `  </url>\n`;
+  });
+
+  // Individual public note pages
+  notes.forEach((note) => {
+    xml += `  <url>\n`;
+    xml += `    <loc>${baseUrl}/notes/${note._id}</loc>\n`;
+    if (note.updatedAt) {
+      xml += `    <lastmod>${new Date(note.updatedAt).toISOString()}</lastmod>\n`;
+    }
+    xml += `    <changefreq>weekly</changefreq>\n`;
+    xml += `    <priority>0.7</priority>\n`;
+    xml += `  </url>\n`;
   });
 
   xml += `</urlset>`;
