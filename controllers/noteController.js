@@ -25,8 +25,10 @@ exports.getNotes = wrapAsync(async (req, res) => {
   }
 
   res.render('notes/index', {
-    title: 'Explore Study Notes — StudyShare',
-    path: '/notes',
+  title: 'Explore University Notes, PYQs & Study Materials — StudyShare',
+  description: 'Explore university notes, previous year question papers, study materials and academic resources shared by students on StudyShare.',
+  canonicalUrl: 'https://www.studysharehub.in/notes',
+  path: '/notes',
     notes: result.notes,
     totalNotes: result.totalNotes,
     page: result.page,
@@ -112,7 +114,7 @@ exports.getNote = wrapAsync(async (req, res) => {
   const comments = await socialService.getNoteComments(note._id);
 
   // Server-side safe canonical Share URL generation
-  const shareUrl = `${req.protocol}://${req.get('host')}/notes/${note._id}`;
+  const shareUrl = `https://www.studysharehub.in/notes/${note._id}`;
   const whatsappMessage = `StudyShare: ${note.title}\n${shareUrl}`;
   const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
   const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(note.title)}`;
@@ -120,8 +122,14 @@ exports.getNote = wrapAsync(async (req, res) => {
   const emailShareUrl = `mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(`Check out this study resource on StudyShare: ${shareUrl}`)}`;
 
   res.render('notes/show', {
-    title: `${note.title} — StudyShare`,
-    path: '/notes',
+
+  title: `${note.title} — StudyShare`,
+
+  description: `Access ${note.title} on StudyShare. View and download this university study resource for exam preparation and academic learning.`,
+
+  canonicalUrl: `https://www.studysharehub.in/notes/${note._id}`,
+
+  path: '/notes',
     note,
     isOwner,
     isAdmin,
