@@ -182,15 +182,17 @@ exports.getHome = wrapAsync(async (req, res) => {
     downloads: (totalDownloadsResult.length > 0 && totalDownloadsResult[0].totalDownloads) ? totalDownloadsResult[0].totalDownloads : 0,
   };
 
-  res.render('home/index', {
-    title: 'StudyShare — Share Knowledge, Discover Better Notes',
-    path: '/',
-    previewNotes,
-    previewStats,
-    platformStats,
-    features,
-    subjects,
-  });
+ res.render('home/index', {
+  title: 'StudyShare — University Notes, PYQs & Study Materials',
+  description: 'Discover and share university notes, previous year question papers, study materials and academic resources on StudyShare.',
+  canonicalUrl: 'https://www.studysharehub.in/',
+  path: '/',
+  previewNotes,
+  previewStats,
+  platformStats,
+  features,
+  subjects,
+});
 });
 
 // @desc    Render About Page
@@ -201,10 +203,12 @@ exports.getAbout = wrapAsync(async (req, res) => {
     .lean();
 
   res.render('home/about', {
-    title: 'About StudyShare — Student Knowledge Sharing',
-    path: '/about',
-    aboutCards,
-  });
+  title: 'About StudyShare — Student Academic Resource Platform',
+  description: 'Learn about StudyShare, a student-focused platform for sharing university notes, PYQs, study materials and academic knowledge.',
+  canonicalUrl: 'https://www.studysharehub.in/about',
+  path: '/about',
+  aboutCards,
+});
 });
 
 // @desc    Render Features Page
@@ -240,16 +244,18 @@ exports.getFeatures = wrapAsync(async (req, res) => {
   const featuresList = dbFeatures && dbFeatures.length > 0 ? dbFeatures : defaultFeaturesList;
 
   res.render('home/features', {
-    title: 'Platform Features — StudyShare',
-    path: '/features',
-    featuresList,
-  });
+  title: 'StudyShare Features — Notes, PYQs, Doubts & More',
+  description: 'Explore StudyShare features including university notes, PYQs, academic resources, search, doubts and peer-to-peer knowledge sharing.',
+  canonicalUrl: 'https://www.studysharehub.in/features',
+  path: '/features',
+  featuresList,
+});
 });
 
 // @desc    Dynamic XML Sitemap for SEO Crawlers
 // @route   GET /sitemap.xml
 exports.getSitemap = wrapAsync(async (req, res) => {
-  const baseUrl = 'https://studysharehub.in';
+ const baseUrl = 'https://www.studysharehub.in';
   const staticUrls = ['/', '/about', '/features', '/notes', '/doubts', '/faculty', '/search'];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
