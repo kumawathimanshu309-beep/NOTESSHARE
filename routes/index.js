@@ -12,6 +12,11 @@ router.get('/about', homeController.getAbout);
 // Features Page
 router.get('/features', homeController.getFeatures);
 
+// Legal Pages
+router.get('/privacy', homeController.getPrivacy);
+router.get('/terms', homeController.getTerms);
+router.get('/cookies', homeController.getCookies);
+
 // Public Academic API for Dynamic Dropdowns
 router.get('/api/fields', adminController.getApiActiveFields);
 router.get('/api/branches', adminController.getApiActiveBranches);

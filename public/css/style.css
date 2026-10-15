@@ -1462,6 +1462,54 @@ button {
 }
 
 /* =========================================================
+   ABOUT PAGE RESPONSIVE CARD GRID
+========================================================= */
+.about-cards-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.about-cards-list .content-card {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.about-cards-list .content-card h2 {
+  font-family: "Sora", sans-serif;
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.about-cards-list .content-card p {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14.5px;
+  margin: 0;
+  flex-grow: 1;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .about-cards-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .about-cards-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+
+/* =========================================================
    FOOTER
 ========================================================= */
 footer {
@@ -1474,7 +1522,7 @@ footer {
   width: min(var(--container), calc(100% - 40px));
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.3fr 2fr;
+  grid-template-columns: 1fr 2.4fr;
   gap: 48px;
   align-items: start;
 }
@@ -1494,8 +1542,8 @@ footer {
 
 .footer-links {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
 }
 
 .footer-links div {
@@ -2101,6 +2149,16 @@ body {
     margin-bottom: 0;
     margin-right: 8px;
   }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
 }
 
 /* =========================================================
@@ -2255,7 +2313,7 @@ body {
   }
 
   .footer-links {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
 
@@ -5368,5 +5426,116 @@ select optgroup,
   .resource-detail-manage-btn {
     width: 100% !important;
   }
+}
+
+/* =========================================================
+   LEGAL PAGES (Privacy Policy, Terms of Service, Cookie Policy)
+========================================================= */
+.legal-page-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.legal-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.legal-header h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #F8FAFC;
+  margin: 14px 0 10px;
+}
+
+.legal-last-updated {
+  color: #94A3B8;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.legal-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 16px;
+  padding: clamp(24px, 4vw, 44px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  color: #CBD5E1;
+  font-size: 15px;
+  line-height: 1.75;
+  backdrop-filter: blur(8px);
+}
+
+.legal-card h3 {
+  color: #F8FAFC;
+  font-size: clamp(18px, 2.5vw, 21px);
+  font-weight: 700;
+  margin-top: 36px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.legal-card h3:first-of-type {
+  margin-top: 0;
+}
+
+.legal-card h4 {
+  color: #E2E8F0;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 22px;
+  margin-bottom: 10px;
+}
+
+.legal-card p {
+  margin-bottom: 14px;
+  color: #CBD5E1;
+}
+
+.legal-card ul {
+  margin: 0 0 18px 0;
+  padding-left: 24px;
+}
+
+.legal-card li {
+  margin-bottom: 6px;
+  color: #CBD5E1;
+}
+
+.legal-contact-block {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-top: 16px;
+}
+
+.legal-contact-block p {
+  margin-bottom: 6px;
+  color: #E2E8F0;
+}
+
+.legal-contact-block p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-contact-block a {
+  color: #C084FC;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.legal-contact-block a:hover {
+  color: #E9D5FF;
+}
+
+.legal-contact-block a:focus-visible {
+  outline: 2px solid #C084FC;
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 

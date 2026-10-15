@@ -252,6 +252,39 @@ exports.getFeatures = wrapAsync(async (req, res) => {
 });
 });
 
+// @desc    Render Privacy Policy Page
+// @route   GET /privacy
+exports.getPrivacy = wrapAsync(async (req, res) => {
+  res.render('legal/privacy', {
+    title: 'Privacy Policy | StudyShare',
+    description: 'Learn how StudyShare collects, uses, protects, and handles your information when using our academic learning and resource platform.',
+    canonicalUrl: 'https://studysharehub.in/privacy',
+    path: '/privacy',
+  });
+});
+
+// @desc    Render Terms of Service Page
+// @route   GET /terms
+exports.getTerms = wrapAsync(async (req, res) => {
+  res.render('legal/terms', {
+    title: 'Terms of Service | StudyShare',
+    description: 'Read the terms and conditions governing your access to and use of StudyShare and its educational resources.',
+    canonicalUrl: 'https://studysharehub.in/terms',
+    path: '/terms',
+  });
+});
+
+// @desc    Render Cookie Policy Page
+// @route   GET /cookies
+exports.getCookies = wrapAsync(async (req, res) => {
+  res.render('legal/cookies', {
+    title: 'Cookie Policy | StudyShare',
+    description: 'Understand how StudyShare uses cookies and similar technologies to support functionality and analyze platform usage.',
+    canonicalUrl: 'https://studysharehub.in/cookies',
+    path: '/cookies',
+  });
+});
+
 // @desc    Dynamic XML Sitemap for SEO Crawlers
 // @route   GET /sitemap.xml
 exports.getSitemap = wrapAsync(async (req, res) => {
