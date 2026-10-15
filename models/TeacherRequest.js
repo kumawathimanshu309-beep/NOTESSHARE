@@ -6,7 +6,6 @@ const teacherRequestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Candidate user reference is required.'],
-      index: true,
     },
     requestedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -67,5 +66,11 @@ const teacherRequestSchema = new mongoose.Schema(
 
 // Compound index for efficient duplicate pending request lookup
 teacherRequestSchema.index({ candidateUser: 1, status: 1 });
+
+// Partial unique index: guarantees at most ONE pending request per candidateUser concurrently in MongoDB
+teacherRequestSchema.index(
+  { candidateUser: 1 },
+  { unique: true, partialFilterExpression: { status: 'pending' } }
+);
 
 module.exports = mongoose.model('TeacherRequest', teacherRequestSchema);

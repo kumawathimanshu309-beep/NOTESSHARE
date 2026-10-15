@@ -249,71 +249,159 @@
         <% } %>
       </div>
 
-      <!-- Section: Apply for Teacher Role (Student Request) -->
+      <!-- Section: Apply for Teacher Role or Review Status -->
       <% if (user.role === 'student') { %>
-        <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(124,58,237,0.3); background: radial-gradient(circle at top right, rgba(124,58,237,0.1), transparent 60%);">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
-            <div>
-              <span style="font-size: 10px; font-weight: 700; color: #C4B5FD; text-transform: uppercase; letter-spacing: 0.5px;">TEACHER GOVERNANCE WORKFLOW</span>
-              <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 2px 0 0 0; color: white;">Apply for Verified Teacher Role</h2>
+        <% const hasPendingSelf = typeof latestTeacherRequest !== 'undefined' && latestTeacherRequest && latestTeacherRequest.status === 'pending' && latestTeacherRequest.isSelfRequest; %>
+        <% const hasPendingRec = typeof latestTeacherRequest !== 'undefined' && latestTeacherRequest && latestTeacherRequest.status === 'pending' && !latestTeacherRequest.isSelfRequest; %>
+        <% const wasRejected = typeof latestTeacherRequest !== 'undefined' && latestTeacherRequest && latestTeacherRequest.status === 'rejected'; %>
+
+        <% if (hasPendingSelf) { %>
+          <!-- Case A: Student has an active pending self-application -->
+          <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(245,158,11,0.35); background: radial-gradient(circle at top right, rgba(245,158,11,0.08), transparent 60%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
+              <div>
+                <span style="font-size: 10px; font-weight: 700; color: #FBBF24; text-transform: uppercase; letter-spacing: 0.5px;">TEACHER GOVERNANCE WORKFLOW</span>
+                <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 2px 0 0 0; color: white;">Application Under Review</h2>
+              </div>
+              <span style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(245,158,11,0.18); color: #FBBF24; font-weight: 600; border: 1px solid rgba(245,158,11,0.3);">
+                ⏳ Pending HOD / Admin Review
+              </span>
             </div>
-            <span style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(168,85,247,0.15); color: #C4B5FD; font-weight: 600;">Pending HOD Review</span>
+
+            <p style="font-size: 13px; color: #E2E8F0; margin-bottom: 16px; line-height: 1.6;">
+              Your application for the <strong>Verified Teacher</strong> role was submitted on <strong><%= new Date(latestTeacherRequest.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></strong> and is currently being evaluated by the administration.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: rgba(0,0,0,0.3); padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); font-size: 12px; margin-bottom: 14px;">
+              <div>
+                <span style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">Qualifications</span>
+                <span style="color: white;"><%= latestTeacherRequest.qualifications || 'Provided in submission' %></span>
+              </div>
+              <div>
+                <span style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">Experience</span>
+                <span style="color: white;"><%= latestTeacherRequest.experience || 'Provided in submission' %></span>
+              </div>
+              <div>
+                <span style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">Requested Subject(s)</span>
+                <span style="color: #C4B5FD;"><%= latestTeacherRequest.subjects && latestTeacherRequest.subjects.length > 0 ? latestTeacherRequest.subjects.join(', ') : 'Catalog subjects' %></span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted);">
+              <i class="fa-solid fa-circle-info" style="color: #FBBF24;"></i>
+              <span>You will receive an in-app notification as soon as an administrator reviews your application. No further action is required from you.</span>
+            </div>
           </div>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 18px; line-height: 1.5;">
-            Are you an educator, teaching assistant, or subject matter expert? Submit your application below to request promotion to a Verified Teacher account. Applications are reviewed directly by HOD/Admin.
-          </p>
 
-          <form action="/teacher-requests" method="POST" id="studentTeacherRequestForm" style="display: flex; flex-direction: column; gap: 12px;">
-            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <% } else if (hasPendingRec) { %>
+          <!-- Case B: A teacher has submitted a recommendation for this student -->
+          <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(168,85,247,0.35); background: radial-gradient(circle at top right, rgba(168,85,247,0.1), transparent 60%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
               <div>
-                <label for="studentQualifications" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Academic Qualification *</label>
-                <input type="text" id="studentQualifications" name="qualifications" maxlength="200" placeholder="e.g. M.Tech CS, Ph.D. Mathematics" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+                <span style="font-size: 10px; font-weight: 700; color: #C4B5FD; text-transform: uppercase; letter-spacing: 0.5px;">FACULTY ENDORSEMENT</span>
+                <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 2px 0 0 0; color: white;">Teacher Recommendation Pending Review</h2>
+              </div>
+              <span style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(168,85,247,0.2); color: #D8B4FE; font-weight: 600; border: 1px solid rgba(168,85,247,0.3);">
+                ⭐ Recommendation Under Review
+              </span>
+            </div>
+
+            <p style="font-size: 13px; color: #E2E8F0; margin-bottom: 16px; line-height: 1.6;">
+              A verified educator, <strong><%= latestTeacherRequest.requestedBy ? latestTeacherRequest.requestedBy.name : 'Faculty Member' %></strong><% if (latestTeacherRequest.requestedBy && latestTeacherRequest.requestedBy.username) { %> (@<%= latestTeacherRequest.requestedBy.username %>)<% } %>, has recommended you for promotion to the <strong>Verified Teacher</strong> role on <strong><%= new Date(latestTeacherRequest.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></strong>.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: rgba(0,0,0,0.3); padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); font-size: 12px; margin-bottom: 14px;">
+              <div>
+                <span style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">Endorsed Subjects</span>
+                <span style="color: #C4B5FD;"><%= latestTeacherRequest.subjects && latestTeacherRequest.subjects.length > 0 ? latestTeacherRequest.subjects.join(', ') : 'Noted in recommendation' %></span>
               </div>
               <div>
-                <label for="studentExperience" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Teaching Experience *</label>
-                <input type="text" id="studentExperience" name="experience" maxlength="200" placeholder="e.g. 3 Years Assistant Professor" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+                <span style="color: var(--muted); display: block; font-size: 10px; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">Current Status</span>
+                <span style="color: #FBBF24;">Awaiting HOD / Admin Governance Approval</span>
               </div>
             </div>
 
-            <div>
-              <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600;">
-                Subject(s) Interested / Qualified to Teach *
-              </label>
-              <div id="studentSubjectList" style="max-height: 180px; overflow-y: auto; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-                <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
-                  <% activeSubjects.forEach(s => { %>
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: white; cursor: pointer; user-select: none;">
-                      <input type="checkbox" name="subjects" value="<%= s.name %>" style="accent-color: var(--lavender); cursor: pointer;">
-                      <span><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></span>
-                    </label>
-                  <% }) %>
-                <% } else { %>
-                  <span style="color: var(--muted); font-size: 12px;">No subjects available in catalog.</span>
-                <% } %>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted);">
+              <i class="fa-solid fa-circle-check" style="color: #A855F7;"></i>
+              <span>This recommendation is currently in the administration review queue. You will be notified automatically when an administrator acts on it.</span>
+            </div>
+          </div>
+
+        <% } else { %>
+          <!-- Case C: No pending application (or previously rejected, can apply/re-apply) -->
+          <div class="content-card" style="padding: 24px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(124,58,237,0.3); background: radial-gradient(circle at top right, rgba(124,58,237,0.1), transparent 60%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
+              <div>
+                <span style="font-size: 10px; font-weight: 700; color: #C4B5FD; text-transform: uppercase; letter-spacing: 0.5px;">TEACHER GOVERNANCE WORKFLOW</span>
+                <h2 style="font-family: 'Sora', sans-serif; font-size: 18px; margin: 2px 0 0 0; color: white;">Apply for Verified Teacher Role</h2>
               </div>
-              <small style="display: block; font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.4;">
-                Select the subjects you are qualified to teach from the official catalog. Admin/HOD will review your requested subjects upon application approval.
-              </small>
             </div>
 
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <label for="studentReason" style="font-size: 11px; color: var(--muted); font-weight: 600;">Reason for Application *</label>
-                <span id="studentReasonCounter" style="font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;">0 / 500</span>
+            <% if (wasRejected) { %>
+              <div style="padding: 12px 16px; border-radius: 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #FCA5A5; font-size: 12px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px;">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-top: 2px; color: #EF4444;"></i>
+                <div>
+                  <strong>Previous Application Update:</strong> Your previous application was reviewed on <%= new Date(latestTeacherRequest.reviewedAt || latestTeacherRequest.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %> and was not approved<% if (latestTeacherRequest.rejectionReason) { %> (Reason: <%= latestTeacherRequest.rejectionReason %>)<% } %>. You may update your qualifications and submit a new application below.
+                </div>
               </div>
-              <textarea id="studentReason" name="reason" rows="3" maxlength="500" placeholder="Describe your background and why you wish to publish verified educational content (maximum 500 characters)..." required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; font-family: inherit; resize: vertical;"></textarea>
-              <div id="studentFormError" style="display: none; font-size: 11px; color: #ef4444; margin-top: 4px;"></div>
-            </div>
+            <% } %>
 
-            <div style="text-align: right; margin-top: 4px;">
-              <button type="submit" class="primary-button" id="studentSubmitBtn" style="padding: 8px 20px; font-size: 12px; cursor: pointer;">
-                Submit Teacher Application →
-              </button>
-            </div>
-          </form>
-        </div>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 18px; line-height: 1.5;">
+              Are you an educator, teaching assistant, or subject matter expert? Submit your application below to request promotion to a Verified Teacher account. Applications are reviewed directly by HOD/Admin.
+            </p>
+
+            <form action="/teacher-requests" method="POST" id="studentTeacherRequestForm" style="display: flex; flex-direction: column; gap: 12px;">
+              <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div>
+                  <label for="studentQualifications" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Academic Qualification *</label>
+                  <input type="text" id="studentQualifications" name="qualifications" maxlength="200" placeholder="e.g. M.Tech CS, Ph.D. Mathematics" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+                </div>
+                <div>
+                  <label for="studentExperience" style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Teaching Experience *</label>
+                  <input type="text" id="studentExperience" name="experience" maxlength="200" placeholder="e.g. 3 Years Assistant Professor" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px;">
+                </div>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600;">
+                  Subject(s) Interested / Qualified to Teach *
+                </label>
+                <div id="studentSubjectList" style="max-height: 180px; overflow-y: auto; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+                  <% if (typeof activeSubjects !== 'undefined' && activeSubjects && activeSubjects.length > 0) { %>
+                    <% activeSubjects.forEach(s => { %>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: white; cursor: pointer; user-select: none;">
+                        <input type="checkbox" name="subjects" value="<%= s.name %>" style="accent-color: var(--lavender); cursor: pointer;">
+                        <span><%= s.name %> <%= s.code ? '(' + s.code + ')' : '' %></span>
+                      </label>
+                    <% }) %>
+                  <% } else { %>
+                    <span style="color: var(--muted); font-size: 12px;">No subjects available in catalog.</span>
+                  <% } %>
+                </div>
+                <small style="display: block; font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.4;">
+                  Select the subjects you are qualified to teach from the official catalog. Admin/HOD will review your requested subjects upon application approval.
+                </small>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label for="studentReason" style="font-size: 11px; color: var(--muted); font-weight: 600;">Reason for Application *</label>
+                  <span id="studentReasonCounter" style="font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;">0 / 500</span>
+                </div>
+                <textarea id="studentReason" name="reason" rows="3" maxlength="500" placeholder="Describe your background and why you wish to publish verified educational content (maximum 500 characters)..." required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; font-family: inherit; resize: vertical;"></textarea>
+                <div id="studentFormError" style="display: none; font-size: 11px; color: #ef4444; margin-top: 4px;"></div>
+              </div>
+
+              <div style="text-align: right; margin-top: 4px;">
+                <button type="submit" class="primary-button" id="studentSubmitBtn" style="padding: 8px 20px; font-size: 12px; cursor: pointer;">
+                  Submit Teacher Application →
+                </button>
+              </div>
+            </form>
+          </div>
+        <% } %>
       <% } %>
 
       <!-- Section: Saved Bookmarks -->
@@ -420,7 +508,28 @@
             return;
           }
         }
+
+        // 3. Client-side double submission guard
+        const submitBtn = document.getElementById('studentSubmitBtn');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.dataset.originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Submitting Application...';
+          submitBtn.style.opacity = '0.7';
+          submitBtn.style.cursor = 'not-allowed';
+        }
       });
     }
+
+    // Restore submit button state if restored from back-forward cache
+    window.addEventListener('pageshow', function() {
+      const submitBtn = document.getElementById('studentSubmitBtn');
+      if (submitBtn && submitBtn.disabled) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitBtn.dataset.originalText || 'Submit Teacher Application →';
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      }
+    });
   });
 </script>

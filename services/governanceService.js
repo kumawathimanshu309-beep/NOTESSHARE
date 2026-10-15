@@ -35,20 +35,43 @@ class GovernanceService {
     }).lean();
 
     if (existingPending) {
-      throw new AppError('A pending teacher application or recommendation already exists for this candidate.', 400);
+      const isSelfPending = existingPending.requestedBy.toString() === candidateUserId.toString();
+      const isSelfRequest = candidateUserId.toString() === requestedById.toString();
+
+      if (isSelfRequest) {
+        if (isSelfPending) {
+          throw new AppError('You already have a teacher application pending HOD/Admin review.', 400);
+        } else {
+          throw new AppError('A teacher has already submitted a recommendation for you that is currently pending HOD/Admin review.', 400);
+        }
+      } else {
+        if (isSelfPending) {
+          throw new AppError('This candidate already has an active teacher application pending HOD/Admin review.', 400);
+        } else {
+          throw new AppError('A teacher recommendation already exists for this candidate and is currently pending HOD/Admin review.', 400);
+        }
+      }
     }
 
     const isSelfRequest = candidateUserId.toString() === requestedById.toString();
 
-    const request = await TeacherRequest.create({
-      candidateUser: candidateUserId,
-      requestedBy: requestedById,
-      reason: reason.trim(),
-      qualifications: qualifications.trim(),
-      subjects: Array.isArray(subjects) ? subjects.map((s) => String(s).trim()).filter((s) => s.length > 0) : [],
-      experience: experience.trim(),
-      status: 'pending',
-    });
+    let request;
+    try {
+      request = await TeacherRequest.create({
+        candidateUser: candidateUserId,
+        requestedBy: requestedById,
+        reason: reason.trim(),
+        qualifications: qualifications.trim(),
+        subjects: Array.isArray(subjects) ? subjects.map((s) => String(s).trim()).filter((s) => s.length > 0) : [],
+        experience: experience.trim(),
+        status: 'pending',
+      });
+    } catch (createErr) {
+      if (createErr.code === 11000) {
+        throw new AppError('A pending teacher application or recommendation already exists for this candidate.', 400);
+      }
+      throw createErr;
+    }
 
     // Audit logging
     const actionType = isSelfRequest ? 'TEACHER_REQUEST_CREATED' : 'TEACHER_RECOMMENDED';
