@@ -5569,3 +5569,23 @@ select optgroup,
   border-radius: 2px;
 }
 
+/* Footer Social Icons Fix */
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-social-link i.fa-brands {
+  display: inline-block !important;
+  width: 18px;
+  min-width: 18px;
+  font-family: "Font Awesome 6 Brands" !important;
+  font-weight: 400 !important;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
